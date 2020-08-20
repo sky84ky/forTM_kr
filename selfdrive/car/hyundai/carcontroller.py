@@ -63,7 +63,6 @@ class CarController():
     self.param_preOpkrAccelProfile = -1
     self.param_OpkrAccelProfile = 0
     self.param_OpkrAutoResume = 0
-    self.param_OpkrEnableLearner = 0
 
     self.SC = None
     self.traceCC = trace1.Loger("CarController")

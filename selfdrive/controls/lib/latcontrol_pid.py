@@ -22,9 +22,9 @@ class LatControlPID():
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       self.params = Params()
-      self.steerKpV = float(self.params.get('Kp'))
-      self.steerKiV = float(self.params.get('Ki'))
-      self.steerKf = float(self.params.get('Kf'))
+      self.steerKpV = float(self.params.get('PIDKp'))
+      self.steerKiV = float(self.params.get('PIDKi'))
+      self.steerKf = float(self.params.get('PIDKf'))
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                           (CP.lateralTuning.pid.kiBP, self.steerKiV),
                           k_f=self.steerKf, pos_limit=1.0)
