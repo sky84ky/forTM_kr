@@ -5,10 +5,8 @@ import hashlib
 import shutil
 from common.basedir import BASEDIR
 from selfdrive.swaglog import cloudlog
-from common.params import Params, put_nonblocking
-params = Params()
 
-android_packages = ("ai.comma.plus.offroad")
+android_packages = ("ai.comma.plus.offroad",)
 
 def get_installed_apks():
   dat = subprocess.check_output(["pm", "list", "packages", "-f"], encoding='utf8').strip().split("\n")
