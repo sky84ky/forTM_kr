@@ -450,7 +450,6 @@ def manager_thread():
     # save boot log
     subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))  
 
-
   # start daemon processes
   for p in daemon_processes:
     start_daemon_process(p)
