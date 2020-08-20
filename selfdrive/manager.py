@@ -193,7 +193,6 @@ managed_processes = {
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "driverview": "selfdrive.monitoring.driverview",
-  "appd": "selfdrive.kyd.appd.appd",  
 }
 
 daemon_processes = {
@@ -229,7 +228,6 @@ if ANDROID:
     'tombstoned',
     'updated',
     'deleter',
-    'appd',
   ]
 
 car_started_processes = [
@@ -573,21 +571,27 @@ def main():
     ("OpkrEnableDriverMonitoring", "1"),
     ("OpkrEnableLogger", "0"),
     ("OpkrEnableGetoffAlert", "1"),
-    ("OpkrEnableLearner", "0"),
     ("OpkrAutoResume", "1"),
     ("OpkrAccelProfile", "0"),
     ("OpkrAutoLanechangedelay", "0"),
-    ("OpkrRunMixplorer", "0"),
-    ("OpkrRunQuickedit", "0"),
-    ("OpkrRunSoftkey", "0"),
-    ("OpkrRunNavigation", "0"),
-    ("OpkrBootNavigation", "0"),
     ("PutPrebuiltOn", "0"),
     ("FingerprintIssuedFix", "0"),
     ("LdwsCarFix", "0"),
     ("LateralControlMethod", "0"),
     ("CruiseStatemodeSelInit", "0"),
     ("LateralControlPriority", "0"),
+    ("OuterLoopGain", "2.0"),
+    ("InnerLoopGain", "3.0"),
+    ("TimeConstant", "1.0"),
+    ("ActuatorEffectiveness", "1.5"),
+    ("Scale", "1850.0"),
+    ("LqrKi", "0.030"),
+    ("DcGain", "0.0030"),
+    ("IgnoreZone", "0.0"),
+    ("Kp", "0.20"),
+    ("Ki", "0.040"),
+    ("Kf", "0.00004"),
+    ("CameraOffset", "0.060"),
   ]
 
   # set unset params

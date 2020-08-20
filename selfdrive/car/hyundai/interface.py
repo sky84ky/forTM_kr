@@ -413,7 +413,7 @@ class CarInterface(CarInterfaceBase):
     elif int(params.get('LateralControlMethod')) == 2:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -426,7 +426,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.8  # 13.8 is spec end-to-end
       elif candidate == CAR.SORENTO:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -439,7 +439,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 14.4 * 1.15
       elif candidate == CAR.GENESIS:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -452,7 +452,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 16.5
       elif candidate in [CAR.K5, CAR.SONATA]:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -466,7 +466,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.SONATA_TURBO:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -479,7 +479,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 14.4 * 1.15   # 15% higher at the center seems reasonable
       elif candidate in [CAR.K5_HEV, CAR.SONATA_HEV]:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -493,7 +493,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR, CAR.K7]:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -507,7 +507,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR_HEV, CAR.K7_HEV]:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -521,7 +521,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.STINGER:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -534,7 +534,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 14.4 * 1.15   # 15% higher at the center seems reasonable
       elif candidate == CAR.KONA:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -548,7 +548,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_HEV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -562,7 +562,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_EV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -576,7 +576,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.NIRO_HEV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -589,7 +589,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.73   #Spec
       elif candidate == CAR.NIRO_EV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -602,7 +602,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.73   #Spec
       elif candidate == CAR.IONIQ_HEV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -615,7 +615,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.73   #Spec
       elif candidate == CAR.IONIQ_EV:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -629,7 +629,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRateCost = 0.4
       elif candidate == CAR.NEXO:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -642,7 +642,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 12.5
       elif candidate == CAR.MOHAVE:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -655,7 +655,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 14.1
       elif candidate == CAR.I30:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -668,7 +668,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.5
       elif candidate == CAR.AVANTE:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -681,7 +681,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.5            # 14 is Stock | Settled Params Learner values are steerRatio: 15.401566348670535
       elif candidate == CAR.SELTOS:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -694,7 +694,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.0
       elif candidate == CAR.PALISADE:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = 1750.0
+        ret.lateralTuning.lqr.scale = 1850.0
         ret.lateralTuning.lqr.ki = 0.03
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
