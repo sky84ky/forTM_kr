@@ -193,6 +193,7 @@ managed_processes = {
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "driverview": "selfdrive.monitoring.driverview",
+  "appd": "selfdrive.kyd.appd.appd",  
 }
 
 daemon_processes = {
@@ -210,7 +211,7 @@ unkillable_processes = ['camerad']
 interrupt_processes: List[str] = []
 
 # processes to end with SIGKILL instead of SIGTERM
-kill_processes = ['sensord']
+kill_processes = ['sensord', 'paramsd']
 
 # processes to end if thermal conditions exceed Green parameters
 green_temp_processes = ['uploader']
@@ -228,6 +229,7 @@ if ANDROID:
     'tombstoned',
     'updated',
     'deleter',
+    'appd',
   ]
 
 car_started_processes = [
@@ -430,10 +432,26 @@ def manager_thread():
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
 
-  # save boot log
-  subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
+
 
   params = Params()
+
+  EnableLogger = int(params.get('OpkrEnableLogger'))     
+
+  #EnableLogger = (params.get("RecordFront") != b"0")
+
+  if not EnableLogger:
+    car_started_processes.remove( 'loggerd' )
+    persistent_processes.remove( 'logmessaged' )
+    persistent_processes.remove( 'uploader' )
+    persistent_processes.remove( 'logcatd' )
+    persistent_processes.remove( 'updated' )
+    persistent_processes.remove( 'deleter' )
+    persistent_processes.remove( 'tombstoned' )
+  else:
+    # save boot log
+    subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))  
+
 
   # start daemon processes
   for p in daemon_processes:
@@ -485,7 +503,7 @@ def manager_thread():
         kill_managed_process(p)
       # this is ugly
       if "driverview" not in running and params.get("IsDriverViewEnabled") == b"1":
-        start_managed_process("driverview")
+      	start_managed_process("driverview")
       elif "driverview" in running and params.get("IsDriverViewEnabled") == b"0":
         kill_managed_process("driverview")
 
@@ -548,6 +566,28 @@ def main():
     ("OpenpilotEnabledToggle", "1"),
     ("LaneChangeEnabled", "1"),
     ("IsDriverViewEnabled", "0"),
+    ("IsOpenpilotViewEnabled", "0"),
+    ("OpkrAutoShutdown", "0"),
+    ("OpkrAutoScreenOff", "0"),
+    ("OpkrUIBrightness", "0"),
+    ("OpkrEnableDriverMonitoring", "1"),
+    ("OpkrEnableLogger", "0"),
+    ("OpkrEnableGetoffAlert", "1"),
+    ("OpkrEnableLearner", "0"),
+    ("OpkrAutoResume", "1"),
+    ("OpkrAccelProfile", "0"),
+    ("OpkrAutoLanechangedelay", "0"),
+    ("OpkrRunMixplorer", "0"),
+    ("OpkrRunQuickedit", "0"),
+    ("OpkrRunSoftkey", "0"),
+    ("OpkrRunNavigation", "0"),
+    ("OpkrBootNavigation", "0"),
+    ("PutPrebuiltOn", "0"),
+    ("FingerprintIssuedFix", "0"),
+    ("LdwsCarFix", "0"),
+    ("LateralControlMethod", "0"),
+    ("CruiseStatemodeSelInit", "0"),
+    ("LateralControlPriority", "0"),
   ]
 
   # set unset params

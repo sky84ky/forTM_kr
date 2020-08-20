@@ -17,6 +17,8 @@
 #include "common/utilpp.h"
 #include "ui.hpp"
 
+#include "dashcam.h"
+
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -41,7 +43,7 @@ static void set_awake(UIState *s, bool awake) {
 #ifdef QCOM
   if (awake) {
     // 30 second timeout
-    s->awake_timeout = 30*UI_FREQ;
+    s->awake_timeout = (s->scene.params.nOpkrAutoScreenOff && s->started)? s->scene.params.nOpkrAutoScreenOff*60*UI_FREQ : 30*UI_FREQ;
   }
   if (s->awake != awake) {
     s->awake = awake;
@@ -106,16 +108,24 @@ static void handle_sidebar_touch(UIState *s, int touch_x, int touch_y) {
   }
 }
 
-static void handle_vision_touch(UIState *s, int touch_x, int touch_y) {
+static void handle_openpilot_view_touch() 
+{
+  write_db_value("IsDriverViewEnabled", "0", 1);
+}
+
+static void handle_vision_touch(UIState *s, int touch_x, int touch_y) 
+{
   if (s->started && (touch_x >= s->scene.ui_viz_rx - bdr_s)
     && (s->active_app != cereal::UiLayoutState::App::SETTINGS)) {
     if (!s->scene.frontview) {
       s->scene.uilayout_sidebarcollapsed = !s->scene.uilayout_sidebarcollapsed;
+    
     } else {
-      write_db_value("IsDriverViewEnabled", "0", 1);
+      handle_openpilot_view_touch();
     }
   }
 }
+
 
 volatile sig_atomic_t do_exit = 0;
 static void set_do_exit(int sig) {
@@ -167,10 +177,10 @@ static int write_param_float(float param, const char* param_name, bool persisten
 static void ui_init(UIState *s) {
 
   pthread_mutex_init(&s->lock, NULL);
-  s->sm = new SubMaster({"model", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "ubloxGnss", "driverState", "dMonitoringState"
+  s->sm = new SubMaster({"model", "controlsState", "carState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
+                         "health", "ubloxGnss", "driverState", "dMonitoringState", "liveParameters"
 #ifdef SHOW_SPEEDLIMIT
-                                    , "liveMapData"
+                          , "liveMapData"
 #endif
   });
   s->pm = new PubMaster({"offroadLayout"});
@@ -288,11 +298,19 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.frontview = scene.controls_state.getRearViewCam();
     if (!scene.frontview){ s->controls_seen = true; }
 
+    scene.v_ego = scene.controls_state.getVEgo();
+
     auto alert_sound = scene.controls_state.getAlertSound();
     if (scene.alert_type.compare(scene.controls_state.getAlertType()) != 0) {
       if (alert_sound == AudibleAlert::NONE) {
+        if (s->scene.params.nOpkrAutoScreenOff) {
+          set_awake(s, true);
+        }
         s->sound.stop();
       } else {
+        if (s->scene.params.nOpkrAutoScreenOff) {
+          set_awake(s, true);
+        }
         s->sound.play(alert_sound);
       }
     }
@@ -326,11 +344,40 @@ void handle_message(UIState *s, SubMaster &sm) {
         }
       }
     }
+
+    scene.engaged = scene.controls_state.getEnabled();
+    scene.angleSteers = scene.controls_state.getAngleSteers();
+    scene.angleSteersDes = scene.controls_state.getAngleSteersDes();
+
+// debug Message
+    std::string user_text1 = scene.controls_state.getAlertTextMsg1();
+    std::string user_text2 = scene.controls_state.getAlertTextMsg2();
+    const char* va_text1 = user_text1.c_str();
+    const char* va_text2 = user_text2.c_str();    
+    if (va_text1) 
+      snprintf(scene.alert.text1, sizeof(scene.alert.text1), "%s", va_text1);
+    else 
+      scene.alert.text1[0] = '\0';
+
+    if (va_text2) 
+      snprintf(scene.alert.text2, sizeof(scene.alert.text2), "%s", va_text2);
+    else 
+      scene.alert.text2[0] = '\0';
+
+    // kegman and copied from atom's code
+    scene.kegman.steerOverride= scene.controls_state.getSteerOverride();
+    scene.kegman.output_scale = scene.controls_state.getLateralControlState().getPidState().getOutput();      
   }
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
     scene.lead_data[0] = data.getLeadOne();
     scene.lead_data[1] = data.getLeadTwo();
+
+
+    scene.lead_status = scene.lead_data[0].getStatus();
+    scene.lead_d_rel = scene.lead_data[0].getDRel();
+    scene.lead_y_rel = scene.lead_data[0].getYRel();
+    scene.lead_v_rel = scene.lead_data[0].getVRel();    
   }
   if (sm.updated("liveCalibration")) {
     scene.world_objects_visible = true;
@@ -364,6 +411,10 @@ void handle_message(UIState *s, SubMaster &sm) {
 #endif
   if (sm.updated("thermal")) {
     scene.thermal = sm["thermal"].getThermal();
+    auto data = sm["thermal"].getThermal();
+    scene.maxBatTemp = scene.thermal.getBat();
+    scene.maxCpuTemp = scene.thermal.getCpu0();     
+    snprintf(scene.ipAddr, sizeof(scene.ipAddr), "%s", data.getIpAddr().cStr());
   }
   if (sm.updated("ubloxGnss")) {
     auto data = sm["ubloxGnss"].getUbloxGnss();
@@ -383,6 +434,16 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.is_rhd = data.getIsRHD();
     s->preview_started = data.getIsPreview();
   }
+  if (sm.updated("carState")) {
+    auto data = sm["carState"].getCarState();
+    scene.brakePress = data.getBrakePressed();
+    scene.brakeLights = data.getBrakeLights();
+
+    scene.leftBlinker = data.getLeftBlinker();
+    scene.rightBlinker = data.getRightBlinker();
+    scene.getGearShifter = data.getGearShifter();
+  }
+
 
   s->started = scene.thermal.getStarted() || s->preview_started;
   // Handle onroad/offroad transition
@@ -480,6 +541,8 @@ static void ui_update(UIState *s) {
 
     assert(glGetError() == GL_NO_ERROR);
 
+
+    
     s->scene.uilayout_sidebarcollapsed = true;
     s->scene.ui_viz_rx = (box_x-sbr_w+bdr_s*2);
     s->scene.ui_viz_rw = (box_w+sbr_w-(bdr_s*2));
@@ -749,6 +812,11 @@ int main(int argc, char* argv[]) {
 
   int draws = 0;
 
+  if (s->scene.params.nOpkrAutoScreenOff) {
+    set_awake(s, true);
+  }
+
+  int nParamRead = 0;
   while (!do_exit) {
     bool should_swap = false;
     if (!s->started) {
@@ -759,12 +827,26 @@ int main(int argc, char* argv[]) {
     pthread_mutex_lock(&s->lock);
     double u1 = millis_since_boot();
 
+    // parameter Read.
+    nParamRead++;
+    switch( nParamRead )
+    {
+      case 1: ui_get_params( "OpkrAutoScreenOff", &s->scene.params.nOpkrAutoScreenOff ); break;
+      case 2: ui_get_params( "OpkrUIBrightness", &s->scene.params.nOpkrUIBrightness ); break;
+      case 3: ui_get_params( "OpkrUIVolumeBoost", &s->scene.params.nOpkrUIVolumeBoost ); break;
+      default: nParamRead = 0; break;
+    }
+
     // light sensor is only exposed on EONs
+    if (s->scene.params.nOpkrUIBrightness == 0) {
     float clipped_brightness = (s->light_sensor*brightness_m) + brightness_b;
     if (clipped_brightness > 512) clipped_brightness = 512;
     smooth_brightness = clipped_brightness * 0.01 + smooth_brightness * 0.99;
     if (smooth_brightness > 255) smooth_brightness = 255;
     ui_set_brightness(s, (int)smooth_brightness);
+    } else {
+      ui_set_brightness(s, (int)(255*s->scene.params.nOpkrUIBrightness*0.01));
+    }
 
     // resize vision for collapsing sidebar
     const bool hasSidebar = !s->scene.uilayout_sidebarcollapsed;
@@ -776,9 +858,21 @@ int main(int argc, char* argv[]) {
     int touch_x = -1, touch_y = -1;
     int touched = touch_poll(&touch, &touch_x, &touch_y, 0);
     if (touched == 1) {
-      set_awake(s, true);
-      handle_sidebar_touch(s, touch_x, touch_y);
-      handle_vision_touch(s, touch_x, touch_y);
+      if (s->scene.params.nOpkrAutoScreenOff && s->awake_timeout == 0) {
+        set_awake(s, true);
+      } else {
+        set_awake(s, true);
+
+        if( touch_x  < 1660 || touch_y < 885 )
+        { 
+          handle_sidebar_touch(s, touch_x, touch_y);
+          handle_vision_touch(s, touch_x, touch_y);
+        }
+        else
+        {
+          handle_openpilot_view_touch();
+        }        
+      }
     }
 
     if (!s->started) {
@@ -789,7 +883,11 @@ int main(int argc, char* argv[]) {
         s->controls_timeout = 5 * UI_FREQ;
       }
     } else {
-      set_awake(s, true);
+      if (s->scene.params.nOpkrAutoScreenOff) {
+        // do nothing
+      } else {
+        set_awake(s, true);
+      }
       // Car started, fetch a new rgb image from ipc
       if (s->vision_connected){
         ui_update(s);
@@ -822,21 +920,37 @@ int main(int argc, char* argv[]) {
 
     // Don't waste resources on drawing in case screen is off
     if (s->awake) {
+      dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
       should_swap = true;
     }
 
-    s->sound.setVolume(fmin(MAX_VOLUME, MIN_VOLUME + s->scene.controls_state.getVEgo() / 5)); // up one notch every 5 m/s
+    float min = MIN_VOLUME + s->scene.controls_state.getVEgo() / 5;
+    if (s->scene.params.nOpkrUIVolumeBoost > 0 || s->scene.params.nOpkrUIVolumeBoost < 0) {
+      min = min * (1 + s->scene.params.nOpkrUIVolumeBoost * 0.01);
+    }
+    s->sound.setVolume(fmin(MAX_VOLUME, min)); // up one notch every 5 m/s
 
     if (s->controls_timeout > 0) {
       s->controls_timeout--;
     } else if (s->started) {
       if (!s->controls_seen) {
-        // car is started, but controlsState hasn't been seen at all
-        s->scene.alert_text1 = "openpilot Unavailable";
-        s->scene.alert_text2 = "Waiting for controls to start";
-        s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+        int  IsOpenpilotViewEnabled = 0;
+        ui_get_params( "IsDriverViewEnabled", &IsOpenpilotViewEnabled );
+        if( !IsOpenpilotViewEnabled )
+        {
+          // car is started, but controlsState hasn't been seen at all
+          s->scene.alert_text1 = "openpilot Unavailable";
+          s->scene.alert_text2 = "Waiting for controls to start";
+          s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+        }
+        else
+        {
+          s->controls_timeout = 5 * UI_FREQ;
+          s->scene.alert_size = cereal::ControlsState::AlertSize::NONE;
+        }
+        
       } else {
         // car is started, but controls is lagging or died
         LOGE("Controls unresponsive");

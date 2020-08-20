@@ -4,6 +4,7 @@ import numpy as np
 from cereal import log
 from common.realtime import DT_CTRL
 from common.numpy_fast import clip
+from common.params import Params
 from selfdrive.car.toyota.values import SteerLimitParams
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.controls.lib.drive_helpers import get_steer_max
@@ -34,6 +35,9 @@ class LatControlINDI():
 
     self.enforce_rate_limit = CP.carName == "toyota"
 
+    self.params = Params(CP)
+    self.mpc_frame = 0
+
     self.RC = CP.lateralTuning.indi.timeConstant
     self.G = CP.lateralTuning.indi.actuatorEffectiveness
     self.outer_loop_gain = CP.lateralTuning.indi.outerLoopGain
@@ -50,6 +54,21 @@ class LatControlINDI():
     self.output_steer = 0.
     self.sat_count = 0.0
 
+  def live_tune(self, CP):
+    self.mpc_frame += 1
+    if self.mpc_frame % 300 == 0:
+      self.params = Params()
+      self.outerLoopGain = float(self.params.get('OuterLoopGain'))
+      self.innerLoopGain = float(self.params.get('InnerLoopGain'))
+      self.timeConstant = float(self.params.get('TimeConstant'))
+      self.actuatorEffectiveness = float(self.params.get('ActuatorEffectiveness'))
+      self.RC = self.timeConstant
+      self.G = self.actuatorEffectiveness
+      self.outer_loop_gain = self.outerLoopGain
+      self.inner_loop_gain = self.innerLoopGain
+      
+      self.mpc_frame = 0
+  
   def _check_saturation(self, control, check_saturation, limit):
     saturated = abs(control) == limit
 
@@ -63,6 +82,9 @@ class LatControlINDI():
     return self.sat_count > self.sat_limit
 
   def update(self, active, CS, CP, path_plan):
+
+    self.live_tune(CP)
+
     # Update Kalman filter
     y = np.matrix([[math.radians(CS.steeringAngle)], [math.radians(CS.steeringRate)]])
     self.x = np.dot(self.A_K, self.x) + np.dot(self.K, y)

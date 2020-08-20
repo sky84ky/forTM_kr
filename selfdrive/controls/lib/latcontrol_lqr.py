@@ -2,11 +2,14 @@ import numpy as np
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from common.realtime import DT_CTRL
+from common.params import Params
 from cereal import log
-
 
 class LatControlLQR():
   def __init__(self, CP):
+    self.params = Params(CP)
+    self.mpc_frame = 0
+
     self.scale = CP.lateralTuning.lqr.scale
     self.ki = CP.lateralTuning.lqr.ki
 
@@ -31,6 +34,20 @@ class LatControlLQR():
     self.output_steer = 0.0
     self.sat_count = 0.0
 
+  def live_tune(self, CP):
+    self.mpc_frame += 1
+    if self.mpc_frame % 300 == 0:
+      self.params = Params()
+      self.scale_ = float(self.params.get('Scale'))
+      self.ki_ = float(self.params.get('LqrKi'))
+      self.dc_gain_ = float(self.params.get('DcGain'))
+
+      self.scale = self.scale_
+      self.ki = self.ki_
+      self.dc_gain = self.dc_gain_
+        
+      self.mpc_frame = 0
+
   def _check_saturation(self, control, check_saturation, limit):
     saturated = abs(control) == limit
 
@@ -44,6 +61,9 @@ class LatControlLQR():
     return self.sat_count > self.sat_limit
 
   def update(self, active, CS, CP, path_plan):
+
+    self.live_tune(CP)
+
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
     steers_max = get_steer_max(CP, CS.vEgo)

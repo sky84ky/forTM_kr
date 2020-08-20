@@ -70,6 +70,7 @@ keys = {
   "HasAcceptedTerms": [TxType.PERSISTENT],
   "HasCompletedSetup": [TxType.PERSISTENT],
   "IsDriverViewEnabled": [TxType.CLEAR_ON_MANAGER_START],
+  "IsOpenpilotViewEnabled": [TxType.CLEAR_ON_MANAGER_START],
   "IsLdwEnabled": [TxType.PERSISTENT],
   "IsGeofenceEnabled": [TxType.PERSISTENT],
   "IsMetric": [TxType.PERSISTENT],
@@ -108,6 +109,39 @@ keys = {
   "Offroad_InvalidTime": [TxType.CLEAR_ON_MANAGER_START],
   "Offroad_IsTakingSnapshot": [TxType.CLEAR_ON_MANAGER_START],
   "Offroad_NeosUpdate": [TxType.CLEAR_ON_MANAGER_START],
+  "OpkrAutoShutdown": [TxType.PERSISTENT],
+  "OpkrAutoScreenOff": [TxType.PERSISTENT],
+  "OpkrUIBrightness": [TxType.PERSISTENT],
+  "OpkrEnableDriverMonitoring": [TxType.PERSISTENT],
+  "OpkrEnableLogger": [TxType.PERSISTENT],
+  "OpkrEnableGetoffAlert": [TxType.PERSISTENT],
+  "OpkrEnableLearner": [TxType.PERSISTENT],
+  "OpkrAutoResume": [TxType.PERSISTENT],
+  "OpkrAccelProfile": [TxType.PERSISTENT],
+  "OpkrAutoLanechangedelay": [TxType.PERSISTENT],
+  "OpkrRunMixplorer": [TxType.PERSISTENT],
+  "OpkrRunQuickedit": [TxType.PERSISTENT],
+  "OpkrRunSoftkey": [TxType.PERSISTENT],
+  "OpkrRunNavigation": [TxType.PERSISTENT],
+  "OpkrBootNavigation": [TxType.PERSISTENT],
+  "PutPrebuiltOn": [TxType.PERSISTENT],
+  "FingerprintIssuedFix": [TxType.PERSISTENT],
+  "LdwsCarFix": [TxType.PERSISTENT],
+  "LateralControlMethod": [TxType.PERSISTENT],
+  "CruiseStatemodeSelInit": [TxType.PERSISTENT],
+  "LateralControlPriority": [TxType.PERSISTENT],
+  "OuterLoopGain": [TxType.PERSISTENT],
+  "InnerLoopGain": [TxType.PERSISTENT],
+  "TimeConstant": [TxType.PERSISTENT],
+  "ActuatorEffectiveness": [TxType.PERSISTENT],
+  "Scale": [TxType.PERSISTENT],
+  "LqrKi": [TxType.PERSISTENT],
+  "DcGain": [TxType.PERSISTENT],
+  "DZone": [TxType.PERSISTENT],
+  "Kp": [TxType.PERSISTENT],
+  "Ki": [TxType.PERSISTENT],
+  "Kf": [TxType.PERSISTENT],
+  "CameraOffset": [TxType.PERSISTENT],
 }
 
 
@@ -398,6 +432,54 @@ class Params():
       raise UnknownKeyName(key)
 
     write_db(self.db, key, dat)
+
+
+  def get_OpkrAutoShutdown(self):
+      cvt_dictionary = {
+          0:0,
+          1:1,
+          2:30,
+          3:60,
+          4:180,
+          5:300,
+          6:600,
+          7:1800,
+          8:3600,
+          9:10800,
+          10:18000,
+      }
+
+      nID = int( self.get("OpkrAutoShutdown") )
+      value = 0
+      try:
+          value = cvt_dictionary[nID]
+      except:
+          value = 0
+
+      return  value
+
+
+  def get_OpkrAutoLanechangedelay(self):
+      cvt_dictionary = {
+          0:0.0,
+          1:0.1,
+          2:0.5,
+          3:1.0,
+          4:1.5,
+          5:2.0,
+      }
+
+      nID = int(  self.get("OpkrAutoLanechangedelay") )
+      value = 0
+      try:
+          value = cvt_dictionary[nID]
+      except:
+          value = 0
+
+      return  value    
+
+
+
 
 
 def put_nonblocking(key, val):

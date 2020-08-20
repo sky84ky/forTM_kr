@@ -2,19 +2,40 @@ from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
+from common.params import Params
 
 
 class LatControlPID():
   def __init__(self, CP):
+    self.params = Params(CP)
+    self.deadzone = float(self.params.get('DZone'))
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
     self.angle_steers_des = 0.
+    self.mpc_frame = 0
 
   def reset(self):
     self.pid.reset()
+    
+  def live_tune(self, CP):
+    self.mpc_frame += 1
+    if self.mpc_frame % 300 == 0:
+      self.params = Params()
+      self.steerKpV = float(self.params.get('Kp'))
+      self.steerKiV = float(self.params.get('Ki'))
+      self.steerKf = float(self.params.get('Kf'))
+      self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
+                          (CP.lateralTuning.pid.kiBP, self.steerKiV),
+                          k_f=self.steerKf, pos_limit=1.0)
+      self.deadzone = float(self.params.get('DZone'))
+        
+      self.mpc_frame = 0
 
   def update(self, active, CS, CP, path_plan):
+  
+    self.live_tune(CP)
+
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(CS.steeringAngle)
     pid_log.steerRate = float(CS.steeringRate)
@@ -34,7 +55,7 @@ class LatControlPID():
         # TODO: feedforward something based on path_plan.rateSteers
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
         steer_feedforward *= CS.vEgo**2  # proportional to realigning tire momentum (~ lateral accel)
-      deadzone = 0.0
+      deadzone = self.deadzone
 
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       output_steer = self.pid.update(self.angle_steers_des, CS.steeringAngle, check_saturation=check_saturation, override=CS.steeringPressed,

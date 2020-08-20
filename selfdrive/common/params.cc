@@ -366,3 +366,25 @@ std::vector<char> read_db_bytes(const char* param_name, bool persistent_param) {
   }
   return bytes;
 }
+
+
+
+int ui_get_params( const char* param_name, int *pValue )
+{
+  char speed_str[512];
+  char *string;
+  int   ret_code = 0;
+
+  const int result = read_db_value( param_name, &string, NULL);
+  if (result == 0) {
+   // bool is_rhd = (string[0] == '1');
+    strcpy( speed_str, string  );
+    free(string);
+
+    ret_code = atol( speed_str );
+    if( pValue )
+      *pValue = ret_code;
+  }
+
+  return result;
+}

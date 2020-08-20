@@ -5,6 +5,7 @@ from common.filter_simple import FirstOrderFilter
 from common.stat_live import RunningStatFilter
 
 from cereal import car
+from common.params import Params
 
 EventName = car.CarEvent.EventName
 
@@ -14,10 +15,17 @@ EventName = car.CarEvent.EventName
 #  We recommend that you do not change these numbers from the defaults.
 # ******************************************************************************************
 
-_AWARENESS_TIME = 70.  # one minute limit without user touching steering wheels make the car enter a terminal status
-_AWARENESS_PRE_TIME_TILL_TERMINAL = 15.  # a first alert is issued 25s before expiration
-_AWARENESS_PROMPT_TIME_TILL_TERMINAL = 6.  # a second alert is issued 15s before start decelerating the car
-_DISTRACTED_TIME = 11.
+params = Params()
+if int(params.get('OpkrEnableLogger')) == 0:
+  _AWARENESS_TIME = 30000.
+else:
+  _AWARENESS_TIME = 70.  # one minute limit without user touching steering wheels make the car enter a terminal status
+_AWARENESS_PRE_TIME_TILL_TERMINAL = 20.  # a first alert is issued 25s before expiration
+_AWARENESS_PROMPT_TIME_TILL_TERMINAL = 10.  # a second alert is issued 15s before start decelerating the car
+if int(params.get('OpkrEnableDriverMonitoring')) == 0 and int(params.get('OpkrEnableLogger')) == 0:
+  _DISTRACTED_TIME = 30000.
+else:
+  _DISTRACTED_TIME = 11.
 _DISTRACTED_PRE_TIME_TILL_TERMINAL = 8.
 _DISTRACTED_PROMPT_TIME_TILL_TERMINAL = 6.
 

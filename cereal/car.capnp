@@ -112,6 +112,14 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     wrongCruiseMode @87;
     neosUpdateRequired @88;
     modeldLagging @89;
+    laneChangeManual @90;
+    emgButtonManual @91;
+    driverSteering @92;
+    modeChangeOpenpilot @93;
+    modeChangeDistcurv @94;
+    modeChangeDistance @95;
+    modeChangeAutores @96;
+    modeChangeStock @97;
   }
 }
 
@@ -194,6 +202,7 @@ struct CarState {
     speedOffset @3 :Float32;
     standstill @4 :Bool;
     nonAdaptive @5 :Bool;
+    modeSel @6 :Int16;
   }
 
   enum GearShifter {
@@ -334,6 +343,19 @@ struct CarControl {
       chimeWarningRepeat @6;
       chimePrompt @7;
       chimeWarning2Repeat @8;
+      chimeReady @9;
+      chimeDoorOpen @10;
+      chimeGearDrive @11;
+      chimeLaneChange @12;
+      chimeLaneDeparture @13;
+      chimeRoadWarning @14;
+      chimeSeatBelt @15;
+      chimeViewUncertain @16;
+      chimeModeOpenpilot @17;
+      chimeModeDistcurv @18;
+      chimeModeDistance @19;
+      chimeModeAutores @20;
+      chimeModeStock @21;
     }
   }
 }
@@ -405,6 +427,9 @@ struct CarParams {
   communityFeature @46: Bool;  # true if a community maintained feature is detected
   fingerprintSource @49: FingerprintSource;
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
+  mdpsBus @51: Int8;
+  sasBus @52: Int8;
+  sccBus @53: Int8;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);

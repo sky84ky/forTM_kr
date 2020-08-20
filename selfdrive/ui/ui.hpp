@@ -132,6 +132,50 @@ typedef struct UIScene {
   cereal::RadarState::LeadData::Reader lead_data[2];
   cereal::ControlsState::Reader controls_state;
   cereal::DriverState::Reader driver_state;
+
+
+  // dev ui
+  uint16_t maxCpuTemp;
+  uint32_t maxBatTemp;
+  float angleSteers;  
+  float angleSteersDes;  
+
+  int  engaged;
+  float v_ego;
+
+
+  int lead_status;
+  float lead_d_rel, lead_y_rel, lead_v_rel;
+
+  bool  brakePress;
+  bool  brakeLights;
+  bool  leftBlinker;
+  bool  rightBlinker;
+
+  char ipAddr[20];
+
+
+  cereal::CarState::GearShifter  getGearShifter;  
+
+  struct _STATUS_
+  {
+      char text1[512];
+      char text2[512];
+  } alert;
+
+  struct _KEGMEN_
+  {
+      bool steerOverride;
+      float output_scale;
+  } kegman;
+
+
+  struct  _PARAMS
+  {
+    int nOpkrAutoScreenOff;
+    int nOpkrUIBrightness;
+    int nOpkrUIVolumeBoost;
+  } params;
 } UIScene;
 
 typedef struct {
