@@ -584,7 +584,7 @@ def main():
     ("InnerLoopGain", "3.0"),
     ("TimeConstant", "1.0"),
     ("ActuatorEffectiveness", "1.5"),
-    ("Scale", "1850.0"),
+    ("Scale", "1850"),
     ("LqrKi", "0.030"),
     ("DcGain", "0.0030"),
     ("IgnoreZone", "0.0"),
