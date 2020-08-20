@@ -3,7 +3,7 @@ import numpy as np
 from cereal import log
 from common.params import Params
 
-CAMERA_OFFSET = float(Params().get('CameraOffsetADJ')) # m from center car to camera
+CAMERA_OFFSET = float(Params().get('CameraOffsetAdj')) # m from center car to camera
 
 
 def compute_path_pinv(l=50):

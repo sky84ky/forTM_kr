@@ -38,9 +38,9 @@ class LatControlLQR():
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       self.params = Params()
-      self.scale_ = float(self.params.get('LQRScale'))
-      self.ki_ = float(self.params.get('LQRKi'))
-      self.dc_gain_ = float(self.params.get('LQRDcGain'))
+      self.scale_ = float(self.params.get('Scale'))
+      self.ki_ = float(self.params.get('LqrKi'))
+      self.dc_gain_ = float(self.params.get('DcGain'))
 
       self.scale = self.scale_
       self.ki = self.ki_
