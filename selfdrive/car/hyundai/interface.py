@@ -30,6 +30,10 @@ class CarInterface(CarInterfaceBase):
       ret.radarOffCan = False
     else:
       ret.radarOffCan = True
+      
+    PidKp = int(params.get('PidKp')) * 0.01
+    PidKi = int(params.get('PidKi')) * 0.001
+    PidKf = int(params.get('PidKf')) * 0.00001
 
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
@@ -78,13 +82,13 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
       elif candidate in [CAR.K5_HEV, CAR.SONATA_HEV]:
-        ret.lateralTuning.pid.kf = 0.00006
+        ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1595. + STD_CARGO_KG
         ret.wheelbase = 2.80
         ret.steerRatio = 12.75
         ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
+        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate in [CAR.GRANDEUR, CAR.K7]:
         ret.lateralTuning.pid.kf = 0.00005
         ret.mass = 1570. + STD_CARGO_KG
