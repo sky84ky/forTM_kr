@@ -58,10 +58,10 @@ class LatControlINDI():
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       self.params = Params()
-      self.outerLoopGain = float(self.params.get('OuterLoopGain'))
-      self.innerLoopGain = float(self.params.get('InnerLoopGain'))
-      self.timeConstant = float(self.params.get('TimeConstant'))
-      self.actuatorEffectiveness = float(self.params.get('ActuatorEffectiveness'))
+      self.outerLoopGain = float(self.params.get('OuterLoopGain') * 0.1)
+      self.innerLoopGain = float(self.params.get('InnerLoopGain') * 0.1)
+      self.timeConstant = float(self.params.get('TimeConstant') * 0.1)
+      self.actuatorEffectiveness = float(self.params.get('ActuatorEffectiveness') * 0.1)
       self.RC = self.timeConstant
       self.G = self.actuatorEffectiveness
       self.outer_loop_gain = self.outerLoopGain

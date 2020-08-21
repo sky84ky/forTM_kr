@@ -8,7 +8,7 @@ from common.params import Params
 class LatControlPID():
   def __init__(self, CP):
     self.params = Params(CP)
-    self.deadzone = float(self.params.get('IgnoreZone'))
+    self.deadzone = float(self.params.get('IgnoreZone') * 0.1)
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
@@ -22,13 +22,13 @@ class LatControlPID():
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
       self.params = Params()
-      self.steerKpV = float(self.params.get('PIDKp'))
-      self.steerKiV = float(self.params.get('PIDKi'))
-      self.steerKf = float(self.params.get('PIDKf'))
+      self.steerKpV = float(self.params.get('PIDKp') * 0.01)
+      self.steerKiV = float(self.params.get('PIDKi') * 0.001)
+      self.steerKf = float(self.params.get('PIDKf') * 0.00001)
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                           (CP.lateralTuning.pid.kiBP, self.steerKiV),
                           k_f=self.steerKf, pos_limit=1.0)
-      self.deadzone = float(self.params.get('IgnoreZone'))
+      self.deadzone = float(self.params.get('IgnoreZone') * 0.1)
         
       self.mpc_frame = 0
 
