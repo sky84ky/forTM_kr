@@ -579,7 +579,7 @@ def main():
     ("LateralControlMethod", "0"),
     ("CruiseStatemodeSelInit", "0"),
     ("LateralControlPriority", "0"),
-    ("OuterLoopGain", 2.0),
+    ("OuterLoopGain", "2.0"),
     ("InnerLoopGain", "3.0"),
     ("TimeConstant", "1.0"),
     ("ActuatorEffectiveness", "1.5"),
