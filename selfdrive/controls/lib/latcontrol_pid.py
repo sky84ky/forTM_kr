@@ -8,7 +8,7 @@ params = Params()
 
 class LatControlPID():
   def __init__(self, CP):
-    self.deadzone = str(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
+    self.deadzone = float(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
@@ -27,7 +27,7 @@ class LatControlPID():
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                           (CP.lateralTuning.pid.kiBP, self.steerKiV),
                           k_f=self.steerKf, pos_limit=1.0)
-      self.deadzone = str(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
+      self.deadzone = float(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
         
       self.mpc_frame = 0
 
