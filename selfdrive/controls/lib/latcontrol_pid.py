@@ -20,9 +20,9 @@ class LatControlPID():
   def live_tune(self, CP):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
-      self.steerKpV = str(int(params.get("PidKp", encoding='utf8')) * 0.01)
-      self.steerKiV = str(int(params.get("PidKi", encoding='utf8')) * 0.001)
-      self.steerKf = str(int(params.get("PidKf", encoding='utf8')) * 0.00001)
+      self.steerKpV = int(int(params.get("PidKp", encoding='utf8')) * 0.01)
+      self.steerKiV = int(int(params.get("PidKi", encoding='utf8')) * 0.001)
+      self.steerKf = int(int(params.get("PidKf", encoding='utf8')) * 0.00001)
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                           (CP.lateralTuning.pid.kiBP, self.steerKiV),
                           k_f=self.steerKf, pos_limit=1.0)
