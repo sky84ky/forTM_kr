@@ -2,8 +2,6 @@ from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
-from common.params import Params
-params = Params()
 
 
 class LatControlPID():
@@ -12,26 +10,11 @@ class LatControlPID():
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
     self.angle_steers_des = 0.
-    self.mpc_frame = 0
 
   def reset(self):
     self.pid.reset()
-    
-  def live_tune(self, CP):
-    self.mpc_frame += 1
-    if self.mpc_frame % 300 == 0:
-      self.steerKpV = int(int(params.get("PidKp", encoding='utf8')) * 0.01)
-      self.steerKiV = int(int(params.get("PidKi", encoding='utf8')) * 0.001)
-      self.steerKf = int(int(params.get("PidKf", encoding='utf8')) * 0.00001)
-      self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
-                          (CP.lateralTuning.pid.kiBP, self.steerKiV),
-                          k_f=self.steerKf, pos_limit=1.0)
-        
-      self.mpc_frame = 0
 
   def update(self, active, CS, CP, path_plan):
-  
-    self.live_tune(CP)
 
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(CS.steeringAngle)
