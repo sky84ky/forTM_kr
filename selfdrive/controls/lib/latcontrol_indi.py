@@ -8,6 +8,7 @@ from common.params import Params
 from selfdrive.car.toyota.values import SteerLimitParams
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.controls.lib.drive_helpers import get_steer_max
+params = Params()
 
 
 class LatControlINDI():
@@ -56,11 +57,10 @@ class LatControlINDI():
   def live_tune(self, CP):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
-      self.params = Params()
-      self.outerLoopGain = float(self.params.get('OuterLoopGain')) * 0.1
-      self.innerLoopGain = float(self.params.get('InnerLoopGain')) * 0.1
-      self.timeConstant = float(self.params.get('TimeConstant')) * 0.1
-      self.actuatorEffectiveness = float(self.params.get('ActuatorEffectiveness')) * 0.1
+      self.outerLoopGain = int(params.get("OuterLoopGain", encoding='utf8')) * 0.1
+      self.innerLoopGain = int(params.get("InnerLoopGain", encoding='utf8')) * 0.1
+      self.timeConstant = int(params.get("TimeConstant", encoding='utf8')) * 0.1
+      self.actuatorEffectiveness = int(params.get("ActuatorEffectiveness", encoding='utf8')) * 0.1
       self.RC = self.timeConstant
       self.G = self.actuatorEffectiveness
       self.outer_loop_gain = self.outerLoopGain

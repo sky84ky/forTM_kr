@@ -4,6 +4,7 @@ from common.numpy_fast import clip
 from common.realtime import DT_CTRL
 from common.params import Params
 from cereal import log
+params = Params()
 
 class LatControlLQR():
   def __init__(self, CP):
@@ -36,10 +37,9 @@ class LatControlLQR():
   def live_tune(self, CP):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
-      self.params = Params()
-      self.scale_ = float(self.params.get('Scale')) * 1
-      self.ki_ = float(self.params.get('LqrKi')) * 0.001
-      self.dc_gain_ = float(self.params.get('DcGain')) * 0.0001
+      self.scale_ = int(params.get("Scale", encoding='utf8')) * 1
+      self.ki_ = int(params.get("LqrKi", encoding='utf8')) * 0.001
+      self.dc_gain_ = int(params.get("DcGain", encoding='utf8')) * 0.0001
 
       self.scale = self.scale_
       self.ki = self.ki_
