@@ -35,7 +35,6 @@ class LatControlINDI():
 
     self.enforce_rate_limit = CP.carName == "toyota"
 
-    self.params = Params(CP)
     self.mpc_frame = 0
 
     self.RC = CP.lateralTuning.indi.timeConstant

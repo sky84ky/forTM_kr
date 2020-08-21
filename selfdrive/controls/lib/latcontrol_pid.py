@@ -7,8 +7,6 @@ from common.params import Params
 
 class LatControlPID():
   def __init__(self, CP):
-    self.params = Params(CP)
-    self.deadzone = float(self.params.get('IgnoreZone')) * 0.1
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
