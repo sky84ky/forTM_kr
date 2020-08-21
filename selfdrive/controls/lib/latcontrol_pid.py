@@ -8,7 +8,7 @@ params = Params()
 
 class LatControlPID():
   def __init__(self, CP):
-    self.deadzone = int(params.get("IgnoreZone", encoding='utf8')) * 0.1
+    self.deadzone = str(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, sat_limit=CP.steerLimitTimer)
@@ -21,13 +21,13 @@ class LatControlPID():
   def live_tune(self, CP):
     self.mpc_frame += 1
     if self.mpc_frame % 300 == 0:
-      self.steerKpV = int(params.get("PidKp", encoding='utf8')) * 0.01
-      self.steerKiV = int(params.get("PidKi", encoding='utf8')) * 0.001
-      self.steerKf = int(params.get("PidKf", encoding='utf8')) * 0.00001
+      self.steerKpV = str(int(params.get("PidKp", encoding='utf8')) * 0.01)
+      self.steerKiV = str(int(params.get("PidKi", encoding='utf8')) * 0.001)
+      self.steerKf = str(int(params.get("PidKf", encoding='utf8')) * 0.00001)
       self.pid = PIController((CP.lateralTuning.pid.kpBP, self.steerKpV),
                           (CP.lateralTuning.pid.kiBP, self.steerKiV),
                           k_f=self.steerKf, pos_limit=1.0)
-      self.deadzone = int(params.get("IgnoreZone", encoding='utf8')) * 0.1
+      self.deadzone = str(int(params.get("IgnoreZone", encoding='utf8')) * 0.1)
         
       self.mpc_frame = 0
 
