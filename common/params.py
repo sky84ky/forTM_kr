@@ -136,6 +136,14 @@ keys = {
   "PidKi": [TxType.PERSISTENT],
   "PidKf": [TxType.PERSISTENT],
   "CameraOffsetAdj": [TxType.PERSISTENT],
+  "SteerRatioAdj": [TxType.PERSISTENT],
+  "SteerActuatorDelayAdj": [TxType.PERSISTENT],
+  "SteerRateCostAdj": [TxType.PERSISTENT],
+  "SteerLimitTimerAdj": [TxType.PERSISTENT],
+  "TireStiffnessFactorAdj": [TxType.PERSISTENT],
+  "SteerMaxAdj": [TxType.PERSISTENT],
+  "SteerDeltaUpAdj": [TxType.PERSISTENT],
+  "SteerDeltaDownAdj": [TxType.PERSISTENT],
 }
 
 

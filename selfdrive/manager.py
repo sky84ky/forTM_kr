@@ -591,6 +591,14 @@ def main():
     ("PidKi", "40"),
     ("PidKf", "4"),
     ("CameraOffsetAdj", "60"),
+    ("SteerRatioAdj", "165"),
+    ("SteerActuatorDelayAdj", "30"),
+    ("SteerRateCostAdj", "50"),
+    ("SteerLimitTimerAdj", "40"),
+    ("TireStiffnessFactorAdj", "100"),
+    ("SteerMaxAdj", "255"),
+    ("SteerDeltaUpAdj", "3"),
+    ("SteerDeltaDownAdj", "7"),
   ]
 
   # set unset params
