@@ -45,11 +45,11 @@ class CarInterface(CarInterfaceBase):
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
 
-    tire_stiffness_factor = 1.
-    ret.steerActuatorDelay = 0.3
-    ret.steerRateCost = 0.4
-    ret.steerLimitTimer = 0.4
-    ret.steerRatio = 16.5
+    tire_stiffness_factor = int(params.get('TireStiffnessFactorAdj')) * 0.01
+    ret.steerActuatorDelay = int(params.get('SteerActuatorDelayAdj')) * 0.01
+    ret.steerRateCost = int(params.get('SteerRateCostAdj')) * 0.01
+    ret.steerLimitTimer = int(params.get('SteerLimitTimerAdj')) * 0.01
+    ret.steerRatio = int(params.get('SteerRatioAdj')) * 0.1
 
     if int(params.get('LateralControlMethod')) == 0:
       if candidate == CAR.SANTAFE:
@@ -75,7 +75,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1470. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.SONATA_TURBO:
@@ -88,21 +87,18 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1595. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate in [CAR.GRANDEUR, CAR.K7]:
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1570. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate in [CAR.GRANDEUR_HEV, CAR.K7_HEV]:
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1675. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.STINGER:
@@ -115,21 +111,18 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.KONA_HEV:
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.KONA_EV:
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.NIRO_HEV:
@@ -154,7 +147,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1490. + STD_CARGO_KG   #weight per hyundai site https://www.hyundaiusa.com/ioniq-electric/specifications.aspx
         ret.wheelbase = 2.7
-        ret.steerRateCost = 0.4
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
       elif candidate == CAR.NEXO:
@@ -226,7 +218,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1470. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
       elif candidate == CAR.SONATA_TURBO:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -243,7 +234,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1595. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR, CAR.K7]:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -252,7 +242,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1570. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR_HEV, CAR.K7_HEV]:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -261,7 +250,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1675. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
       elif candidate == CAR.STINGER:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -278,7 +266,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_HEV:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -287,7 +274,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_EV:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -296,7 +282,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.NIRO_HEV:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -329,7 +314,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 1490. + STD_CARGO_KG   #weight per hyundai site https://www.hyundaiusa.com/ioniq-electric/specifications.aspx
         ret.wheelbase = 2.7
-        ret.steerRateCost = 0.4
       elif candidate == CAR.NEXO:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -427,7 +411,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1470. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
       elif candidate == CAR.SONATA_TURBO:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -452,7 +435,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1595. + STD_CARGO_KG
         ret.wheelbase = 2.80
-        ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR, CAR.K7]:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -465,7 +447,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1570. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
       elif candidate in [CAR.GRANDEUR_HEV, CAR.K7_HEV]:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -478,7 +459,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1675. + STD_CARGO_KG
         ret.wheelbase = 2.885
-        ret.steerRateCost = 0.4
       elif candidate == CAR.STINGER:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -503,7 +483,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_HEV:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -516,7 +495,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.KONA_EV:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -529,7 +507,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1330. + STD_CARGO_KG
         ret.wheelbase = 2.6
-        ret.steerRateCost = 0.4
       elif candidate == CAR.NIRO_HEV:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
@@ -578,7 +555,6 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 1490. + STD_CARGO_KG   #weight per hyundai site https://www.hyundaiusa.com/ioniq-electric/specifications.aspx
         ret.wheelbase = 2.7
-        ret.steerRateCost = 0.4
       elif candidate == CAR.NEXO:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
