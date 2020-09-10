@@ -474,7 +474,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
   const UIScene *scene = &s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y;
-  int bb_h = 5;
+  int bb_h = 4;
   NVGcolor lab_color = nvgRGBA(255, 255, 255, 200);
   NVGcolor uom_color = nvgRGBA(255, 255, 255, 200);
   int value_fontSize=40;
@@ -529,7 +529,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_h, 20);
   nvgStrokeColor(s->vg, nvgRGBA(255,255,255,80));
-  nvgStrokeWidth(s->vg, 6);
+  nvgStrokeWidth(s->vg, 7);
   nvgStroke(s->vg);
 }
 
@@ -538,7 +538,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   const UIScene *scene = &s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y;
-  int bb_h = 5;
+  int bb_h = 4;
   NVGcolor lab_color = nvgRGBA(255, 255, 255, 200);
   NVGcolor uom_color = nvgRGBA(255, 255, 255, 200);
   int value_fontSize=40;
@@ -665,7 +665,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   nvgBeginPath(s->vg);
     nvgRoundedRect(s->vg, bb_x, bb_y, bb_w, bb_h, 20);
     nvgStrokeColor(s->vg, nvgRGBA(255,255,255,80));
-    nvgStrokeWidth(s->vg, 6);
+    nvgStrokeWidth(s->vg, 7);
     nvgStroke(s->vg);
 }
 
