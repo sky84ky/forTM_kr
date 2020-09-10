@@ -3,10 +3,12 @@ from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from common.realtime import DT_CTRL
 from cereal import log
-
+import common.log as trace1
+from selfdrive.ntune import nTune
 
 class LatControlLQR():
   def __init__(self, CP):
+    self.trLQR = trace1.Loger("077_R3_LQR_ctrl")    
     self.scale = CP.lateralTuning.lqr.scale
     self.ki = CP.lateralTuning.lqr.ki
 
@@ -25,6 +27,7 @@ class LatControlLQR():
     self.sat_limit = CP.steerLimitTimer
 
     self.reset()
+    self.tune = nTune(CP, self) # 추가    
 
   def reset(self):
     self.i_lqr = 0.0
@@ -44,6 +47,7 @@ class LatControlLQR():
     return self.sat_count > self.sat_limit
 
   def update(self, active, CS, CP, path_plan):
+    self.tune.check() # 추가    
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
     steers_max = get_steer_max(CP, CS.vEgo)
@@ -51,8 +55,15 @@ class LatControlLQR():
 
     steering_angle = CS.steeringAngle
 
+    v_ego_kph = CS.vEgo * 3.61
+    #self.ki, self.scale = self.atom_tune( v_ego_kph, CS.steeringAngle, CP )
+    log_ki = self.ki
+    log_scale = self.scale
+    log_dc_gain = self.dc_gain    
+
     # Subtract offset. Zero angle should correspond to zero torque
     self.angle_steers_des = path_plan.angleSteers - path_plan.angleOffset
+    log_angle_steers_des =  self.angle_steers_des
     steering_angle -= path_plan.angleOffset
 
     # Update Kalman filter
@@ -85,6 +96,10 @@ class LatControlLQR():
 
       self.output_steer = lqr_output + self.i_lqr
       self.output_steer = clip(self.output_steer, -steers_max, steers_max)
+
+      #str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+      #        v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer )
+      #self.trLQR.add( str2 ) 
 
     check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
     saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
