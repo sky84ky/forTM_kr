@@ -445,12 +445,12 @@ static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_
     dx = (int)(bb_uomFontSize*2.5/2);
    }
   //print value
-  nvgFontFace(s->vg, "sans-semibold");
+  nvgFontFace(s->vg, "sans-bold");
   nvgFontSize(s->vg, bb_valueFontSize*2*fFontSize);
   nvgFillColor(s->vg, bb_valueColor);
   nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+5, bb_value, NULL);
   //print label
-  nvgFontFace(s->vg, "sans-regular");
+  nvgFontFace(s->vg, "sans-semibold");
   nvgFontSize(s->vg, bb_labelFontSize*2*fFontSize);
   nvgFillColor(s->vg, bb_labelColor);
   nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
@@ -478,7 +478,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
   NVGcolor lab_color = nvgRGBA(255, 255, 255, 200);
   NVGcolor uom_color = nvgRGBA(255, 255, 255, 200);
   int value_fontSize=40;
-  int label_fontSize=15;
+  int label_fontSize=20;
   int uom_fontSize = 15;
   int bb_uom_dx =  (int)(bb_w /2 - uom_fontSize*2.5) ;
 
@@ -738,7 +738,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
   const int text_x = viz_maxspeed_x + (viz_maxspeed_xo / 2) + (viz_maxspeed_w / 2);
-  ui_draw_text(s->vg, text_x, 148, "설정속도", 26 * 2.3, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_regular);
+  ui_draw_text(s->vg, text_x, 148, "설정속도", 26 * 2.3, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_semibold);
 
   if (is_cruise_set) {
     snprintf(maxspeed_str, sizeof(maxspeed_str), "%d", maxspeed_calc);
