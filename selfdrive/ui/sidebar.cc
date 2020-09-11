@@ -50,7 +50,7 @@ static void ui_draw_sidebar_ip_addr(UIState *s) {
   char network_ip_str[15];
   snprintf(network_ip_str, sizeof(network_ip_str), "%s", s->scene.ipAddr);
   nvgFillColor(s->vg, COLOR_WHITE);
-  nvgFontSize(s->vg, 35*fFontSize);
+  nvgFontSize(s->vg, 38*fFontSize);
   nvgFontFaceId(s->vg, s->font_sans_bold);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   nvgTextBox(s->vg, network_ip_x, network_ip_y, network_ip_w, network_ip_str, NULL);
