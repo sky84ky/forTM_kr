@@ -43,29 +43,29 @@ static void ui_draw_sidebar_network_strength(UIState *s) {
 }
 
 static void ui_draw_sidebar_ip_addr(UIState *s) {
-  const int network_ip_w = 176;
+  const int network_ip_w = 185;
   const int network_ip_x = !s->scene.uilayout_sidebarcollapsed ? 54 : -(sbr_w); 
   const int network_ip_y = 255;
 
   char network_ip_str[15];
   snprintf(network_ip_str, sizeof(network_ip_str), "%s", s->scene.ipAddr);
   nvgFillColor(s->vg, COLOR_WHITE);
-  nvgFontSize(s->vg, 34*fFontSize);
-  nvgFontFaceId(s->vg, s->font_sans_regular);
+  nvgFontSize(s->vg, 38*fFontSize);
+  nvgFontFaceId(s->vg, s->font_sans_semibold);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   nvgTextBox(s->vg, network_ip_x, network_ip_y, network_ip_w, network_ip_str, NULL);
 }
 
 static void ui_draw_sidebar_battery_text(UIState *s) {
-  const int battery_img_w = 96;
+  const int battery_img_w = 100;
   const int battery_img_x = !s->scene.uilayout_sidebarcollapsed ? 150 : -(sbr_w);
   const int battery_img_y = 303;
 
   char battery_str[7];
   snprintf(battery_str, sizeof(battery_str), "%d%%%s", s->scene.thermal.getBatteryPercent(), s->scene.thermal.getBatteryStatus() == "Charging" ? "+" : "-");  
   nvgFillColor(s->vg, COLOR_WHITE);
-  nvgFontSize(s->vg, 44*fFontSize);
-  nvgFontFaceId(s->vg, s->font_sans_regular);
+  nvgFontSize(s->vg, 42*fFontSize);
+  nvgFontFaceId(s->vg, s->font_sans_semibold);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
   nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_str, NULL);
 }
