@@ -673,7 +673,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
 static void bb_ui_draw_UI(UIState *s)
 {
   const UIScene *scene = &s->scene;
-  const int bb_dml_w = 230;
+  const int bb_dml_w = 250;
   const int bb_dml_x = (scene->ui_viz_rx + (bdr_s * 2));
   const int bb_dml_y = (box_y + (bdr_s * 1.5)) + 220;
 
@@ -709,7 +709,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   bool is_set_over_limit = is_speedlim_valid && s->scene.controls_state.getEnabled() &&
                        is_cruise_set && maxspeed_calc > (speedlim_calc + speed_lim_off);
 
-  int viz_maxspeed_w = 230;
+  int viz_maxspeed_w = 250;
   int viz_maxspeed_h = 202;
   int viz_maxspeed_x = (s->scene.ui_viz_rx + (bdr_s*2));
   int viz_maxspeed_y = (box_y + (bdr_s*1.5));
@@ -738,7 +738,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
   const int text_x = viz_maxspeed_x + (viz_maxspeed_xo / 2) + (viz_maxspeed_w / 2);
-  ui_draw_text(s->vg, text_x, 148, "설정속도", 26 * 2.3, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_semibold);
+  ui_draw_text(s->vg, text_x, 148, "설정속도", 28 * 2.3, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_semibold);
 
   if (is_cruise_set) {
     snprintf(maxspeed_str, sizeof(maxspeed_str), "%d", maxspeed_calc);
