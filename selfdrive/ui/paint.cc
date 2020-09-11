@@ -453,7 +453,7 @@ static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_
   nvgFontFace(s->vg, "sans-semibold");
   nvgFontSize(s->vg, bb_labelFontSize*2*fFontSize);
   nvgFillColor(s->vg, bb_labelColor);
-  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+3 + (int)(bb_labelFontSize*2.5)+3, bb_label, NULL);
+  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
   //print uom
   if (strlen(bb_uom) > 0) {
       nvgSave(s->vg);
@@ -474,11 +474,11 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
   const UIScene *scene = &s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y;
-  int bb_h = 4;
+  int bb_h = 1;
   NVGcolor lab_color = nvgRGBA(255, 255, 255, 200);
   NVGcolor uom_color = nvgRGBA(255, 255, 255, 200);
-  int value_fontSize=40;
-  int label_fontSize=20;
+  int value_fontSize=38;
+  int label_fontSize=15;
   int uom_fontSize = 15;
   int bb_uom_dx =  (int)(bb_w /2 - uom_fontSize*2.5) ;
 
@@ -538,11 +538,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   const UIScene *scene = &s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y;
-  int bb_h = 4;
+  int bb_h = 2;
   NVGcolor lab_color = nvgRGBA(255, 255, 255, 200);
   NVGcolor uom_color = nvgRGBA(255, 255, 255, 200);
-  int value_fontSize=40;
-  int label_fontSize=20;
+  int value_fontSize=38;
+  int label_fontSize=15;
   int uom_fontSize = 15;
   int bb_uom_dx =  (int)(bb_w /2 - uom_fontSize*2.5) ;
 
@@ -673,7 +673,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
 static void bb_ui_draw_UI(UIState *s)
 {
   const UIScene *scene = &s->scene;
-  const int bb_dml_w = 180;
+  const int bb_dml_w = 190;
   const int bb_dml_x = (scene->ui_viz_rx + (bdr_s * 2));
   const int bb_dml_y = (box_y + (bdr_s * 1.5)) + 220;
 
