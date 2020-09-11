@@ -448,12 +448,12 @@ static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_
   nvgFontFace(s->vg, "sans-bold");
   nvgFontSize(s->vg, bb_valueFontSize*2*fFontSize);
   nvgFillColor(s->vg, bb_valueColor);
-  nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+3, bb_value, NULL);
+  nvgText(s->vg, bb_x-dx/2, bb_y+ (int)(bb_valueFontSize*2.5)+1, bb_value, NULL);
   //print label
   nvgFontFace(s->vg, "sans-semibold");
   nvgFontSize(s->vg, bb_labelFontSize*2*fFontSize);
   nvgFillColor(s->vg, bb_labelColor);
-  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+5 + (int)(bb_labelFontSize*2.5)+5, bb_label, NULL);
+  nvgText(s->vg, bb_x, bb_y + (int)(bb_valueFontSize*2.5)+1 + (int)(bb_labelFontSize*2.5)+1, bb_label, NULL);
   //print uom
   if (strlen(bb_uom) > 0) {
       nvgSave(s->vg);
@@ -673,11 +673,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
 static void bb_ui_draw_UI(UIState *s)
 {
   const UIScene *scene = &s->scene;
-  const int bb_dml_w = 230;
+  const int bb_dml_w = 210;
   const int bb_dml_x = (scene->ui_viz_rx + (bdr_s * 2));
   const int bb_dml_y = (box_y + (bdr_s * 1.5)) + 220;
 
-  const int bb_dmr_w = 180;
+  const int bb_dmr_w = 200;
   const int bb_dmr_x = scene->ui_viz_rx + scene->ui_viz_rw - bb_dmr_w - (bdr_s * 2);
   const int bb_dmr_y = (box_y + (bdr_s * 1.5)) + 220;
 
@@ -709,7 +709,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   bool is_set_over_limit = is_speedlim_valid && s->scene.controls_state.getEnabled() &&
                        is_cruise_set && maxspeed_calc > (speedlim_calc + speed_lim_off);
 
-  int viz_maxspeed_w = 230;
+  int viz_maxspeed_w = 210;
   int viz_maxspeed_h = 202;
   int viz_maxspeed_x = (s->scene.ui_viz_rx + (bdr_s*2));
   int viz_maxspeed_y = (box_y + (bdr_s*1.5));
