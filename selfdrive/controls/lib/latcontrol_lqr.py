@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from common.realtime import DT_CTRL
@@ -55,6 +56,12 @@ class LatControlLQR():
 
     steering_angle = CS.steeringAngle
 
+    ###  설정값 분석을 위한 랜덤화
+    self.ki = random(self.ki - (self.ki*0.5) ,self.ki + (self.ki*0.5) )
+    self.scale = random(self.scale - (self.scale*0.055) ,self.scale + (self.scale*0.055) )
+    self.dc_gain = random(self.dc_gain - (self.dc_gain*0.1) ,self.dc_gain + (self.dc_gain*0.1) )    
+    ########################### 
+
     v_ego_kph = CS.vEgo * 3.61
     #self.ki, self.scale = self.atom_tune( v_ego_kph, CS.steeringAngle, CP )
     log_ki = self.ki
@@ -97,9 +104,9 @@ class LatControlLQR():
       self.output_steer = lqr_output + self.i_lqr
       self.output_steer = clip(self.output_steer, -steers_max, steers_max)
 
-      #str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
-      #        v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer )
-      #self.trLQR.add( str2 ) 
+      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer )
+      self.trLQR.add( str2 ) 
 
     check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
     saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
