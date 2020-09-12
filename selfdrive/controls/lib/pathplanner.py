@@ -92,6 +92,8 @@ class PathPlanner():
   def update(self, sm, pm, CP, VM):
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
+    steeringTorque = sm['carState'].steeringTorque    
+    steeringPressed  = sm['carState'].steeringPressed    
     active = sm['controlsState'].active
 
     angle_offset = sm['liveParameters'].angleOffset
@@ -149,7 +151,12 @@ class PathPlanner():
       # starting
       elif self.lane_change_state == LaneChangeState.laneChangeStarting:
         # fade out over .5s
-        self.lane_change_ll_prob = max(self.lane_change_ll_prob - 1.5*DT_MDL, 0.0)
+        # ATOM logic add
+        xp = [40,60,70,80]
+        fp2 = [0.5,1,1.5,2]
+        lane_time = interp( v_ego_kph, xp, fp2 )        
+        # <==
+        self.lane_change_ll_prob = max(self.lane_change_ll_prob - lane_time*DT_MDL, 0.0)
         # 98% certainty
         if lane_change_prob < 0.02 and self.lane_change_ll_prob < 0.01:
           self.lane_change_state = LaneChangeState.laneChangeFinishing
@@ -199,6 +206,26 @@ class PathPlanner():
 
     self.cur_state[0].delta = delta_desired
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
+    org_angle_steers_des = self.angle_steers_des_mpc
+
+    # atom
+    if steeringPressed:
+      delta_steer = self.angle_steers_des_mpc - angle_steers
+      xp = [-450,0,450]
+      fp2 = [5,0,5]
+      limit_steers = interp( steeringTorque, xp, fp2 )
+      if steeringTorque < 0:  # right
+        if delta_steer > 0:
+          self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
+      elif steeringTorque > 0:  # left
+        if delta_steer < 0:
+          self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
+
+    elif v_ego_kph < 30:  # 30
+        xp = [5,15,30]
+        fp2 = [1,3,5]
+        limit_steers = interp( v_ego_kph, xp, fp2 )
+        self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
