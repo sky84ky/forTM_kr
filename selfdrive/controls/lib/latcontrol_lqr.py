@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import datetime
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from common.realtime import DT_CTRL
@@ -56,10 +57,14 @@ class LatControlLQR():
 
     steering_angle = CS.steeringAngle
 
-    ###  설정값 분석을 위한 랜덤화
-    self.ki = random.uniform(0.015, 0.025)    #self.ki - (self.ki*0.5), self.ki + (self.ki*0.5) )
-    self.scale = random.uniform(1750, 1950)     #int(self.scale) - int(self.scale*0.055), int(self.scale) + int(self.scale*0.055) ) )
-    self.dc_gain = random.uniform(0.0028, 0.0032 )  #self.dc_gain - (self.dc_gain*0.1), self.dc_gain + (self.dc_gain*0.1) )    
+    ###  설정값 최적화 분석을 위한 랜덤화 임시 코드
+    now = datetime.datetime.now() # current date and time
+    micro_S = int(now.microsecond)
+    if micro_S < 10000 : #1초에 한번만 랜덤변환
+      self.ki = random.uniform(0.015, 0.025)    #self.ki - (self.ki*0.5), self.ki + (self.ki*0.5) )
+      self.scale = random.uniform(1750, 1950)     #int(self.scale) - int(self.scale*0.055), int(self.scale) + int(self.scale*0.055) ) )
+      self.dc_gain = random.uniform(0.0028, 0.0032)  #self.dc_gain - (self.dc_gain*0.1), self.dc_gain + (self.dc_gain*0.1) )    
+      steers_max = random.uniform(1.0, 1.2)
     ########################### 
 
     v_ego_kph = CS.vEgo * 3.61
@@ -70,7 +75,6 @@ class LatControlLQR():
 
     # Subtract offset. Zero angle should correspond to zero torque
     self.angle_steers_des = path_plan.angleSteers - path_plan.angleOffset
-    log_angle_steers_des =  self.angle_steers_des
     steering_angle -= path_plan.angleOffset
 
     # Update Kalman filter
@@ -82,6 +86,10 @@ class LatControlLQR():
       lqr_log.active = False
       lqr_output = 0.
       self.reset()
+
+      check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
+      saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
+
     else:
       lqr_log.active = True
 
@@ -104,12 +112,14 @@ class LatControlLQR():
       self.output_steer = lqr_output + self.i_lqr
       self.output_steer = clip(self.output_steer, -steers_max, steers_max)
 
-      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
-              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer )
+      check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
+      saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
+
+      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
       self.trLQR.add( str2 ) 
 
-    check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
-    saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
+
 
     lqr_log.steerAngle = angle_steers_k + path_plan.angleOffset
     lqr_log.i = self.i_lqr
