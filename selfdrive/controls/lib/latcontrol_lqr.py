@@ -58,7 +58,7 @@ class LatControlLQR():
 
     ###  설정값 분석을 위한 랜덤화
     self.ki = random.uniform(self.ki - (self.ki*0.5), self.ki + (self.ki*0.5) )
-    self.scale = random(self.scale - int(self.scale*0.055), self.scale + int(self.scale*0.055) )
+    self.scale = random(int(self.scale) - int(self.scale*0.055), int(self.scale) + int(self.scale*0.055) )
     self.dc_gain = random.uniform(self.dc_gain - (self.dc_gain*0.1), self.dc_gain + (self.dc_gain*0.1) )    
     ########################### 
 
