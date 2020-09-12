@@ -57,9 +57,9 @@ class LatControlLQR():
     steering_angle = CS.steeringAngle
 
     ###  설정값 분석을 위한 랜덤화
-    self.ki = random.uniform(self.ki - (self.ki*0.5), self.ki + (self.ki*0.5) )
-    #self.scale = random.random(int(self.scale) - int(self.scale*0.055), int(self.scale) + int(self.scale*0.055) ) )
-    self.dc_gain = random.uniform(self.dc_gain - (self.dc_gain*0.1), self.dc_gain + (self.dc_gain*0.1) )    
+    self.ki = random.uniform(0.01, 0.02)    #self.ki - (self.ki*0.5), self.ki + (self.ki*0.5) )
+    self.scale = random.random(1700, 1900)     #int(self.scale) - int(self.scale*0.055), int(self.scale) + int(self.scale*0.055) ) )
+    self.dc_gain = random.uniform(0.0028, 0.0032 )  #self.dc_gain - (self.dc_gain*0.1), self.dc_gain + (self.dc_gain*0.1) )    
     ########################### 
 
     v_ego_kph = CS.vEgo * 3.61
