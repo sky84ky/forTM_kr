@@ -8,6 +8,7 @@ from selfdrive.controls.lib.lane_planner import LanePlanner
 from selfdrive.config import Conversions as CV
 from common.params import Params
 import cereal.messaging as messaging
+from common.numpy_fast import interp
 from cereal import log
 import common.log as trace1
 
@@ -91,6 +92,7 @@ class PathPlanner():
 
   def update(self, sm, pm, CP, VM):
     v_ego = sm['carState'].vEgo
+    v_ego_kph = v_ego * 3.61
     angle_steers = sm['carState'].steeringAngle
     steeringTorque = sm['carState'].steeringTorque    
     steeringPressed  = sm['carState'].steeringPressed    
