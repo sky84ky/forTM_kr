@@ -53,6 +53,8 @@ def calc_states_after_delay(states, v_ego, steer_angle, curvature_factor, steer_
 
 class PathPlanner():
   def __init__(self, CP):
+    self.PathPlan = trace1.Loger("077_R3_LQR_parhplan")    
+
     self.LP = LanePlanner()
 
     self.last_cloudlog_t = 0
@@ -237,6 +239,24 @@ class PathPlanner():
         fp2 = [1,3,5]
         limit_steers = interp( v_ego_kph, xp, fp2 )
         self.angle_steers_des_mpc = self.limit_ctrl( org_angle_steers_des, limit_steers, angle_steers )
+
+# # 설정값 분석을 위한 임시 코드
+
+#     self.scale = CP.lateralTuning.lqr.scale
+#     self.ki = CP.lateralTuning.lqr.ki
+#     self.dc_gain = CP.lateralTuning.lqr.dcGain
+#     self.steerRatio = VM.sR
+#     self.laneWidth = float(self.LP.lane_width)
+#     self.dPoly = [float(x) for x in self.LP.d_poly]
+#     self.lPoly = [float(x) for x in self.LP.l_poly]
+#     self.lProb = float(self.LP.l_prob)
+#     self.rPoly = [float(x) for x in self.LP.r_poly]
+#     self.rProb = float(self.LP.r_prob)
+
+#     str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+#               v_ego_kph, angle_steers, self.angle_steers_des_mpc, angle_offset, steeringTorque, self.scale, self.ki, self.dc_gain, self.steerRatio, self.laneWidth, self.dPoly, self.lPoly, self.lProb, self.rPoly, self.rProb )
+#     self.PathPlan.add( str2 )
+# ###############################
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
