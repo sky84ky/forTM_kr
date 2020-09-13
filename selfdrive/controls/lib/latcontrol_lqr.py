@@ -49,7 +49,7 @@ class LatControlLQR():
 
     return self.sat_count > self.sat_limit
 
-  def update(self, active, CS, CP, path_plan, VM):
+  def update(self, active, CS, CP, path_plan):
     self.tune.check() # 추가    
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
@@ -58,7 +58,7 @@ class LatControlLQR():
 
     steering_angle = CS.steeringAngle
 
-    steerR = VM.sR
+    #steerR = VM.sR
 
     ###  설정값 최적화 분석을 위한 랜덤화 임시 코드
     now = datetime.datetime.now() # current date and time
@@ -119,8 +119,8 @@ class LatControlLQR():
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
 
-      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
-              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, steerR, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
+      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
       self.trLQR.add( str2 )
 
     lqr_log.steerAngle = angle_steers_k + path_plan.angleOffset
