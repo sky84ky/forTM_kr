@@ -57,8 +57,7 @@ class LatControlLQR():
     torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
 
     steering_angle = CS.steeringAngle
-
-    #steerR = VM.sR
+    steeringTQ = CS.steeringtorque
 
     ###  설정값 최적화 분석을 위한 랜덤화 임시 코드
     now = datetime.datetime.now() # current date and time
@@ -71,14 +70,12 @@ class LatControlLQR():
     ########################### 
 
     v_ego_kph = CS.vEgo * 3.61
-    #self.ki, self.scale = self.atom_tune( v_ego_kph, CS.steeringAngle, CP )
     log_ki = self.ki
     log_scale = self.scale
     log_dc_gain = self.dc_gain    
 
     # Subtract offset. Zero angle should correspond to zero torque
     self.angle_steers_des = path_plan.angleSteers - path_plan.angleOffset
-    #log_angle_steers_des =  self.angle_steers_des
     steering_angle -= path_plan.angleOffset
 
     # Update Kalman filter
@@ -119,8 +116,8 @@ class LatControlLQR():
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
 
-      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
-              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
+      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, steeringTQ, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
       self.trLQR.add( str2 )
 
     lqr_log.steerAngle = angle_steers_k + path_plan.angleOffset
