@@ -74,6 +74,15 @@ class PathPlanner():
     self.lane_change_ll_prob = 1.0
     self.prev_one_blinker = False
 
+  def limit_ctrl(self, value, limit, offset ):
+      p_limit = offset + limit
+      m_limit = offset - limit
+      if value > p_limit:
+          value = p_limit
+      elif  value < m_limit:
+          value = m_limit
+      return value    
+
   def setup_mpc(self):
     self.libmpc = libmpc_py.libmpc
     self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
