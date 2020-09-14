@@ -56,10 +56,10 @@ class LatControlLQR():
     steers_max = get_steer_max(CP, CS.vEgo)
     torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
     #neokii
-    torque_scale = min(torque_scale, 0.65) 
+    #torque_scale = min(torque_scale, 0.65) 
 
     steering_angle = CS.steeringAngle
-    steeringTQ = CS.out.steeringTorque
+    steeringTQ = CS.steeringTorque
 
     ###  설정값 최적화 분석을 위한 랜덤화 임시 코드
     now = datetime.datetime.now() # current date and time
