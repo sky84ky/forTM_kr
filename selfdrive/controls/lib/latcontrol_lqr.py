@@ -55,6 +55,8 @@ class LatControlLQR():
 
     steers_max = get_steer_max(CP, CS.vEgo)
     torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
+    #neokii
+    torque_scale = min(torque_scale, 0.65) 
 
     steering_angle = CS.steeringAngle
     steeringTQ = CS.out.steeringTorque
@@ -97,12 +99,13 @@ class LatControlLQR():
       # LQR
       u_lqr = float(self.angle_steers_des / self.dc_gain - self.K.dot(self.x_hat))
       lqr_output = torque_scale * u_lqr / self.scale
+      error = self.angle_steers_des - angle_steers_k
 
       # Integrator
       if CS.steeringPressed:
         self.i_lqr -= self.i_unwind_rate * float(np.sign(self.i_lqr))
       else:
-        error = self.angle_steers_des - angle_steers_k
+        #error = self.angle_steers_des - angle_steers_k
         i = self.i_lqr + self.ki * self.i_rate * error
         control = lqr_output + i
 
@@ -116,8 +119,8 @@ class LatControlLQR():
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       saturated = self._check_saturation(self.output_steer, check_saturation, steers_max)
 
-      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
-              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, steeringTQ, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
+      str2 = '/{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{} /{}'.format(   
+              v_ego_kph, steering_angle, self.angle_steers_des, angle_steers_k, error, steeringTQ, torque_scale, log_scale, log_ki, log_dc_gain, u_lqr, lqr_output, self.i_lqr, steers_max, self.output_steer, saturated )
       self.trLQR.add( str2 )
  
     lqr_log.steerAngle = angle_steers_k + path_plan.angleOffset
