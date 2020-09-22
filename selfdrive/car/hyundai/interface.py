@@ -58,12 +58,23 @@ class CarInterface(CarInterfaceBase):
     #ret.minSteerSpeed = 35 * CV.MPH_TO_MS
 
     if candidate == CAR.GENESIS:
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.mass = 2060. + STD_CARGO_KG
+      ret.mass = 1980. + STD_CARGO_KG
       ret.wheelbase = 3.01
-      ret.steerRatio = 16.5
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.16], [0.01]]           
+      ret.steerRatio = 12.0
+      ret.steerActuatorDelay = 0.3
+      ret.steerRateCost = 0.55
+      ret.steerLimitTimer = 2.5
+      #lqr 조향 시작
+      ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.scale = 1580.0
+      ret.lateralTuning.lqr.ki = 0.015
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-100., 450.]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]
+      ret.lateralTuning.lqr.dcGain = 0.003
+      #lqr 조향 종료           
     elif candidate in [CAR.GENESIS_G90, CAR.GENESIS_G80]:
       ret.mass = 2200. + STD_CARGO_KG
       ret.wheelbase = 3.01 #Default 3.15
@@ -213,7 +224,7 @@ class CarInterface(CarInterfaceBase):
 
     # steer, gas, brake limitations VS speed
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.0]
+    ret.steerMaxV = [1.5]
     ret.gasMaxBP = [0.]
     ret.gasMaxV = [0.5]
     ret.brakeMaxBP = [0., 20.]
