@@ -50,12 +50,12 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.GENESIS_G80:
       ret.mass = 1855. + STD_CARGO_KG
       ret.wheelbase = 3.01
-    # g90 eq900세팅
+    # g90
     
     
     elif candidate == CAR.GENESIS_G90:
-      ret.mass = 2200. + STD_CARGO_KG
-      ret.wheelbase = 3.15
+      ret.mass = 2290. + STD_CARGO_KG
+      ret.wheelbase = 3.45
     
     
     
