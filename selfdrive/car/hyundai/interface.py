@@ -39,8 +39,8 @@ class CarInterface(CarInterfaceBase):
     TimeConstant = int(params.get('TimeConstant')) * 0.1
     ActuatorEffectiveness = int(params.get('ActuatorEffectiveness')) * 0.1
     Scale = int(params.get('Scale')) * 1.0
-    LqrKi = int(params.get('LqrKi')) * 0.0001
-    DcGain = int(params.get('DcGain')) * 0.000001
+    LqrKi = int(params.get('LqrKi')) * 0.001
+    DcGain = int(params.get('DcGain')) * 0.0001
 
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
