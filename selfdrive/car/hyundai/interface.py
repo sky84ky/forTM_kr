@@ -71,14 +71,7 @@ class CarInterface(CarInterfaceBase):
         ret.wheelbase = 3.01
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
-    #g90 값 입력
-      elif candidate == CAR.GENESIS_G90:
-        ret.lateralTuning.pid.kf = PidKf
-        ret.mass = 2290. + STD_CARGO_KG
-        ret.wheelbase = 3.45
-        ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
-   #g90값 입력 종료   
+     
       elif candidate in [CAR.K5, CAR.SONATA]:
         ret.lateralTuning.pid.kf = PidKf
         ret.mass = 1470. + STD_CARGO_KG
@@ -218,16 +211,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
         ret.mass = 2060. + STD_CARGO_KG
         ret.wheelbase = 3.01
-      #g90 값 입력  
-      elif candidate == CAR.GENESIS_G90:
-        ret.lateralTuning.init('indi')
-        ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
-        ret.lateralTuning.indi.outerLoopGain = OuterLoopGain
-        ret.lateralTuning.indi.timeConstant = TimeConstant
-        ret.lateralTuning.indi.actuatorEffectiveness = ActuatorEffectiveness 
-        ret.mass = 2290. + STD_CARGO_KG
-        ret.wheelbase = 3.45
-      #g90 값 입력 종료  
+        
       elif candidate in [CAR.K5, CAR.SONATA]:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = InnerLoopGain
@@ -417,20 +401,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = DcGain
         ret.mass = 2060. + STD_CARGO_KG
         ret.wheelbase = 3.01
-      #g90 값 입력  
-      elif candidate == CAR.GENESIS_G90:
-        ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = Scale
-        ret.lateralTuning.lqr.ki = LqrKi
-        ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-        ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-        ret.lateralTuning.lqr.c = [1., 0.]
-        ret.lateralTuning.lqr.k = [-110., 450.]
-        ret.lateralTuning.lqr.l = [0.22, 0.318]
-        ret.lateralTuning.lqr.dcGain = DcGain
-        ret.mass = 2290. + STD_CARGO_KG
-        ret.wheelbase = 3.45
-        #g90 값 입력 
+      
       elif candidate in [CAR.K5, CAR.SONATA]:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = Scale
