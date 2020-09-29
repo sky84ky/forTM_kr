@@ -48,7 +48,7 @@ class CarInterface(CarInterfaceBase):
     tire_stiffness_factor = int(params.get('TireStiffnessFactorAdj')) * 0.01
     ret.steerActuatorDelay = int(params.get('SteerActuatorDelayAdj')) * 0.001
     ret.steerRateCost = int(params.get('SteerRateCostAdj')) * 0.001
-    ret.steerLimitTimer = int(params.get('SteerLimitTimerAdj')) * 0.1
+    ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
     ret.steerRatio = int(params.get('SteerRatioAdj')) * 0.1
 
     if int(params.get('LateralControlMethod')) == 0:
@@ -420,14 +420,14 @@ class CarInterface(CarInterfaceBase):
     #g90 값 입력  
       elif candidate == CAR.GENESIS_G90:
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = Scale
+        ret.lateralTuning.lqr.scale = 1630 #Scale
         ret.lateralTuning.lqr.ki = LqrKi
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
         ret.lateralTuning.lqr.c = [1., 0.]
         ret.lateralTuning.lqr.k = [-110., 450.]
         ret.lateralTuning.lqr.l = [0.22, 0.318]
-        ret.lateralTuning.lqr.dcGain = DcGain
+        ret.lateralTuning.lqr.dcGain = 0.002858 #DcGain
         ret.mass = 2290. + STD_CARGO_KG
         ret.wheelbase = 3.45
         #g90 값 입력   
