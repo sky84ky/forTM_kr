@@ -406,17 +406,23 @@ class CarInterface(CarInterfaceBase):
         ret.mass = 1950. + STD_CARGO_KG
         ret.wheelbase = 2.78
       elif candidate == CAR.GENESIS:
+        ret.mass = 1980. + STD_CARGO_KG
+        ret.wheelbase = 3.01
+        ret.steerRatio = 15.0
+        ret.steerActuatorDelay = 0.3
+        ret.steerRateCost = 0.55
+        ret.steerLimitTimer = 2.5
+       #lqr 조향 시작
         ret.lateralTuning.init('lqr')
-        ret.lateralTuning.lqr.scale = Scale
-        ret.lateralTuning.lqr.ki = LqrKi
+        ret.lateralTuning.lqr.scale = 1950.0
+        ret.lateralTuning.lqr.ki = 0.005
         ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
         ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
         ret.lateralTuning.lqr.c = [1., 0.]
         ret.lateralTuning.lqr.k = [-100., 450.]
         ret.lateralTuning.lqr.l = [0.22, 0.318]
-        ret.lateralTuning.lqr.dcGain = DcGain
-        ret.mass = 2060. + STD_CARGO_KG
-        ret.wheelbase = 3.01
+        ret.lateralTuning.lqr.dcGain = 0.00288
+      #lqr 조향 종료 
     #g90 값 입력  
       elif candidate == CAR.GENESIS_G90:
         ret.lateralTuning.init('lqr')
