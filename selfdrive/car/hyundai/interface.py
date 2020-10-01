@@ -430,6 +430,12 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.dcGain = 0.002858 #DcGain
         ret.mass = 2290. + STD_CARGO_KG
         ret.wheelbase = 3.45
+        ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
+        ret.steerRatio = 13.0 #int(params.get('SteerRatioAdj')) * 0.1
+        ret.steerActuatorDelay = 0.2 #int(params.get('SteerActuatorDelayAdj')) * 0.001
+        ret.steerRateCost = 0.2 #int(params.get('SteerRateCostAdj')) * 0.001
+
+
         #g90 값 입력   
       elif candidate in [CAR.K5, CAR.SONATA]:
         ret.lateralTuning.init('lqr')
