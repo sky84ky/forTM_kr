@@ -22,7 +22,7 @@ def print_cpu_usage(first_proc, last_proc):
     ("./_modeld", 12.74),
     ("selfdrive.locationd.paramsd", 11.53),
     ("selfdrive.controls.radard", 9.54),
-    ("./_ui", 9.54),
+    ("./_ui", 5.82),
     ("./camerad", 7.07),
     ("selfdrive.locationd.calibrationd", 6.81),
     ("./_sensord", 6.17),
