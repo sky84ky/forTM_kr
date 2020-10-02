@@ -433,13 +433,13 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.c = [1., 0.]
         ret.lateralTuning.lqr.k = [-110., 450.]
         ret.lateralTuning.lqr.l = [0.22, 0.318]
-        ret.lateralTuning.lqr.dcGain = 0.002856 #DcGain
+        ret.lateralTuning.lqr.dcGain = 0.002858 #DcGain
         ret.mass = 2290. + STD_CARGO_KG
         ret.wheelbase = 3.45
         ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
         ret.steerRatio = 13.0 #int(params.get('SteerRatioAdj')) * 0.1
-        ret.steerActuatorDelay = 0.25 #int(params.get('SteerActuatorDelayAdj')) * 0.001
-        ret.steerRateCost = 0.65 #int(params.get('SteerRateCostAdj')) * 0.001
+        ret.steerActuatorDelay = 0.2 #int(params.get('SteerActuatorDelayAdj')) * 0.001
+        ret.steerRateCost = 0.55 #int(params.get('SteerRateCostAdj')) * 0.001
 
 
         #g90 값 입력   
