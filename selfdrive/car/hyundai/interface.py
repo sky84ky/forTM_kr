@@ -438,7 +438,7 @@ class CarInterface(CarInterfaceBase):
         ret.wheelbase = 3.45
         ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
         ret.steerRatio = 13.0 #int(params.get('SteerRatioAdj')) * 0.1
-        ret.steerActuatorDelay = 0.2 #int(params.get('SteerActuatorDelayAdj')) * 0.001
+        ret.steerActuatorDelay = 0.25 #int(params.get('SteerActuatorDelayAdj')) * 0.001
         ret.steerRateCost = 0.6 #int(params.get('SteerRateCostAdj')) * 0.001
 
 
