@@ -48,7 +48,7 @@ class CarInterface(CarInterfaceBase):
     tire_stiffness_factor = int(params.get('TireStiffnessFactorAdj')) * 0.01
     ret.steerActuatorDelay = int(params.get('SteerActuatorDelayAdj')) * 0.001
     ret.steerRateCost = int(params.get('SteerRateCostAdj')) * 0.001
-    ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
+    ret.steerLimitTimer = int(params.get('SteerLimitTimerAdj')) * 0.1
     ret.steerRatio = int(params.get('SteerRatioAdj')) * 0.1
 
     if int(params.get('LateralControlMethod')) == 0:
