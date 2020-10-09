@@ -74,8 +74,8 @@ class CarInterface(CarInterfaceBase):
      #g90 값 입력
       elif candidate == CAR.GENESIS_G90:
         ret.lateralTuning.pid.kf = PidKf
-        ret.mass = 2120. + STD_CARGO_KG
-        ret.wheelbase = 3.16
+        ret.mass = 2290. + STD_CARGO_KG
+        ret.wheelbase = 3.45
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[PidKp], [PidKi]]
    #g90값 입력 종료  
