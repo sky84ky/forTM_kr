@@ -43,7 +43,7 @@ def calc_d_poly(l_poly, r_poly, p_poly, l_prob, r_prob, lane_width, v_ego):
 
   lr_prob = l_prob + r_prob - l_prob * r_prob
   
-  if lr_prob > 0.7: # 차선추종 강화 로직 by Neokii
+  if lr_prob > 0.72: # 차선추종 강화 로직 by Neokii
     lr_prob = min(lr_prob * 1.32, 1.0)  
     #lr_prob = max(0.95, lr_prob)    
 
