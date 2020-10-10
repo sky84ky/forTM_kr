@@ -585,7 +585,7 @@ def main():
     ("ActuatorEffectiveness", "15"),
     ("Scale", "1630"),
     ("LqrKi", "10"),
-    ("DcGain", "28.58"),
+    ("DcGain", "28"),
     ("IgnoreZone", "0"),
     ("PidKp", "20"),
     ("PidKi", "40"),
