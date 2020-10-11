@@ -548,10 +548,10 @@ def main():
   params.manager_start()
 
   default_params = [
-    ("CommunityFeaturesToggle", "0"),
+    ("CommunityFeaturesToggle", "1"),
     ("CompletedTrainingVersion", "0"),
     ("IsRHD", "0"),
-    ("IsMetric", "0"),
+    ("IsMetric", "1"),
     ("RecordFront", "0"),
     ("HasAcceptedTerms", "0"),
     ("HasCompletedSetup", "0"),
@@ -567,10 +567,10 @@ def main():
     ("LaneChangeEnabled", "1"),
     ("IsDriverViewEnabled", "0"),
     ("IsOpenpilotViewEnabled", "0"),
-    ("OpkrAutoShutdown", "0"),
+    ("OpkrAutoShutdown", "3"),
     ("OpkrAutoScreenOff", "0"),
     ("OpkrUIBrightness", "0"),
-    ("OpkrEnableDriverMonitoring", "1"),
+    ("OpkrEnableDriverMonitoring", "0"),
     ("OpkrEnableLogger", "0"),
     ("OpkrEnableGetoffAlert", "1"),
     ("OpkrEnableLearner", "0"),
@@ -585,7 +585,7 @@ def main():
     ("PutPrebuiltOn", "0"),
     ("FingerprintIssuedFix", "0"),
     ("LdwsCarFix", "0"),
-    ("LateralControlMethod", "0"),
+    ("LateralControlMethod", "2"),
     ("CruiseStatemodeSelInit", "0"),
     ("LateralControlPriority", "0"),
   ]
