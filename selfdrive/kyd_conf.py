@@ -71,7 +71,7 @@ class kyd_conf():
         self.element_updated = True
 
       if "cameraOffset" not in self.config:
-        self.config.update({"cameraOffset":"0.06"})
+        self.config.update({"cameraOffset":"0.065"})
         self.element_updated = True
         
       if "steerAngleCorrection" not in self.config:
