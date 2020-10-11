@@ -567,7 +567,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.lqr.c = [1., 0.] 
         ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255] 
         ret.lateralTuning.lqr.l = [0.3233671, 0.3185757] 
-        ret.lateralTuning.lqr.dcGain = 0.0028    #58 #0.002237852961363602
+        ret.lateralTuning.lqr.dcGain = 0.002858    #58 #0.002237852961363602
         ret.mass = 2290. + STD_CARGO_KG
         ret.wheelbase = 3.45
         ret.steerLimitTimer = 2.5 #int(params.get('SteerLimitTimerAdj')) * 0.1
