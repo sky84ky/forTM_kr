@@ -148,9 +148,10 @@ class NoEntryAlert(Alert):
 class SoftDisableAlert(Alert):
   def __init__(self, alert_text_2):
     super().__init__("핸들을 즉시 잡아주세요", alert_text_2,
-                     AlertStatus.critical, AlertSize.full,
+                     AlertStatus.userPrompt, AlertSize.full,
                      Priority.MID, VisualAlert.steerRequired,
-                     AudibleAlert.chimeWarningRepeat, .1, 2., 2.),
+                     AudibleAlert.chimeDisengage, .1, 2., 2.),
+
 
 
 class ImmediateDisableAlert(Alert):
@@ -728,7 +729,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       "",
       AlertStatus.normal, AlertSize.full,
       Priority.LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2, creation_delay=0.5),
-    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("기어 [R] 상태"),
+    ET.SOFT_DISABLE: ImmediateDisableAlert("기어 [R] 상태"),
     ET.NO_ENTRY: NoEntryAlert("기어 [R] 상태"),
   },
 
