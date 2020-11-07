@@ -93,7 +93,7 @@ class Spdctrl(SpdController):
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 60, 3)
             elif CS.clu_Vanz > 40 and lead_objspd < 0 and (int(CS.clu_Vanz)-1) <= int(CS.VSetDis) and int(CS.clu_Vanz) >= dRel*2 and 1 < dRel < 149: # 유지거리 범위 외 감속 조건 앞차 감속중 현재속도/2 아래로 거리 좁혀졌을 때 상대속도에 따라 점진적 감소
                 self.seq_step_debug = "SS>VS,-1"
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, max(25, 175-(abs(int(lead_objspd))*10)), -1)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, max(25, 200-(abs(int(lead_objspd))*10)), -1)
             elif CS.clu_Vanz < 30 and lead_objspd < 0 and CS.VSetDis > 30:
                 self.seq_step_debug = "SS>VS,30이하"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, -3)
