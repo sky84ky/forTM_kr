@@ -108,25 +108,25 @@ class LanePlanner():
       leftCurvOffsetAdj = int(Params().get('LeftCurvOffsetAdj'))
       rightCurvOffsetAdj = int(Params().get('RightCurvOffsetAdj'))
       # 차선(좌우)간격 계산 조건 추가, 좌우간격에 따라 선택적 적용, 좌우폭 동일시 적용안함
-      if curvature >= 0.001 and leftCurvOffsetAdj < 0 and (self.l_poly + self.r_poly) >= 0: # 왼쪽 커브
+      if curvature > 0.001 and leftCurvOffsetAdj < 0 and (self.l_poly + self.r_poly) >= -0.1: # 왼쪽 커브
         if Curv > 0.006:
           Curv = 0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6          
         lean_offset = +((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #왼쪽 커브에서 차를 왼쪽으로 이동
-      elif curvature >= 0.001 and leftCurvOffsetAdj > 0 and (self.l_poly + self.r_poly) <= 0:
+      elif curvature > 0.001 and leftCurvOffsetAdj > 0 and (self.l_poly + self.r_poly) <= 0.1:
         if Curv > 0.006:
           Curv = 0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6
         lean_offset = -((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #왼쪽 커브에서 차를 오른쪽으로 이동
-      elif curvature <= -0.001 and rightCurvOffsetAdj < 0 and (self.l_poly + self.r_poly) >= 0: # 오른쪽 커브
+      elif curvature < -0.001 and rightCurvOffsetAdj < 0 and (self.l_poly + self.r_poly) >= -0.1: # 오른쪽 커브
         if Curv < -0.006:
           Curv = -0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6    
         lean_offset = +((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #오른쪽 커브에서 차를 왼쪽으로 이동
-      elif curvature <= -0.001 and rightCurvOffsetAdj > 0 and (self.l_poly + self.r_poly) <= 0:
+      elif curvature < -0.001 and rightCurvOffsetAdj > 0 and (self.l_poly + self.r_poly) <= 0.1:
         if Curv < -0.006:
           Curv = -0.006
         if Poly_differ > 0.6:
