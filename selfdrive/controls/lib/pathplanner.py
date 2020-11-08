@@ -86,7 +86,7 @@ class PathPlanner():
     self.lane_change_adjust_vel = [16, 30]
     self.lane_change_adjust_new = 0.0
 
-    self.angle_differ_range = [5, 50]
+    self.angle_differ_range = [0, 30]
     self.steerRatio_range = [CP.steerRatio, 18]
 
     self.new_steerRatio = CP.steerRatio
