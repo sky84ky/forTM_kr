@@ -563,7 +563,7 @@ static void ui_draw_debug(UIState *s)
     ui_print(s, ui_viz_rx_center, ui_viz_ry+650, "커브");
     ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "%.4f", scene.curvature);
     ui_print(s, ui_viz_rx_center, ui_viz_ry+750, " 좌측간격(m)    차선폭(m)    우측간격(m)");
-    ui_print(s, ui_viz_rx_center, ui_viz_ry+800, "%.2f                    %.2f                    %.2f", (scene.pathPlan.lPoly, scene.pathPlan.laneWidth, scene.pathPlan.rPoly);
+    ui_print(s, ui_viz_rx_center, ui_viz_ry+800, "%.2f                    %.2f                    %.2f", scene.pathPlan.lPoly, scene.pathPlan.laneWidth, scene.pathPlan.rPoly);
   }
 }
 
