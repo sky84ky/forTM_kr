@@ -16,7 +16,7 @@ class Spdctrl(SpdController):
         self.steer_mode = ""
         self.cruise_gap = 0.0
 
-    def update_lead(self, sm, CS, dRel, yRel, vRel):
+   def update_lead(self, sm, CS, dRel, yRel, vRel):
         plan = sm['plan']
         dRele = plan.ddRel #EON Lead
         yRele = plan.yyRel #EON Lead
@@ -88,16 +88,19 @@ class Spdctrl(SpdController):
             elif lead_objspd > 5 and 149 > (dRel + 20) > CS.clu_Vanz and CS.clu_Vanz > 60 and CS.VSetDis < 80:
                 self.seq_step_debug = "SS>VS,종가"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 5, 5)
-            elif lead_objspd > 0 and CS.clu_Vanz >= (int(CS.VSetDis) - 9) and int(CS.clu_Vanz * 0.5) < dRel < 149:
+            elif lead_objspd > 0.9 and CS.clu_Vanz >= (int(CS.VSetDis) - 9) and int(CS.clu_Vanz * 0.45) < dRel < 149:
                 self.seq_step_debug = "SS>VS,+3"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 60, 3)
-            elif CS.clu_Vanz > 40 and lead_objspd < 0 and (int(CS.clu_Vanz)-1) <= int(CS.VSetDis) and int(CS.clu_Vanz) >= dRel*2 and 1 < dRel < 149: # 유지거리 범위 외 감속 조건 앞차 감속중 현재속도/2 아래로 거리 좁혀졌을 때 상대속도에 따라 점진적 감소
+            elif CS.clu_Vanz > 80 and lead_objspd < -0.9 and (int(CS.clu_Vanz)-1) <= int(CS.VSetDis) and int(CS.clu_Vanz) >= dRel*1.8 and 1 < dRel < 149: # 유지거리 범위 외 감속 조건 앞차 감속중 현재속도/2 아래로 거리 좁혀졌을 때 상대속도에 따라 점진적 감소
+                self.seq_step_debug = "SS>VS,-1"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, max(25, 200-(abs(int(lead_objspd))*10)), -1)
+            elif CS.clu_Vanz > 40 and lead_objspd < -0.9 and (int(CS.clu_Vanz)-1) <= int(CS.VSetDis) and int(CS.clu_Vanz) >= dRel*2.2 and 1 < dRel < 149: # 유지거리 범위 외 감속 조건 앞차 감속중 현재속도/2 아래로 거리 좁혀졌을 때 상대속도에 따라 점진적 감소
                 self.seq_step_debug = "SS>VS,-1"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, max(25, 200-(abs(int(lead_objspd))*10)), -1)
             elif CS.clu_Vanz < 30 and lead_objspd < 0 and CS.VSetDis > 30:
                 self.seq_step_debug = "SS>VS,30이하"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, -3)
-            elif lead_objspd == 0 and int(CS.clu_Vanz)+10 <= int(CS.VSetDis) and int(CS.clu_Vanz) > 40 and 1 < dRel < 149: # 앞차와 속도 같을 시 현재속도+10으로 크루즈설정속도 유지
+            elif -1 < lead_objspd <= 0 and int(CS.clu_Vanz)+10 <= int(CS.VSetDis) and int(CS.clu_Vanz) > 40 and 1 < dRel < 149: # 앞차와 속도 같을 시 현재속도+10으로 크루즈설정속도 유지
                 self.seq_step_debug = "SS>VS,vRel=0"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, -1)
             elif d_delta == 0 and lead_objspd == 0:
@@ -160,4 +163,4 @@ class Spdctrl(SpdController):
         str4 = '  레이더=D:{:04.1f}/V:{:05.1f}  CG={:1.0f}  구분={:s}'.format(  CS.lead_distance, CS.lead_objspd, self.cruise_gap, self.seq_step_debug )
 
         str5 = str3 + str4
-        trace1.printf2( str5 )
+        trace1.printf2( str5 )         
