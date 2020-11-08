@@ -16,7 +16,7 @@ class Spdctrl(SpdController):
         self.steer_mode = ""
         self.cruise_gap = 0.0
 
-   def update_lead(self, sm, CS, dRel, yRel, vRel):
+    def update_lead(self, sm, CS, dRel, yRel, vRel):
         plan = sm['plan']
         dRele = plan.ddRel #EON Lead
         yRele = plan.yyRel #EON Lead
