@@ -362,7 +362,7 @@ void ui_update(UIState *s) {
       } else {
         s->scene.alert_size = cereal::ControlsState::AlertSize::NONE;
       }
-    } else if (((s->sm)->frame - (s->sm)->rcv_frame("controlsState")) > 5*UI_FREQ) {
+    } else if ((((s->sm)->frame - (s->sm)->rcv_frame("controlsState")) > 5*UI_FREQ) && s->ignition) {
       // car is started, but controls is lagging or died
       if (s->scene.alert_text2 != "Controls Unresponsive") {
         s->sound->play(AudibleAlert::CHIME_WARNING_REPEAT);
