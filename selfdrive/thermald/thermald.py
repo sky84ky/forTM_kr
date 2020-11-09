@@ -315,6 +315,7 @@ def thermald_thread():
         lateral_control_method_cnt = 0
         lateral_control_method_trigger = 0
 
+
       # Setup fan handler on first connect to panda
       if handle_fan is None and health.health.hwType != log.HealthData.HwType.unknown:
         is_uno = health.health.hwType == log.HealthData.HwType.uno
@@ -419,7 +420,7 @@ def thermald_thread():
     now = datetime.datetime.utcnow()
 
     # show invalid date/time alert
-    startup_conditions["time_valid"] = now.year >= True
+    startup_conditions["time_valid"] = now.year >= 2019
     set_offroad_alert_if_changed("Offroad_InvalidTime", (not startup_conditions["time_valid"]))
 
     # Show update prompt
