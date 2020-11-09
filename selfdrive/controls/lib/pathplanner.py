@@ -300,7 +300,7 @@ class PathPlanner():
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
     plan_send.pathPlan.steerRatio = VM.sR
     plan_send.pathPlan.steerActuatorDelay = CP.steerActuatorDelay
-    plan_send.pathPlan.steerRateCost = self._new_steer_rate_cost
+    plan_send.pathPlan.steerRateCost = self.new_steer_rate_cost
     plan_send.pathPlan.outputScale = output_scale
 
     pm.send('pathPlan', plan_send)
