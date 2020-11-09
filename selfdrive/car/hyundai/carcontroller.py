@@ -130,12 +130,12 @@ class CarController():
     self.longcontrol = CP.openpilotLongitudinalControl
     self.scc_live = not CP.radarOffCan
 
-    self.angle_differ_range = [0, 30]
-    self.steerMax_range = [380, SteerLimitParams.STEER_MAX]
+    self.angle_differ_range = [0, 45]
+    self.steerMax_range = [255, SteerLimitParams.STEER_MAX]
     self.steerDeltaUp_range = [3, SteerLimitParams.STEER_DELTA_UP]
     self.steerDeltaDown_range = [7, SteerLimitParams.STEER_DELTA_DOWN]
 
-    self.steerMax = 380
+    self.steerMax = 255
     self.steerDeltaUp = 3
     self.steerDeltaDown = 7
     self.steerMax_timer = 0
@@ -204,8 +204,8 @@ class CarController():
       if self.steerMax_timer > 5:
         self.steerMax -= 5
         self.steerMax_timer = 0
-        if self.steerMax < 380:
-          self.steerMax = 380
+        if self.steerMax < 255:
+          self.steerMax = 255
       if self.steerDeltaUp_timer > 50:
         self.steerDeltaUp -= 1
         self.steerDeltaUp_timer = 0
@@ -252,7 +252,7 @@ class CarController():
     else:
       lkas_active = enabled and not spas_active
 
-    if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < 2 * CV.KPH_TO_MS: #< LANE_CHANGE_SPEED_MIN:
+    if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < LANE_CHANGE_SPEED_MIN:
       self.lanechange_manual_timer = 10
     if CS.out.leftBlinker and CS.out.rightBlinker:
       self.emergency_manual_timer = 10
