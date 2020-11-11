@@ -49,8 +49,8 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
 
   # initialize to no line visible
   sys_state = 1
-#  if not button_on:           xx979xx
-#    lane_visible = 0          xx979xx
+  if not button_on:         
+    lane_visible = 0       
   if left_lane and right_lane or sys_warning:  #HUD alert only display when LKAS status is active
     if enabled or sys_warning:
       sys_state = 3
@@ -283,8 +283,8 @@ class CarController():
 
     sys_warning, sys_state, left_lane_warning, right_lane_warning =\
       process_hud_alert(lkas_active, self.car_fingerprint, visual_alert,
-                        left_lane, right_lane, left_lane_depart, right_lane_depart)
-#xx979xx                        self.lkas_button_on)
+                        left_lane, right_lane, left_lane_depart, right_lane_depart,
+                        self.lkas_button_on)
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph  else 55
