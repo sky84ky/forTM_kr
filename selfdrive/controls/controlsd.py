@@ -488,8 +488,10 @@ class Controls:
 
     force_decel = (self.sm['dMonitoringState'].awarenessStatus < 0.) or \
                     (self.state == State.softDisabling)
-
-    steer_angle_rad = (CS.steeringAngle - self.sm['pathPlan'].angleOffset) * CV.DEG_TO_RAD
+    #네오키
+    angleOffset = self.sm['pathPlan'].angleOffset
+    steer_angle_rad = (CS.steeringAngle - angleOffset) * CV.DEG_TO_RAD
+    #steer_angle_rad = (CS.steeringAngle - self.sm['pathPlan'].angleOffset) * CV.DEG_TO_RAD        ###OPKR
 
     # controlsState
     dat = messaging.new_message('controlsState')
@@ -510,7 +512,8 @@ class Controls:
     controlsState.active = self.active
     controlsState.vEgo = CS.vEgo
     controlsState.vEgoRaw = CS.vEgoRaw
-    controlsState.angleSteers = CS.steeringAngle
+    controlsState.angleSteers = CS.steeringAngle - angleOffset  #네오키
+#OPKR    controlsState.angleSteers = CS.steeringAngle
     controlsState.curvature = self.VM.calc_curvature(steer_angle_rad, CS.vEgo)
     controlsState.steerOverride = CS.steeringPressed
     controlsState.state = self.state
