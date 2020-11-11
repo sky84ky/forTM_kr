@@ -284,7 +284,7 @@ class Controls:
     self.controlsAllowed = self.sm['health'].controlsAllowed
     if not self.enabled:
       self.mismatch_counter = 0
-    elif not self.controlsAllowed and self.enabled:
+    elif not self.controlsAllowed: # and self.enabled:  77
       self.mismatch_counter += 1
 
     self.distance_traveled += CS.vEgo * DT_CTRL
