@@ -74,9 +74,22 @@ class Spdctrl(SpdController):
             else:
                 self.seq_step_debug = "d<0,거리유지"
         # 선행차량이 멀리 있는 상태에서 감속 조건
-        elif 30 < dRel < 149 and lead_objspd < -15 and int(dRel*0.5) < int(CS.clu_Vanz): #정지 차량 및 급감속 차량 발견 시
-            self.seq_step_debug = "선행차감속"
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, max(15, (int(CS.clu_Vanz)-50)), -5)
+        elif 30 < dRel < 149 and lead_objspd < -15: #정지 차량 및 급감속 차량 발견 시
+            if dRel > 100:
+                self.seq_step_debug = "d>100감속"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 120+lead_objspd, -1)
+            elif dRel > 80:
+                self.seq_step_debug = "d>80감속"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 100+lead_objspd, -1)
+            elif dRel > 60:
+                self.seq_step_debug = "d>60감속"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 80+lead_objspd, -1)
+            elif dRel > 40:
+                self.seq_step_debug = "d>40감속"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 60+lead_objspd, -1)
+            elif dRel > 20:
+                self.seq_step_debug = "d>20감속"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 40+lead_objspd, -1)
         elif self.cruise_set_speed_kph > int(round((CS.clu_Vanz))):  #이온설정속도가 차량속도보다 큰경우
             if lead_objspd > 5 and 149 > (dRel + 2) > CS.clu_Vanz and CS.clu_Vanz > 20 and CS.VSetDis < 40: # 처음출발시 선행차량 급가속할 때 설정속도 많이 업
                 self.seq_step_debug = "SS>VS,초가"
