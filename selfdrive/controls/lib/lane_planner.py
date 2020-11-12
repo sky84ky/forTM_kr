@@ -88,31 +88,31 @@ class LanePlanner:
     elif (int(Params().get('LeftCurvOffsetAdj')) != 0 or int(Params().get('RightCurvOffsetAdj')) != 0) and v_ego > 8:
       leftCurvOffsetAdj = int(Params().get('LeftCurvOffsetAdj'))
       rightCurvOffsetAdj = int(Params().get('RightCurvOffsetAdj'))
-      # Â÷¼±(ÁÂ¿ì)°£°İ °è»ê Á¶°Ç Ãß°¡, ÁÂ¿ì°£°İ¿¡ µû¶ó ¼±ÅÃÀû Àû¿ë, ÁÂ¿ìÆø µ¿ÀÏ½Ã Àû¿ë¾ÈÇÔ
-      if curvature > 0.001 and leftCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # ¿ŞÂÊ Ä¿ºê
+      # ì°¨ì„ (ì¢Œìš°)ê°„ê²© ê³„ì‚° ì¡°ê±´ ì¶”ê°€, ì¢Œìš°ê°„ê²©ì— ë”°ë¼ ì„ íƒì  ì ìš©, ì¢Œìš°í­ ë™ì¼ì‹œ ì ìš©ì•ˆí•¨
+      if curvature > 0.001 and leftCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # ì™¼ìª½ ì»¤ë¸Œ
         if Curv > 0.006:
           Curv = 0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6          
-        lean_offset = +((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #¿ŞÂÊ Ä¿ºê¿¡¼­ Â÷¸¦ ¿ŞÂÊÀ¸·Î ÀÌµ¿
+        lean_offset = +((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #ì™¼ìª½ ì»¤ë¸Œì—ì„œ ì°¨ë¥¼ ì™¼ìª½ìœ¼ë¡œ ì´ë™
       elif curvature > 0.001 and leftCurvOffsetAdj > 0 and (self.l_poly[3] + self.r_poly[3]) <= 0.1:
         if Curv > 0.006:
           Curv = 0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6
-        lean_offset = -((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #¿ŞÂÊ Ä¿ºê¿¡¼­ Â÷¸¦ ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
-      elif curvature < -0.001 and rightCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # ¿À¸¥ÂÊ Ä¿ºê
+        lean_offset = -((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #ì™¼ìª½ ì»¤ë¸Œì—ì„œ ì°¨ë¥¼ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™
+      elif curvature < -0.001 and rightCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # ì˜¤ë¥¸ìª½ ì»¤ë¸Œ
         if Curv < -0.006:
           Curv = -0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6    
-        lean_offset = +((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #¿À¸¥ÂÊ Ä¿ºê¿¡¼­ Â÷¸¦ ¿ŞÂÊÀ¸·Î ÀÌµ¿
+        lean_offset = +((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #ì˜¤ë¥¸ìª½ ì»¤ë¸Œì—ì„œ ì°¨ë¥¼ ì™¼ìª½ìœ¼ë¡œ ì´ë™
       elif curvature < -0.001 and rightCurvOffsetAdj > 0 and (self.l_poly[3] + self.r_poly[3]) <= 0.1:
         if Curv < -0.006:
           Curv = -0.006
         if Poly_differ > 0.6:
           Poly_differ = 0.6    
-        lean_offset = -((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #¿À¸¥ÂÊ Ä¿ºê¿¡¼­ Â÷¸¦ ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
+        lean_offset = -((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #ì˜¤ë¥¸ìª½ ì»¤ë¸Œì—ì„œ ì°¨ë¥¼ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™
       else:
         lean_offset = 0
     # only offset left and right lane lines; offsetting p_poly does not make sense

@@ -147,9 +147,9 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   }
 
   if (scene->radarDistance < 149) {
-    draw_chevron(s, d_rel, lead.getYRel(), 25, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);  //¬˜∑Æ ∑π¿Ã¥ı∞° æ’¬˜∏¶ ¿ŒΩƒ«— ªÛ≈¬
+    draw_chevron(s, d_rel, lead.getYRel(), 25, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);  //Ï∞®Îüâ Î†àÏù¥ÎçîÍ∞Ä ÏïûÏ∞®Î•º Ïù∏ÏãùÌïú ÏÉÅÌÉú
   } else {
-    draw_chevron(s, d_rel, lead.getYRel(), 25, nvgRGBA(165, 255, 135, fillAlpha), COLOR_GREEN);  //¬˜∑Æ ∑π¿Ã¥ı∞° æ’¬˜∏¶ ¿ŒΩƒ«œ¡ˆ ∏¯«— ªÛ≈¬
+    draw_chevron(s, d_rel, lead.getYRel(), 25, nvgRGBA(165, 255, 135, fillAlpha), COLOR_GREEN);  //Ï∞®Îüâ Î†àÏù¥ÎçîÍ∞Ä ÏïûÏ∞®Î•º Ïù∏ÏãùÌïòÏßÄ Î™ªÌïú ÏÉÅÌÉú
   }
 }
 
@@ -377,7 +377,7 @@ static void ui_draw_tpms(UIState *s) {
 
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
   const int pos_x = viz_tpms_x + (viz_tpms_w / 2);
-  ui_draw_text(s->vg, pos_x, 120, "≈∏¿ÃæÓ∞¯±‚æ–", 53, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
+  ui_draw_text(s->vg, pos_x, 120, "ÌÉÄÏù¥Ïñ¥Í≥µÍ∏∞Ïïï", 53, COLOR_WHITE_ALPHA(200), s->font_sans_regular);
   snprintf(tpmsFl, sizeof(tpmsFl), "%.1f", s->scene.tpmsPressureFl);
   snprintf(tpmsFr, sizeof(tpmsFr), "%.1f", s->scene.tpmsPressureFr);
   snprintf(tpmsRl, sizeof(tpmsRl), "%.1f", s->scene.tpmsPressureRl);
@@ -431,10 +431,10 @@ static void ui_draw_debug(UIState *s)
   nvgFillColor(s->vg, COLOR_WHITE_ALPHA(150));
   if (s->nDebugUi2 == 1) {
     ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
-    ui_print(s, ui_viz_rx, ui_viz_ry+50, "°§SR:%.2f", scene.liveParams.steerRatio);
-    ui_print(s, ui_viz_rx, ui_viz_ry+100, "°§AOfs:%.2f", scene.liveParams.angleOffset);
-    ui_print(s, ui_viz_rx, ui_viz_ry+150, "°§AOAVG:%.2f", scene.liveParams.angleOffsetAverage);
-    ui_print(s, ui_viz_rx, ui_viz_ry+200, "°§SFact:%.2f", scene.liveParams.stiffnessFactor);
+    ui_print(s, ui_viz_rx, ui_viz_ry+50, "¬∑SR:%.2f", scene.liveParams.steerRatio);
+    ui_print(s, ui_viz_rx, ui_viz_ry+100, "¬∑AOfs:%.2f", scene.liveParams.angleOffset);
+    ui_print(s, ui_viz_rx, ui_viz_ry+150, "¬∑AOAVG:%.2f", scene.liveParams.angleOffsetAverage);
+    ui_print(s, ui_viz_rx, ui_viz_ry+200, "¬∑SFact:%.2f", scene.liveParams.stiffnessFactor);
 
     ui_print(s, ui_viz_rx, ui_viz_ry+300, "ADelay:%.2f", scene.pathPlan.steerActuatorDelay);
     ui_print(s, ui_viz_rx, ui_viz_ry+350, "SRCost:%.2f", scene.pathPlan.steerRateCost);
@@ -448,15 +448,15 @@ static void ui_draw_debug(UIState *s)
       ui_print(s, ui_viz_rx, ui_viz_ry+500, "LaC:LQR");
     }
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-    ui_print(s, ui_viz_rx_center, ui_viz_ry+650, "ƒø∫Í");
+    ui_print(s, ui_viz_rx_center, ui_viz_ry+650, "Ïª§Î∏å");
     if (scene.curvature >= 0.001) {
-      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "¢ÿ%.4f°°", abs(scene.curvature));
+      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "‚Üñ%.4f„ÄÄ", abs(scene.curvature));
     } else if (scene.curvature <= -0.001) {
-      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "°°%.4f¢÷", abs(scene.curvature));
+      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "„ÄÄ%.4f‚Üó", abs(scene.curvature));
     } else {
-      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "°°%.4f°°", abs(scene.curvature));
+      ui_print(s, ui_viz_rx_center, ui_viz_ry+700, "„ÄÄ%.4f„ÄÄ", abs(scene.curvature));
     }
-    ui_print(s, ui_viz_rx_center, ui_viz_ry+750, " ¡¬√¯∞£∞›(m)    ¬˜º±∆¯(m)    øÏ√¯∞£∞›(m)");
+    ui_print(s, ui_viz_rx_center, ui_viz_ry+750, " Ï¢åÏ∏°Í∞ÑÍ≤©(m)    Ï∞®ÏÑ†Ìè≠(m)    Ïö∞Ï∏°Í∞ÑÍ≤©(m)");
     ui_print(s, ui_viz_rx_center, ui_viz_ry+800, "%.2f                    %.2f                    %.2f", scene.pathPlan.lPoly, scene.pathPlan.laneWidth, abs(scene.pathPlan.rPoly));
   }
 }
@@ -527,7 +527,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
   const int text_x = viz_maxspeed_x + (viz_maxspeed_xo / 2) + (viz_maxspeed_w / 2);
-  ui_draw_text(s->vg, text_x, 148, "º≥¡§º”µµ", 26 * 2.2, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_regular);
+  ui_draw_text(s->vg, text_x, 148, "ÏÑ§Ï†ïÏÜçÎèÑ", 26 * 2.2, COLOR_WHITE_ALPHA(is_cruise_set ? 200 : 100), s->font_sans_regular);
 
   if (is_cruise_set) {
     snprintf(maxspeed_str, sizeof(maxspeed_str), "%d", maxspeed_calc);
@@ -745,9 +745,9 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     char val_str[16];
     char uom_str[6];
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    snprintf(val_str, sizeof(val_str), "%.0f°∆C", (round((s->scene.cpu0Temp)/10)));
+    snprintf(val_str, sizeof(val_str), "%.0f¬∞C", (round((s->scene.cpu0Temp)/10)));
     snprintf(uom_str, sizeof(uom_str), "%d%%", (s->scene.cpuPerc));
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "CPU ø¬µµ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "CPU Ïò®ÎèÑ",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -768,9 +768,9 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     // temp is alway in C * 1000
-    snprintf(val_str, sizeof(val_str), "%.0f°∆C", batteryTemp);
+    snprintf(val_str, sizeof(val_str), "%.0f¬∞C", batteryTemp);
     snprintf(uom_str, sizeof(uom_str), "%d", (s->scene.fanSpeed)/1000);
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "πË≈Õ∏Æø¬µµ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "Î∞∞ÌÑ∞Î¶¨Ïò®ÎèÑ",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -787,7 +787,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
 
     snprintf(val_str, sizeof(val_str), "%d%%", batteryPercent);
     snprintf(uom_str, sizeof(uom_str), "%s", scene->thermal.getBatteryStatus() == "Charging" ? "++" : "--");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "πË≈Õ∏Æ∑π∫ß",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "Î∞∞ÌÑ∞Î¶¨Î†àÎ≤®",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -815,7 +815,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
       snprintf(val_str, sizeof(val_str), "%.2f", (s->scene.gpsAccuracyUblox));
     }
     snprintf(uom_str, sizeof(uom_str), "%d", (s->scene.satelliteCount));
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPS ¡§»Æµµ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPS Ï†ïÌôïÎèÑ",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -828,7 +828,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     NVGcolor val_color = COLOR_WHITE_ALPHA(200);
     snprintf(val_str, sizeof(val_str), "%.0f", (s->scene.altitudeUblox));
     snprintf(uom_str, sizeof(uom_str), "m");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "∞Ìµµ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "Í≥†ÎèÑ",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -881,7 +881,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
        snprintf(val_str, sizeof(val_str), "-");
     }
     snprintf(uom_str, sizeof(uom_str), "m");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "¬˜∞£∞≈∏Æ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "Ï∞®Í∞ÑÍ±∞Î¶¨",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -916,7 +916,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     } else {
       snprintf(uom_str, sizeof(uom_str), "mi/h");
     }
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "ªÛ¥Îº”µµ",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "ÏÉÅÎåÄÏÜçÎèÑ",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -937,10 +937,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         val_color = COLOR_RED_ALPHA(200);
       }
       // steering is in degrees
-      snprintf(val_str, sizeof(val_str), "%.1f°∆",(s->scene.angleSteers));
+      snprintf(val_str, sizeof(val_str), "%.1f¬∞",(s->scene.angleSteers));
 
       snprintf(uom_str, sizeof(uom_str), "");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "«ˆ¿Á¡∂«‚∞¢",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "ÌòÑÏû¨Ï°∞Ìñ•Í∞Å",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -962,12 +962,12 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         val_color = COLOR_WHITE_ALPHA(200);
       }
       // steering is in degrees
-      snprintf(val_str, sizeof(val_str), "%.1f°∆",(s->scene.angleSteersDes));
+      snprintf(val_str, sizeof(val_str), "%.1f¬∞",(s->scene.angleSteersDes));
     } else {
        snprintf(val_str, sizeof(val_str), "-");
     }
       snprintf(uom_str, sizeof(uom_str), "");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "« ø‰¡∂«‚∞¢",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "ÌïÑÏöîÏ°∞Ìñ•Í∞Å",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
