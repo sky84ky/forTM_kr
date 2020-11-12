@@ -309,6 +309,9 @@ struct ThermalData {
   bat @29 :Float32;
   ambient @30 :Float32;
 
+  ipAddr @31 :Text;
+  cpu0 @32 :UInt16;
+
   enum ThermalStatus {
     green @0;   # all processes run
     yellow @1;  # critical processes run (kill uploader), engage still allowed
@@ -548,6 +551,14 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   decelForModel @54 :Bool;
   canErrorCounter @57 :UInt32;
+
+  applySteer @58 :Float32;
+  applyAccel @59 :Float32;
+
+  steerSaturated @60 :Bool;
+  alertTextMsg1  @61 :Text;
+  alertTextMsg2  @62 :Text;
+  lateralControlMethod  @63 :UInt8;
 
   lateralControlState :union {
     indiState @52 :LateralINDIState;
@@ -829,6 +840,9 @@ struct Plan {
 
   processingDelay @29 :Float32;
 
+  ddRel @32 :Float32;
+  yyRel @33 :Float32;
+  vvRel @34 :Float32;
 
   struct GpsTrajectory {
     x @0 :List(Float32);
@@ -867,6 +881,10 @@ struct PathPlan {
   desire @17 :Desire;
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
+  steerRatio @20 :Float32;
+  steerActuatorDelay @21 :Float32;
+  outputScale @22 :Float32;
+  steerRateCost @23 :Float32;
 
   enum Desire {
     none @0;
@@ -883,6 +901,7 @@ struct PathPlan {
     preLaneChange @1;
     laneChangeStarting @2;
     laneChangeFinishing @3;
+    laneChangeDone @4;
   }
 
   enum LaneChangeDirection {

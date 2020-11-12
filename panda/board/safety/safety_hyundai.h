@@ -1,8 +1,8 @@
-const int HYUNDAI_MAX_STEER = 384;             // like stock
+const int HYUNDAI_MAX_STEER = 1000;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
-const int HYUNDAI_MAX_RATE_UP = 3;
-const int HYUNDAI_MAX_RATE_DOWN = 7;
+const int HYUNDAI_MAX_RATE_UP = 7;
+const int HYUNDAI_MAX_RATE_DOWN = 15;
 const int HYUNDAI_DRIVER_TORQUE_ALLOWANCE = 50;
 const int HYUNDAI_DRIVER_TORQUE_FACTOR = 2;
 const int HYUNDAI_STANDSTILL_THRSLD = 30;  // ~1kph
@@ -15,6 +15,7 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
   // {1290, 0, 8}, //   SCC13,  Bus 0
   // {905, 0, 8},  //   SCC14,  Bus 0
   // {1186, 0, 8}  //   4a2SCC, Bus 0
+  {1427, 0, 6},   // TPMS, Bus 0
  };
 
 // TODO: missing checksum for wheel speeds message,worst failure case is
