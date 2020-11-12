@@ -26,12 +26,19 @@ int write_param_float(float param, const char* param_name, bool persistent_param
 
 void ui_init(UIState *s) {
   s->sm = new SubMaster({"modelV2", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "carParams", "ubloxGnss", "driverState", "dMonitoringState", "sensorEvents"});
+                         "health", "carParams", "ubloxGnss", "driverState", "dMonitoringState", "sensorEvents", "carState", "liveMpc", "gpsLocationExternal", "liveParameters", "pathPlan"});
 
   s->started = false;
   s->status = STATUS_OFFROAD;
   s->scene.satelliteCount = -1;
   read_param(&s->is_metric, "IsMetric");
+  read_param(&s->nOpkrAutoScreenOff, "OpkrAutoScreenOff");
+  read_param(&s->nOpkrUIBrightness, "OpkrUIBrightness");
+  read_param(&s->nOpkrUIVolumeBoost, "OpkrUIVolumeBoost");
+  read_param(&s->nDebugUi1, "DebugUi1");
+  read_param(&s->nDebugUi2, "DebugUi2");
+  read_param(&s->nOpkrBlindSpotDetect, "OpkrBlindSpotDetect");
+  read_param(&s->lateral_control, "LateralControlMethod");
 
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
   assert(s->fb);
@@ -73,6 +80,7 @@ static void ui_init_vision(UIState *s) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
   }
   assert(glGetError() == GL_NO_ERROR);
+  s->scene.recording = false;
 }
 
 void ui_update_vision(UIState *s) {
@@ -120,6 +128,24 @@ void update_sockets(UIState *s) {
     auto event = sm["controlsState"];
     scene.controls_state = event.getControlsState();
 
+    s->scene.angleSteers = scene.controls_state.getAngleSteers();
+    s->scene.steerOverride = scene.controls_state.getSteerOverride();
+
+    s->scene.lateralControlMethod = scene.controls_state.getLateralControlMethod();
+    if (s->scene.lateralControlMethod == 0) {
+      s->scene.output_scale = scene.controls_state.getLateralControlState().getPidState().getOutput();
+    } else if (s->scene.lateralControlMethod == 1) {
+      s->scene.output_scale = scene.controls_state.getLateralControlState().getIndiState().getOutput();
+    } else if (s->scene.lateralControlMethod == 2) {
+      s->scene.output_scale = scene.controls_state.getLateralControlState().getLqrState().getOutput();
+    }
+    
+    s->scene.angleSteersDes = scene.controls_state.getAngleSteersDes();
+    s->scene.curvature = scene.controls_state.getCurvature();
+
+    s->scene.alertTextMsg1 = scene.controls_state.getAlertTextMsg1(); //debug1
+    s->scene.alertTextMsg2 = scene.controls_state.getAlertTextMsg2(); //debug2
+
     // TODO: the alert stuff shouldn't be handled here
     auto alert_sound = scene.controls_state.getAlertSound();
     if (scene.alert_type.compare(scene.controls_state.getAlertType()) != 0) {
@@ -160,10 +186,35 @@ void update_sockets(UIState *s) {
       }
     }
   }
+
+  if (sm.updated("liveParameters")) {
+    //scene.liveParams = sm["liveParameters"].getLiveParameters();
+    auto data = sm["liveParameters"].getLiveParameters();    
+    s->scene.steerRatio=data.getSteerRatio();
+    scene.liveParams.gyroBias = data.getGyroBias();
+    scene.liveParams.angleOffset = data.getAngleOffset();
+    scene.liveParams.angleOffsetAverage = data.getAngleOffsetAverage();
+    scene.liveParams.stiffnessFactor = data.getStiffnessFactor();
+    scene.liveParams.steerRatio = data.getSteerRatio();
+    scene.liveParams.yawRate = data.getYawRate();
+    scene.liveParams.posenetSpeed = data.getPosenetSpeed();
+  }
+  if(sm.updated("liveMpc")) {
+    auto data = sm["liveMpc"].getLiveMpc();
+    auto x_list = data.getX();
+    auto y_list = data.getY();
+    for (int i = 0; i < 50; i++){
+       scene.mpc_x[i] = x_list[i];
+       scene.mpc_y[i] = y_list[i];
+    }
+  }
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
     scene.lead_data[0] = data.getLeadOne();
     scene.lead_data[1] = data.getLeadTwo();
+    s->scene.lead_v_rel = scene.lead_data[0].getVRel();
+    s->scene.lead_d_rel = scene.lead_data[0].getDRel();
+    s->scene.lead_status = scene.lead_data[0].getStatus();
   }
   if (sm.updated("liveCalibration")) {
     scene.world_objects_visible = true;
@@ -198,12 +249,21 @@ void update_sockets(UIState *s) {
   }
   if (sm.updated("thermal")) {
     scene.thermal = sm["thermal"].getThermal();
+    s->scene.cpu0Temp = scene.thermal.getCpu0();
+    s->scene.cpuPerc = scene.thermal.getCpuPerc();
+    s->scene.fanSpeed = scene.thermal.getFanSpeed();
+    auto data = sm["thermal"].getThermal();
+    snprintf(scene.ipAddr, sizeof(scene.ipAddr), "%s", data.getIpAddr().cStr());
   }
   if (sm.updated("ubloxGnss")) {
     auto data = sm["ubloxGnss"].getUbloxGnss();
     if (data.which() == cereal::UbloxGnss::MEASUREMENT_REPORT) {
       scene.satelliteCount = data.getMeasurementReport().getNumMeas();
+      s->scene.satelliteCount = scene.satelliteCount;
     }
+    auto data2 = sm["gpsLocationExternal"].getGpsLocationExternal();
+    s->scene.gpsAccuracyUblox = data2.getAccuracy();
+    s->scene.altitudeUblox = data2.getAltitude();
   }
   if (sm.updated("health")) {
     auto health = sm["health"].getHealth();
@@ -222,9 +282,30 @@ void update_sockets(UIState *s) {
     scene.dmonitoring_state = sm["dMonitoringState"].getDMonitoringState();
     scene.is_rhd = scene.dmonitoring_state.getIsRHD();
     scene.frontview = scene.dmonitoring_state.getIsPreview();
+    scene.awareness_status = scene.dmonitoring_state.getAwarenessStatus();
   } else if ((sm.frame - sm.rcv_frame("dMonitoringState")) > UI_FREQ/2) {
     scene.frontview = false;
   }
+
+  if (sm.updated("carState")) {
+    auto data = sm["carState"].getCarState();
+    if(scene.leftBlinker!=data.getLeftBlinker() || scene.rightBlinker!=data.getRightBlinker()){
+      scene.blinker_blinkingrate = 50;
+    }
+    scene.brakePress = data.getBrakePressed();
+    scene.brakeLights = data.getBrakeLights();
+    scene.getGearShifter = data.getGearShifter();
+    scene.leftBlinker = data.getLeftBlinker();
+    scene.rightBlinker = data.getRightBlinker();
+    scene.leftblindspot = data.getLeftBlindspot();
+    scene.rightblindspot = data.getRightBlindspot();
+    scene.tpmsPressureFl = data.getTpmsPressureFl();
+    scene.tpmsPressureFr = data.getTpmsPressureFr();
+    scene.tpmsPressureRl = data.getTpmsPressureRl();
+    scene.tpmsPressureRr = data.getTpmsPressureRr();
+    scene.radarDistance = data.getRadarDistance();
+  }
+
   if (sm.updated("sensorEvents")) {
     for (auto sensor : sm["sensorEvents"].getSensorEvents()) {
       if (sensor.which() == cereal::SensorEventData::LIGHT) {
@@ -235,6 +316,26 @@ void update_sockets(UIState *s) {
         s->gyro_sensor = sensor.getGyroUncalibrated().getV()[1];
       }
     }
+  }
+
+  if (sm.updated("pathPlan")) {
+    scene.path_plan = sm["pathPlan"].getPathPlan();
+    auto data = sm["pathPlan"].getPathPlan();
+
+    scene.pathPlan.laneWidth = data.getLaneWidth();
+    scene.pathPlan.steerRatio = data.getSteerRatio();
+    scene.pathPlan.cProb = data.getCProb();
+    scene.pathPlan.lProb = data.getLProb();
+    scene.pathPlan.rProb = data.getRProb();
+    scene.pathPlan.angleOffset = data.getAngleOffset();
+    scene.pathPlan.steerActuatorDelay = data.getSteerActuatorDelay();
+    scene.pathPlan.steerRateCost = data.getSteerRateCost();
+
+    auto l_list = data.getLPoly();
+    auto r_list = data.getRPoly();
+
+    scene.pathPlan.lPoly = l_list[3];
+    scene.pathPlan.rPoly = r_list[3];
   }
 
   s->started = scene.thermal.getStarted() || scene.frontview;
@@ -266,9 +367,13 @@ void ui_update(UIState *s) {
   if (s->started && !s->scene.frontview && ((s->sm)->frame - s->started_frame) > 5*UI_FREQ) {
     if ((s->sm)->rcv_frame("controlsState") < s->started_frame) {
       // car is started, but controlsState hasn't been seen at all
-      s->scene.alert_text1 = "openpilot Unavailable";
-      s->scene.alert_text2 = "Waiting for controls to start";
-      s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+      if( !s->is_OpenpilotViewEnabled ) {
+        s->scene.alert_text1 = "openpilot Unavailable";
+        s->scene.alert_text2 = "Waiting for controls to start";
+        s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+      } else {
+        s->scene.alert_size = cereal::ControlsState::AlertSize::NONE;
+      }
     } else if (((s->sm)->frame - (s->sm)->rcv_frame("controlsState")) > 5*UI_FREQ) {
       // car is started, but controls is lagging or died
       if (s->scene.alert_text2 != "Controls Unresponsive") {
@@ -286,6 +391,14 @@ void ui_update(UIState *s) {
   // Read params
   if ((s->sm)->frame % (5*UI_FREQ) == 0) {
     read_param(&s->is_metric, "IsMetric");
+    read_param(&s->is_OpenpilotViewEnabled, "IsOpenpilotViewEnabled");
+    read_param(&s->nOpkrAutoScreenOff, "OpkrAutoScreenOff");
+    read_param(&s->nOpkrUIBrightness, "OpkrUIBrightness");
+    read_param(&s->nOpkrUIVolumeBoost, "OpkrUIVolumeBoost");
+    read_param(&s->nDebugUi1, "DebugUi1");
+    read_param(&s->nDebugUi2, "DebugUi2");
+    read_param(&s->nOpkrBlindSpotDetect, "OpkrBlindSpotDetect");
+    read_param(&s->lateral_control, "LateralControlMethod");
   } else if ((s->sm)->frame % (6*UI_FREQ) == 0) {
     int param_read = read_param(&s->last_athena_ping, "LastAthenaPingTime");
     if (param_read != 0) { // Failed to read param

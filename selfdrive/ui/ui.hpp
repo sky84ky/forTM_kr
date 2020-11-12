@@ -33,7 +33,14 @@
 #define COLOR_WHITE_ALPHA(x) nvgRGBA(255, 255, 255, x)
 #define COLOR_YELLOW nvgRGBA(218, 202, 37, 255)
 #define COLOR_RED nvgRGBA(201, 34, 49, 255)
-
+#define COLOR_OCHRE nvgRGBA(218, 111, 37, 255)
+#define COLOR_OCHRE_ALPHA(x) nvgRGBA(218, 111, 37, x)
+#define COLOR_GREEN nvgRGBA(0, 255, 0, 255)
+#define COLOR_GREEN_ALPHA(x) nvgRGBA(0, 255, 0, x)
+#define COLOR_ORANGE nvgRGBA(255, 175, 3, 255)
+#define COLOR_ORANGE_ALPHA(x) nvgRGBA(255, 175, 3, x)
+#define COLOR_RED_ALPHA(x) nvgRGBA(201, 34, 49, x)
+#define COLOR_YELLOW_ALPHA(x) nvgRGBA(218, 202, 37, x)
 #define UI_BUF_COUNT 4
 
 typedef struct Rect {
@@ -48,8 +55,10 @@ typedef struct Rect {
 
 const int sbr_w = 300;
 const int bdr_s = 30;
+const int vwp_h = 1080;
 const int header_h = 420;
 const int footer_h = 280;
+const int footer_y = vwp_h-bdr_s-footer_h;
 const Rect settings_btn = {50, 35, 200, 117};
 const Rect home_btn = {60, 1080 - 180 - 40, 180, 180};
 
@@ -91,6 +100,9 @@ typedef struct {
 
 typedef struct UIScene {
 
+  float mpc_x[50];
+  float mpc_y[50];
+
   mat4 extrinsic_matrix;      // Last row is 0 so we can use mat4.
   bool world_objects_visible;
 
@@ -101,10 +113,47 @@ typedef struct UIScene {
   Rect viz_rect;
   int ui_viz_ro;
 
+  int lead_status;
+  float lead_d_rel, lead_v_rel;
   std::string alert_text1;
   std::string alert_text2;
+  std::string alertTextMsg1;
+  std::string alertTextMsg2;
   std::string alert_type;
   cereal::ControlsState::AlertSize alert_size;
+  float awareness_status;
+
+  bool  brakePress;
+  bool recording;
+  float gpsAccuracyUblox;
+  float altitudeUblox;
+  int cpuPerc;
+  bool rightblindspot;
+  bool leftblindspot;
+  bool leftBlinker;
+  bool rightBlinker;
+  int blinker_blinkingrate;
+  int blindspot_blinkingrate = 120;
+  int car_valid_status_changed = 0;
+  float angleSteers;
+  float steerRatio;
+  bool brakeLights;
+  float angleSteersDes;
+  float curvature;
+  bool steerOverride;
+  float output_scale; 
+  float cpu0Temp;
+  int batteryPercent;
+  bool batteryCharging;
+  char batteryStatus[64];
+  char ipAddr[20];
+  int fanSpeed;
+  float tpmsPressureFl;
+  float tpmsPressureFr;
+  float tpmsPressureRl;
+  float tpmsPressureRr;
+  int lateralControlMethod;
+  float radarDistance;
 
   cereal::HealthData::HwType hwType;
   int satelliteCount;
@@ -116,6 +165,8 @@ typedef struct UIScene {
   cereal::DriverState::Reader driver_state;
   cereal::DMonitoringState::Reader dmonitoring_state;
   cereal::ModelDataV2::Reader model;
+  cereal::CarState::GearShifter getGearShifter;
+  cereal::PathPlan::Reader path_plan;
   line path;
   line outer_left_lane_line;
   line left_lane_line;
@@ -126,6 +177,34 @@ typedef struct UIScene {
   float max_distance;
   float lane_line_probs[4];
   float road_edge_stds[2];
+
+  struct _LiveParams
+  {
+    float gyroBias;
+    float angleOffset;
+    float angleOffsetAverage;
+    float stiffnessFactor;
+    float steerRatio;
+    float yawRate;
+    float posenetSpeed;
+  } liveParams;
+
+  struct _PathPlan
+  {
+    float laneWidth;
+    float steerRatio;
+    float steerActuatorDelay;
+    float steerRateCost;
+
+    float cProb;
+    float lProb;
+    float rProb;
+
+    float angleOffset;
+
+    float lPoly;
+    float rPoly;
+  } pathPlan;
 } UIScene;
 
 typedef struct {
@@ -163,6 +242,8 @@ typedef struct UIState {
   int img_battery;
   int img_battery_charging;
   int img_network[6];
+  int img_car_left;
+  int img_car_right;
 
   SubMaster *sm;
 
@@ -188,12 +269,25 @@ typedef struct UIState {
 
   // device state
   bool awake;
+  int awake_timeout;
   float light_sensor, accel_sensor, gyro_sensor;
 
   bool started;
   bool ignition;
   bool is_metric;
   bool longitudinal_control;
+
+  int is_OpenpilotViewEnabled;
+  int lateral_control;
+
+
+  int nOpkrAutoScreenOff;
+  int nOpkrUIBrightness;
+  int nOpkrUIVolumeBoost;
+  int nDebugUi1;
+  int nDebugUi2;
+  int nOpkrBlindSpotDetect;
+
   uint64_t last_athena_ping;
   uint64_t started_frame;
 

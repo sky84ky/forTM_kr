@@ -1,8 +1,10 @@
 from common.numpy_fast import interp
 import numpy as np
-from cereal import log
+from cereal import car, log
+from common.params import Params
 
-CAMERA_OFFSET = 0.06  # m from center car to camera
+CAMERA_OFFSET = int(Params().get('CameraOffsetAdj')) * 0.001  # m from center car to camera
+CAMERA_OFFSET_A = (int(Params().get('CameraOffsetAdj')) * 0.001) - 0.1
 
 
 def compute_path_pinv(length=50):
@@ -28,9 +30,9 @@ class LanePlanner:
     self.p_poly = [0., 0., 0., 0.]
     self.d_poly = [0., 0., 0., 0.]
 
-    self.lane_width_estimate = 3.7
+    self.lane_width_estimate = 3.5
     self.lane_width_certainty = 1.0
-    self.lane_width = 3.7
+    self.lane_width = 3.5
 
     self.l_prob = 0.
     self.r_prob = 0.
@@ -62,10 +64,64 @@ class LanePlanner:
       self.l_lane_change_prob = md.meta.desireState[log.PathPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = md.meta.desireState[log.PathPlan.Desire.laneChangeRight]
 
-  def update_d_poly(self, v_ego):
+  def update_d_poly(self, v_ego, sm):
+    curvature = sm['controlsState'].curvature
+    mode_select = sm['carState'].cruiseState.modeSel
+    Curv = round(curvature, 3)
+    Poly_differ = round(abs(self.l_poly[3] + self.r_poly[3]), 1)
+
+    if mode_select == 3 and v_ego > 8:
+      if curvature >= 0.001: # left curve
+        if Curv > 0.006:
+          Curv = 0.006
+        lean_offset = -0.04 - (Curv * 20) #move the car to right at left curve
+      elif curvature <= -0.001:   # right curve
+        if Curv < -0.006:
+          Curv = -0.006
+        lean_offset = -0.04 + (Curv * 30) #move the car to right at right curve
+      else:
+        lean_offset = 0
     # only offset left and right lane lines; offsetting p_poly does not make sense
-    self.l_poly[3] += CAMERA_OFFSET
-    self.r_poly[3] += CAMERA_OFFSET
+      self.l_poly[3] += CAMERA_OFFSET_A + lean_offset
+      self.r_poly[3] += CAMERA_OFFSET_A + lean_offset
+
+    elif (int(Params().get('LeftCurvOffsetAdj')) != 0 or int(Params().get('RightCurvOffsetAdj')) != 0) and v_ego > 8:
+      leftCurvOffsetAdj = int(Params().get('LeftCurvOffsetAdj'))
+      rightCurvOffsetAdj = int(Params().get('RightCurvOffsetAdj'))
+      # 차선(좌우)간격 계산 조건 추가, 좌우간격에 따라 선택적 적용, 좌우폭 동일시 적용안함
+      if curvature > 0.001 and leftCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # 왼쪽 커브
+        if Curv > 0.006:
+          Curv = 0.006
+        if Poly_differ > 0.6:
+          Poly_differ = 0.6          
+        lean_offset = +((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #왼쪽 커브에서 차를 왼쪽으로 이동
+      elif curvature > 0.001 and leftCurvOffsetAdj > 0 and (self.l_poly[3] + self.r_poly[3]) <= 0.1:
+        if Curv > 0.006:
+          Curv = 0.006
+        if Poly_differ > 0.6:
+          Poly_differ = 0.6
+        lean_offset = -((abs(Curv)* 5 * abs(leftCurvOffsetAdj)) + (abs(leftCurvOffsetAdj) * Poly_differ * 0.05)) #왼쪽 커브에서 차를 오른쪽으로 이동
+      elif curvature < -0.001 and rightCurvOffsetAdj < 0 and (self.l_poly[3] + self.r_poly[3]) >= -0.1: # 오른쪽 커브
+        if Curv < -0.006:
+          Curv = -0.006
+        if Poly_differ > 0.6:
+          Poly_differ = 0.6    
+        lean_offset = +((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #오른쪽 커브에서 차를 왼쪽으로 이동
+      elif curvature < -0.001 and rightCurvOffsetAdj > 0 and (self.l_poly[3] + self.r_poly[3]) <= 0.1:
+        if Curv < -0.006:
+          Curv = -0.006
+        if Poly_differ > 0.6:
+          Poly_differ = 0.6    
+        lean_offset = -((abs(Curv)* 5 * abs(rightCurvOffsetAdj)) + (abs(rightCurvOffsetAdj) * Poly_differ * 0.05)) #오른쪽 커브에서 차를 오른쪽으로 이동
+      else:
+        lean_offset = 0
+    # only offset left and right lane lines; offsetting p_poly does not make sense
+      self.l_poly[3] += CAMERA_OFFSET_A + lean_offset
+      self.r_poly[3] += CAMERA_OFFSET_A + lean_offset
+
+    else:
+      self.l_poly[3] += CAMERA_OFFSET
+      self.r_poly[3] += CAMERA_OFFSET
 
     # Find current lanewidth
     # This will improve behaviour when lanes suddenly widen
@@ -90,11 +146,11 @@ class LanePlanner:
     self.lane_width_certainty += 0.05 * (l_prob * r_prob - self.lane_width_certainty)
     current_lane_width = abs(self.l_poly[3] - self.r_poly[3])
     self.lane_width_estimate += 0.005 * (current_lane_width - self.lane_width_estimate)
-    speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+    speed_lane_width = interp(v_ego, [0., 9., 31.], [2.5, 2.8, 3.6])
     self.lane_width = self.lane_width_certainty * self.lane_width_estimate + \
                       (1 - self.lane_width_certainty) * speed_lane_width
 
-    clipped_lane_width = min(4.0, self.lane_width)
+    clipped_lane_width = min(3.8, self.lane_width)
     path_from_left_lane = self.l_poly.copy()
     path_from_left_lane[3] -= clipped_lane_width / 2.0
     path_from_right_lane = self.r_poly.copy()

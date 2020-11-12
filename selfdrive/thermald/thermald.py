@@ -27,6 +27,9 @@ from selfdrive.thermald.power_monitoring import (PowerMonitoring,
                                                  get_usb_present)
 from selfdrive.version import get_git_branch, terms_version, training_version
 
+import re
+import subprocess
+
 ThermalConfig = namedtuple('ThermalConfig', ['cpu', 'gpu', 'mem', 'bat', 'ambient'])
 
 FW_SIGNATURE = get_expected_signature()
@@ -38,13 +41,16 @@ CURRENT_TAU = 15.   # 15s time constant
 CPU_TEMP_TAU = 5.   # 5s time constant
 DAYS_NO_CONNECTIVITY_MAX = 7  # do not allow to engage after a week without internet
 DAYS_NO_CONNECTIVITY_PROMPT = 4  # send an offroad prompt after 4 days with no internet
-DISCONNECT_TIMEOUT = 5.  # wait 5 seconds before going offroad after disconnect so you get an alert
+DISCONNECT_TIMEOUT = 3.  # wait 5 seconds before going offroad after disconnect so you get an alert
 
 prev_offroad_states: Dict[str, Tuple[bool, Optional[str]]] = {}
 
 LEON = False
 last_eon_fan_val = None
 
+mediaplayer = '/data/openpilot/selfdrive/assets/addon/mediaplayer/'
+prebuiltfile = '/data/openpilot/prebuilt'
+pandaflash_ongoing = '/data/openpilot/pandaflash_ongoing'
 
 def get_thermal_config():
   # (tz, scale)
@@ -74,6 +80,7 @@ def read_thermal(thermal_config):
   dat.thermal.mem = read_tz(thermal_config.mem[0]) / thermal_config.mem[1]
   dat.thermal.ambient = read_tz(thermal_config.ambient[0]) / thermal_config.ambient[1]
   dat.thermal.bat = read_tz(thermal_config.bat[0]) / thermal_config.bat[1]
+  dat.thermal.cpu0 = read_tz(5)
   return dat
 
 
@@ -158,6 +165,31 @@ def handle_fan_uno(max_cpu_temp, bat_temp, fan_speed, ignition):
 
   return new_speed
 
+def check_car_battery_voltage(should_start, health, charging_disabled, msg):
+  battery_charging_control = Params().get('OpkrBatteryChargingControl') == b'1'
+  battery_charging_min = int(Params().get('OpkrBatteryChargingMin'))
+  battery_charging_max = int(Params().get('OpkrBatteryChargingMax'))
+
+  # charging disallowed if:
+  #   - there are health packets from panda, and;
+  #   - 12V battery voltage is too low, and;
+  #   - onroad isn't started
+  print(health)
+  
+  if charging_disabled and (health is None or health.health.voltage > (11800+500)) and msg.thermal.batteryPercent < battery_charging_min:
+    charging_disabled = False
+    os.system('echo "1" > /sys/class/power_supply/battery/charging_enabled')
+  elif not charging_disabled and (msg.thermal.batteryPercent > battery_charging_max or (health is not None and health.health.voltage < 11800 and not should_start)):
+    charging_disabled = True
+    os.system('echo "0" > /sys/class/power_supply/battery/charging_enabled')
+  elif msg.thermal.batteryCurrent < 0 and msg.thermal.batteryPercent > battery_charging_max:
+    charging_disabled = True
+    os.system('echo "0" > /sys/class/power_supply/battery/charging_enabled')
+    
+  if not battery_charging_control:
+    charging_disabled = False
+
+  return charging_disabled
 
 def set_offroad_alert_if_changed(offroad_alert: str, show_alert: bool, extra_text: Optional[str]=None):
   if prev_offroad_states.get(offroad_alert, None) == (show_alert, extra_text):
@@ -195,6 +227,7 @@ def thermald_thread():
   current_filter = FirstOrderFilter(0., CURRENT_TAU, DT_TRML)
   cpu_temp_filter = FirstOrderFilter(0., CPU_TEMP_TAU, DT_TRML)
   health_prev = None
+  charging_disabled = False
   should_start_prev = False
   handle_fan = None
   is_uno = False
@@ -205,7 +238,50 @@ def thermald_thread():
 
   thermal_config = get_thermal_config()
 
+  ts_last_ip = 0
+  ip_addr = '255.255.255.255'
+
+  # sound trigger
+  sound_trigger = 1
+  opkrAutoShutdown = 0
+
+  shutdown_trigger = 1
+  is_openpilot_view_enabled = 0
+
+  env = dict(os.environ)
+  env['LD_LIBRARY_PATH'] = mediaplayer
+
+  getoff_alert = Params().get('OpkrEnableGetoffAlert') == b'1'
+
+  if int(params.get('OpkrAutoShutdown')) == 0:
+    opkrAutoShutdown = 0
+  elif int(params.get('OpkrAutoShutdown')) == 1:
+    opkrAutoShutdown = 5
+  elif int(params.get('OpkrAutoShutdown')) == 2:
+    opkrAutoShutdown = 30
+  elif int(params.get('OpkrAutoShutdown')) == 3:
+    opkrAutoShutdown = 60
+  elif int(params.get('OpkrAutoShutdown')) == 4:
+    opkrAutoShutdown = 180
+  elif int(params.get('OpkrAutoShutdown')) == 5:
+    opkrAutoShutdown = 300
+  elif int(params.get('OpkrAutoShutdown')) == 6:
+    opkrAutoShutdown = 600
+  elif int(params.get('OpkrAutoShutdown')) == 7:
+    opkrAutoShutdown = 1800
+  elif int(params.get('OpkrAutoShutdown')) == 8:
+    opkrAutoShutdown = 3600
+  elif int(params.get('OpkrAutoShutdown')) == 9:
+    opkrAutoShutdown = 10800
+  else:
+    opkrAutoShutdown = 18000
+  
+  lateral_control_method = int(params.get("LateralControlMethod"))
+  lateral_control_method_prev = int(params.get("LateralControlMethod"))
+  lateral_control_method_cnt = 0
+  lateral_control_method_trigger = 0
   while 1:
+    ts = sec_since_boot()
     health = messaging.recv_sock(health_sock, wait=True)
     location = messaging.recv_sock(location_sock)
     location = location.gpsLocation if location else None
@@ -215,15 +291,27 @@ def thermald_thread():
       usb_power = health.health.usbPowerMode != log.HealthData.UsbPowerMode.client
 
       # If we lose connection to the panda, wait 5 seconds before going offroad
-      if health.health.hwType == log.HealthData.HwType.unknown:
+      lateral_control_method = int(params.get("LateralControlMethod"))
+      if lateral_control_method != lateral_control_method_prev and lateral_control_method_trigger == 0:
+        startup_conditions["ignition"] = False
+        lateral_control_method_trigger = 1
+      elif lateral_control_method != lateral_control_method_prev:
+        lateral_control_method_cnt += 1
+        if lateral_control_method_cnt > 1 / DT_TRML:
+          lateral_control_method_prev = lateral_control_method
+      elif health.health.hwType == log.HealthData.HwType.unknown:
         no_panda_cnt += 1
         if no_panda_cnt > DISCONNECT_TIMEOUT / DT_TRML:
           if startup_conditions["ignition"]:
             cloudlog.error("Lost panda connection while onroad")
           startup_conditions["ignition"] = False
+          shutdown_trigger = 1
       else:
         no_panda_cnt = 0
         startup_conditions["ignition"] = health.health.ignitionLine or health.health.ignitionCan
+        sound_trigger == 1
+        lateral_control_method_cnt = 0
+        lateral_control_method_trigger = 0
 
       # Setup fan handler on first connect to panda
       if handle_fan is None and health.health.hwType != log.HealthData.HwType.unknown:
@@ -243,6 +331,14 @@ def thermald_thread():
           health_prev.health.hwType != log.HealthData.HwType.unknown:
           params.panda_disconnect()
       health_prev = health
+    elif int(params.get("IsOpenpilotViewEnabled")) == 1 and int(params.get("IsDriverViewEnabled")) == 0 and is_openpilot_view_enabled == 0:
+      is_openpilot_view_enabled = 1
+      startup_conditions["ignition"] = True
+    elif int(params.get("IsOpenpilotViewEnabled")) == 0 and int(params.get("IsDriverViewEnabled")) == 0 and is_openpilot_view_enabled == 1:
+      shutdown_trigger = 0
+      sound_trigger == 0
+      is_openpilot_view_enabled = 0
+      startup_conditions["ignition"] = False
 
     # get_network_type is an expensive call. update every 10s
     if (count % int(10. / DT_TRML)) == 0:
@@ -268,6 +364,17 @@ def thermald_thread():
       msg.thermal.batteryPercent = 100
       msg.thermal.batteryStatus = "Charging"
       msg.thermal.bat = 0
+
+    # update ip every 10 seconds
+    ts = sec_since_boot()
+    if ts - ts_last_ip >= 10.:
+      try:
+        result = subprocess.check_output(["ifconfig", "wlan0"], encoding='utf8')  # pylint: disable=unexpected-keyword-arg
+        ip_addr = re.findall(r"inet addr:((\d+\.){3}\d+)", result)[0][0]
+      except:
+        ip_addr = 'N/A'
+      ts_last_ip = ts
+    msg.thermal.ipAddr = ip_addr
 
     current_filter.update(msg.thermal.batteryCurrent / 1e6)
 
@@ -313,38 +420,38 @@ def thermald_thread():
     set_offroad_alert_if_changed("Offroad_InvalidTime", (not startup_conditions["time_valid"]))
 
     # Show update prompt
-    try:
-      last_update = datetime.datetime.fromisoformat(params.get("LastUpdateTime", encoding='utf8'))
-    except (TypeError, ValueError):
-      last_update = now
-    dt = now - last_update
-
-    update_failed_count = params.get("UpdateFailedCount")
-    update_failed_count = 0 if update_failed_count is None else int(update_failed_count)
-    last_update_exception = params.get("LastUpdateException", encoding='utf8')
-
-    if update_failed_count > 15 and last_update_exception is not None:
-      if current_branch in ["release2", "dashcam"]:
-        extra_text = "Ensure the software is correctly installed"
-      else:
-        extra_text = last_update_exception
-
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
-      set_offroad_alert_if_changed("Offroad_UpdateFailed", True, extra_text=extra_text)
-    elif dt.days > DAYS_NO_CONNECTIVITY_MAX and update_failed_count > 1:
-      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", True)
-    elif dt.days > DAYS_NO_CONNECTIVITY_PROMPT:
-      remaining_time = str(max(DAYS_NO_CONNECTIVITY_MAX - dt.days, 0))
-      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", True, extra_text=f"{remaining_time} days.")
-    else:
-      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
-      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
+#    try:
+#      last_update = datetime.datetime.fromisoformat(params.get("LastUpdateTime", encoding='utf8'))
+#    except (TypeError, ValueError):
+#      last_update = now
+#    dt = now - last_update
+#
+#    update_failed_count = params.get("UpdateFailedCount")
+#    update_failed_count = 0 if update_failed_count is None else int(update_failed_count)
+#    last_update_exception = params.get("LastUpdateException", encoding='utf8')
+#
+#    if update_failed_count > 15 and last_update_exception is not None:
+#      if current_branch in ["release2", "dashcam"]:
+#        extra_text = "Ensure the software is correctly installed"
+#      else:
+#        extra_text = last_update_exception
+#
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
+#      set_offroad_alert_if_changed("Offroad_UpdateFailed", True, extra_text=extra_text)
+#    elif dt.days > DAYS_NO_CONNECTIVITY_MAX and update_failed_count > 1:
+#      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", True)
+#    elif dt.days > DAYS_NO_CONNECTIVITY_PROMPT:
+#      remaining_time = str(max(DAYS_NO_CONNECTIVITY_MAX - dt.days, 0))
+#      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", True, extra_text=f"{remaining_time} days.")
+#    else:
+#      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
+#      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
 
     startup_conditions["not_uninstalling"] = not params.get("DoUninstall") == b"1"
     startup_conditions["accepted_terms"] = params.get("HasAcceptedTerms") == terms_version
@@ -389,20 +496,45 @@ def thermald_thread():
         off_ts = sec_since_boot()
         os.system('echo powersave > /sys/class/devfreq/soc:qcom,cpubw/governor')
 
+      if shutdown_trigger == 1 and sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 1 and getoff_alert:
+        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/eondetach.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+        sound_trigger = 0
+      # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
+      # more than a minute but we were running
+      if shutdown_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and \
+         started_seen and opkrAutoShutdown and (sec_since_boot() - off_ts) > opkrAutoShutdown and not os.path.isfile(pandaflash_ongoing):
+        os.system('LD_LIBRARY_PATH="" svc power shutdown')
+
+    charging_disabled = check_car_battery_voltage(should_start, health, charging_disabled, msg)
+
+    if msg.thermal.batteryCurrent > 0:
+      msg.thermal.batteryStatus = "Discharging"
+    else:
+      msg.thermal.batteryStatus = "Charging"
+
+    
+    msg.thermal.chargingDisabled = charging_disabled
+
+    prebuiltlet = Params().get('PutPrebuiltOn') == b'1'
+    if not os.path.isfile(prebuiltfile) and prebuiltlet:
+      os.system("cd /data/openpilot; touch prebuilt")
+    elif os.path.isfile(prebuiltfile) and not prebuiltlet:
+      os.system("cd /data/openpilot; rm -f prebuilt")
+
     # Offroad power monitoring
     pm.calculate(health)
     msg.thermal.offroadPowerUsage = pm.get_power_used()
     msg.thermal.carBatteryCapacity = max(0, pm.get_car_battery_capacity())
 
-    # Check if we need to disable charging (handled by boardd)
-    msg.thermal.chargingDisabled = pm.should_disable_charging(health, off_ts)
-
-    # Check if we need to shut down
-    if pm.should_shutdown(health, off_ts, started_seen, LEON):
-      cloudlog.info(f"shutting device down, offroad since {off_ts}")
-      # TODO: add function for blocking cloudlog instead of sleep
-      time.sleep(10)
-      os.system('LD_LIBRARY_PATH="" svc power shutdown')
+#    # Check if we need to disable charging (handled by boardd)
+#    msg.thermal.chargingDisabled = pm.should_disable_charging(health, off_ts)
+#
+#    # Check if we need to shut down
+#    if pm.should_shutdown(health, off_ts, started_seen, LEON):
+#      cloudlog.info(f"shutting device down, offroad since {off_ts}")
+#      # TODO: add function for blocking cloudlog instead of sleep
+#      time.sleep(10)
+#      os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
     msg.thermal.chargingError = current_filter.x > 0. and msg.thermal.batteryPercent < 90  # if current is positive, then battery is being discharged
     msg.thermal.started = started_ts is not None
