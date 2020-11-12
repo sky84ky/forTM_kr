@@ -228,7 +228,7 @@ class DriverStatus():
     elif self.face_detected and self.pose.low_std:
       self.hi_stds = 0
 
-  def update(self, events, driver_engaged, ctrl_active, standstill):
+  def update(self, events, driver_engaged, ctrl_active, standstill, car_speed):
     if (driver_engaged and self.awareness > 0) or not ctrl_active:
       # reset only when on disengagement if red reached
       self.awareness = 1.
@@ -270,7 +270,7 @@ class DriverStatus():
       alert = EventName.promptDriverDistracted if self.active_monitoring_mode else EventName.promptDriverUnresponsive
     elif self.awareness <= self.threshold_pre:
       # pre green alert
-      alert = EventName.preDriverDistracted if self.active_monitoring_mode else EventName.preDriverUnresponsive
+      alert = EventName.preDriverDistracted if self.active_monitoring_mode and car_speed > 1 else EventName.preDriverUnresponsive
 
     if alert is not None:
       events.add(alert)
