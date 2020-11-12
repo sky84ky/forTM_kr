@@ -621,6 +621,9 @@ static void ui_draw_vision_event(UIState *s) {
     }
   }
   ui_draw_debug(s);
+  bb_ui_draw_UI(s);
+  ui_draw_tpms(s);
+  ui_draw_vision_car(s);
 }
 
 static void ui_draw_vision_face(UIState *s) {
@@ -1088,9 +1091,6 @@ static void ui_draw_vision_footer(UIState *s) {
   nvgBeginPath(s->vg);
   nvgRect(s->vg, scene->viz_rect.x, s->scene.viz_rect.bottom(), scene->viz_rect.w, footer_h);
   ui_draw_vision_face(s);
-  bb_ui_draw_UI(s);
-  ui_draw_tpms(s);
-  ui_draw_vision_car(s);
 }
 
 void ui_draw_vision_alert(UIState *s, cereal::ControlsState::AlertSize va_size, UIStatus va_color,
