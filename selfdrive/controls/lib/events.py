@@ -252,13 +252,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 5.),
   },
 
-  EventName.invalidGiraffeToyota: {
-    ET.PERMANENT: Alert(
-      "지원되지 않는 지라프 설정",
-      "comma.ai/tg 방문하세요",
-      AlertStatus.normal, AlertSize.mid,
-      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
-  },
 
   EventName.invalidLkasSetting: {
     ET.PERMANENT: Alert(
@@ -481,6 +474,14 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       "차로유지 범위를 이탈하고 있습니다",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 1., 1.),
+  },
+  
+  EventName.fanMalfunction: {
+    ET.PERMANENT: NormalPermanentAlert("팬 오작동", "서비스팀에 문의하세요"),
+  },
+
+  EventName.cameraMalfunction: {
+    ET.PERMANENT: NormalPermanentAlert("카메라 오작동", "서비스팀에 문의하세요"),
   },
 
   EventName.modeChangeOpenpilot: {
