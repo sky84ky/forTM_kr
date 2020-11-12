@@ -290,7 +290,11 @@ static void ui_draw_vision_lane_lines(UIState *s) {
   if(s->sm->updated("modelV2")) {
     update_track_data(s, scene->model.getPosition(), &s->track_vertices);
   }
-  ui_draw_track(s, &s->track_vertices);
+  ui_draw_track(s, false, &s->track_vertices);
+  if (scene->controls_state.getEnabled()) {
+    // Draw MPC path when engaged
+    ui_draw_track(s, true, &s->track_vertices);
+  }
 }
 
 // Draw all world space objects.
