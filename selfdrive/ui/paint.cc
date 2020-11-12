@@ -195,7 +195,7 @@ static void update_track_data(UIState *s, const cereal::ModelDataV2::XYZTData::R
   pvd->cnt = v - pvd->v;
 }
 
-static void ui_draw_track(UIState *s, track_vertices_data *pvd) {
+static void ui_draw_track(UIState *s, bool is_mpc, track_vertices_data *pvd) {
   NVGpaint track_bg;
   if (is_mpc) {
     // Draw colored MPC track Kegman's
