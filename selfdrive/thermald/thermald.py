@@ -472,9 +472,6 @@ def thermald_thread():
     set_offroad_alert_if_changed("Offroad_TemperatureTooHigh", (not startup_conditions["device_temp_good"]))
     should_start = all(startup_conditions.values())
 
-    startup_conditions["hardware_supported"] = health is not None
-    set_offroad_alert_if_changed("Offroad_HardwareUnsupported", health is not None and not startup_conditions["hardware_supported"])
-
     if should_start:
       if not should_start_prev:
         params.delete("IsOffroad")
