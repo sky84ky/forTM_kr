@@ -251,15 +251,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 5.),
   },
-  
-  EventName.startupGreyPanda: {
-    ET.PERMANENT: Alert(
-      "그레이판다는 더 이상 지원되지 않습니다",
-      "콤마2나 블랙판다로 업그레이드 하세요",
-      AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 2.),
-  },
-
 
   EventName.invalidGiraffeToyota: {
     ET.PERMANENT: Alert(
@@ -267,15 +258,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       "comma.ai/tg 방문하세요",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
-  },
-
-  EventName.whitePandaUnsupported: {
-    ET.PERMANENT: Alert(
-      "화이트판다는 더 이상 지원되지 않습니다",
-      "콤마2나 블랙판다로 업그레이드 하세요",
-      AlertStatus.normal, AlertSize.mid,
-      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
-    ET.NO_ENTRY: NoEntryAlert("화이트판다는 더 이상 지원되지 않습니다"),
   },
 
   EventName.invalidLkasSetting: {
