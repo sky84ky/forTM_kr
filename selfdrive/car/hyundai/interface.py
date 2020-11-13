@@ -17,10 +17,6 @@ class CarInterface(CarInterfaceBase):
     self.cp2 = self.CS.get_can2_parser(CP)
     self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
 
-	self.lkas_button_alert = False
-    self.blinker_status = 0
-    self.blinker_timer = 0
-
   @staticmethod
   def compute_gb(accel, speed):
     return float(accel) / 3.0
