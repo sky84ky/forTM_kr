@@ -277,7 +277,7 @@ void update_sockets(UIState *s) {
   }
   if (sm.updated("driverState")) {
     scene.driver_state = sm["driverState"].getDriverState();
-    scene.face_prob = driver_state.getFaceProb();
+    scene.face_prob = scene.driver_state.getFaceProb();
   }
   if (sm.updated("dMonitoringState")) {
     scene.dmonitoring_state = sm["dMonitoringState"].getDMonitoringState();
