@@ -48,6 +48,8 @@ class Pc(HardwareBase):
   def get_network_strength(self, network_type):
     return NetworkStrength.unknown
 
+  def get_ip_address(self):
+    return "N/A"
 
 if EON:
   HARDWARE = cast(HardwareBase, Android())

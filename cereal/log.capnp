@@ -291,6 +291,7 @@ struct ThermalData {
   offroadPowerUsage @23 :UInt32;  # Power usage since going offroad in uWh
   networkStrength @24 :NetworkStrength;
   carBatteryCapacity @25 :UInt32;  # Estimated remaining car battery capacity in uWh
+  wifiIpAddress @31 :Text;
 
   fanSpeed @10 :UInt16;
   started @11 :Bool;
@@ -867,6 +868,12 @@ struct PathPlan {
   desire @17 :Desire;
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
+  autoLaneChangeEnabled @20 :Bool;
+  autoLaneChangeTimer @21 :Int8;
+
+  steerRatio @22 :Float32;
+  steerRateCost @23 :Float32;
+  steerActuatorDelay @24 :Float32;
 
   enum Desire {
     none @0;

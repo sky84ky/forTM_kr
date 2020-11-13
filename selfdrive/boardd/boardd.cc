@@ -107,8 +107,6 @@ void safety_setter_thread() {
   cereal::CarParams::Reader car_params = cmsg.getRoot<cereal::CarParams>();
   cereal::CarParams::SafetyModel safety_model = car_params.getSafetyModel();
 
-  panda->set_unsafe_mode(0);  // see safety_declarations.h for allowed values
-
   auto safety_param = car_params.getSafetyParam();
   LOGW("setting safety model: %d with param %d", (int)safety_model, safety_param);
 
@@ -162,9 +160,9 @@ bool usb_connect() {
 
   // power on charging, only the first time. Panda can also change mode and it causes a brief disconneciton
 #ifndef __x86_64__
-  if (!connected_once) {
-    panda->set_usb_power_mode(cereal::HealthData::UsbPowerMode::CDP);
-  }
+  //if (!connected_once) {
+  panda->set_usb_power_mode(cereal::HealthData::UsbPowerMode::CDP);
+  //}
 #endif
 
   if (panda->has_rtc){

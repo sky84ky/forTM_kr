@@ -26,7 +26,8 @@ int write_param_float(float param, const char* param_name, bool persistent_param
 
 void ui_init(UIState *s) {
   s->sm = new SubMaster({"modelV2", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "carParams", "ubloxGnss", "driverState", "dMonitoringState", "sensorEvents"});
+                         "health", "carParams", "ubloxGnss", "driverState", "dMonitoringState", "sensorEvents",
+						 "carState", "pathPlan", "gpsLocationExternal", "liveMpc"});
 
   s->started = false;
   s->status = STATUS_OFFROAD;
@@ -73,6 +74,8 @@ static void ui_init_vision(UIState *s) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
   }
   assert(glGetError() == GL_NO_ERROR);
+
+  s->scene.recording = false;
 }
 
 void ui_update_vision(UIState *s) {
@@ -160,6 +163,50 @@ void update_sockets(UIState *s) {
       }
     }
   }
+
+  if (sm.updated("carState"))
+   {
+    scene.car_state = sm["carState"].getCarState();
+   }
+
+   /*if (sm.updated("carControl"))
+   {
+    scene.car_control = sm["carControl"].getCarControl();
+   }*/
+
+   if (sm.updated("pathPlan"))
+   {
+    scene.path_plan = sm["pathPlan"].getPathPlan();
+   }
+
+   if (sm.updated("gpsLocationExternal"))
+   {
+    auto data = sm["gpsLocationExternal"].getGpsLocationExternal();
+
+    float verticalAccuracy = data.getVerticalAccuracy();
+    scene.gpsAltitude = data.getAltitude();
+    scene.gpsAccuracy = data.getAccuracy();
+
+    if(verticalAccuracy == 0 || verticalAccuracy > 100)
+        scene.gpsAltitude = 99.99;
+
+    if (scene.gpsAccuracy > 100)
+      scene.gpsAccuracy = 99.99;
+    else if (scene.gpsAccuracy == 0)
+      scene.gpsAccuracy = 99.8;
+   }
+
+   if(sm.updated("liveMpc")) {
+
+    auto data = sm["liveMpc"].getLiveMpc();
+    auto x_list = data.getX();
+    auto y_list = data.getY();
+    for (int i = 0; i < 50; i++){
+       scene.mpc_x[i] = x_list[i];
+       scene.mpc_y[i] = y_list[i];
+    }
+  }
+
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
     scene.lead_data[0] = data.getLeadOne();

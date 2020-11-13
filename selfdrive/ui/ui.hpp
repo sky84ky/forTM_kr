@@ -1,4 +1,28 @@
 #pragma once
+
+#define UI_FEATURE_DEBUG 1
+
+#define UI_FEATURE_BRAKE 1
+#define UI_FEATURE_DASHCAM 1
+
+#define UI_FEATURE_LEFT 1
+#define UI_FEATURE_RIGHT 1
+
+#define UI_FEATURE_LEFT_Y 220
+#define UI_FEATURE_RIGHT_Y 20
+
+#define UI_FEATURE_LEFT_REL_DIST 1
+#define UI_FEATURE_LEFT_REL_SPEED 1
+#define UI_FEATURE_LEFT_REAL_STEER 1
+#define UI_FEATURE_LEFT_DESIRED_STEER 1
+
+#define UI_FEATURE_RIGHT_CPU_TEMP 1
+#define UI_FEATURE_RIGHT_BATTERY_TEMP 1
+#define UI_FEATURE_RIGHT_BATTERY_LEVEL 1
+#define UI_FEATURE_RIGHT_GPS_ALTITUDE 1
+#define UI_FEATURE_RIGHT_GPS_ACCURACY 1
+#define UI_FEATURE_RIGHT_GPS_SATELLITE 1
+
 #include "messaging.hpp"
 
 #ifdef __APPLE__
@@ -126,6 +150,16 @@ typedef struct UIScene {
   float max_distance;
   float lane_line_probs[4];
   float road_edge_stds[2];
+  
+  // neokii dev UI
+  cereal::CarState::Reader car_state;
+  cereal::CarControl::Reader car_control;
+  cereal::PathPlan::Reader path_plan;
+
+  float gpsAccuracy;
+  float gpsAltitude;
+
+  bool recording;
 } UIScene;
 
 typedef struct {
@@ -163,6 +197,7 @@ typedef struct UIState {
   int img_battery;
   int img_battery_charging;
   int img_network[6];
+  int img_brake;
 
   SubMaster *sm;
 
