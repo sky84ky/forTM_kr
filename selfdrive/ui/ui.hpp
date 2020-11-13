@@ -122,6 +122,7 @@ typedef struct UIScene {
   std::string alert_type;
   cereal::ControlsState::AlertSize alert_size;
   float awareness_status;
+  float face_prob;
 
   bool  brakePress;
   bool recording;

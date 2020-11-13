@@ -432,7 +432,7 @@ static void ui_draw_debug(UIState *s)
     ui_draw_text(s->vg, 0, 1078, scene.alertTextMsg2.c_str(), 50, COLOR_WHITE_ALPHA(150), s->font_sans_semibold);
   }
 
-  nvgFontSize(s->vg, 45);
+  nvgFontSize(s->vg, 43);
   nvgFillColor(s->vg, COLOR_WHITE_ALPHA(150));
   if (s->nDebugUi2 == 1) {
     ui_print(s, ui_viz_rx, ui_viz_ry, "Live Parameters");
@@ -445,13 +445,15 @@ static void ui_draw_debug(UIState *s)
     ui_print(s, ui_viz_rx, ui_viz_ry+350, "SRCost:%.2f", scene.pathPlan.steerRateCost);
     ui_print(s, ui_viz_rx, ui_viz_ry+400, "OutScale:%.3f", scene.output_scale);
     ui_print(s, ui_viz_rx, ui_viz_ry+450, "Awareness:%.2f", scene.awareness_status);
+    ui_print(s, ui_viz_rx, ui_viz_ry+500, "FaceProb:%.2f", scene.face_prob);
     if (s->lateral_control == 0) {
-      ui_print(s, ui_viz_rx, ui_viz_ry+500, "LaC:PID");
+      ui_print(s, ui_viz_rx, ui_viz_ry+550, "LaC:PID");
     } else if (s->lateral_control == 1) {
-      ui_print(s, ui_viz_rx, ui_viz_ry+500, "LaC:INDI");
+      ui_print(s, ui_viz_rx, ui_viz_ry+550, "LaC:INDI");
     } else if (s->lateral_control == 2) {
-      ui_print(s, ui_viz_rx, ui_viz_ry+500, "LaC:LQR");
+      ui_print(s, ui_viz_rx, ui_viz_ry+550, "LaC:LQR");
     }
+    nvgFontSize(s->vg, 45);
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
     ui_print(s, ui_viz_rx_center, ui_viz_ry+650, "커브");
     if (scene.curvature >= 0.001) {
