@@ -17,6 +17,7 @@ class CarInterface(CarInterfaceBase):
     self.cp2 = self.CS.get_can2_parser(CP)
     self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
 
+	self.lkas_button_alert = False
     self.blinker_status = 0
     self.blinker_timer = 0
 
@@ -221,44 +222,6 @@ class CarInterface(CarInterfaceBase):
     # most HKG cars has no long control, it is safer and easier to engage by main on
     if self.mad_mode_enabled and not self.CC.longcontrol:
       ret.cruiseState.enabled = ret.cruiseState.available
-    # some Optima only has blinker flash signal
-    if self.CP.carFingerprint == CAR.K5:
-      ret.leftBlinker = bool(self.CS.left_blinker_flash or self.CS.prev_left_blinker and self.CC.turning_signal_timer)
-      ret.rightBlinker = bool(self.CS.right_blinker_flash or self.CS.prev_right_blinker and self.CC.turning_signal_timer)
-
-    ###
-
-    if self.CP.carFingerprint in FEATURES["use_blinker_flash"]:
-
-      if self.CS.left_blinker_flash and self.CS.right_blinker_flash:
-        self.blinker_status = 3
-        self.blinker_timer = 50
-      elif self.CS.left_blinker_flash:
-        self.blinker_status = 2
-        self.blinker_timer = 50
-      elif self.CS.right_blinker_flash:
-        self.blinker_status = 1
-        self.blinker_timer = 50
-      elif not self.blinker_timer:
-        self.blinker_status = 0
-
-      if self.blinker_status == 3:
-        ret.leftBlinker = bool(self.blinker_timer)
-        ret.rightBlinker = bool(self.blinker_timer)
-      elif self.blinker_status == 2:
-        ret.rightBlinker = False
-        ret.leftBlinker = bool(self.blinker_timer)
-      elif self.blinker_status == 1:
-        ret.leftBlinker = False
-        ret.rightBlinker = bool(self.blinker_timer)
-      else:
-        ret.leftBlinker = False
-        ret.rightBlinker = False
-
-      if self.blinker_timer:
-        self.blinker_timer -= 1
-
-
 
     # turning indicator alert logic
     if (ret.leftBlinker or ret.rightBlinker or self.CC.turning_signal_timer) and ret.vEgo < LANE_CHANGE_SPEED_MIN - 1.2:

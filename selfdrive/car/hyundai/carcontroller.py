@@ -134,12 +134,8 @@ class CarController():
     if CS.out.vEgo < 60 * CV.KPH_TO_MS and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
       lkas_active = False
 
-    # Optima has blinker flash signal only
-    if self.car_fingerprint in [CAR.K5, CAR.K5_HEV]:
-      if CS.left_blinker_flash or CS.right_blinker_flash: 
-        self.turning_signal_timer = 100
     # Disable steering while turning blinker on and speed below 60 kph
-    elif CS.out.leftBlinker or CS.out.rightBlinker:
+    if CS.out.leftBlinker or CS.out.rightBlinker:
       self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
     if self.turning_indicator_alert: # set and clear by interface
       lkas_active = 0
@@ -148,9 +144,6 @@ class CarController():
 
     if not lkas_active:
       apply_steer = 0
-
-    CC.applyAccel = apply_accel
-    CC.applySteer = apply_steer
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
@@ -225,7 +218,7 @@ class CarController():
           self.resume_wait_timer = int(0.2 / DT_CTRL)
 
     # reset lead distnce after the car starts moving
-    else:
+    elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
 
     if CS.mdps_bus:  # send mdps12 to LKAS to prevent LKAS error
@@ -271,9 +264,7 @@ class CarController():
 
         self.mdps11_stat_last = CS.mdps11_stat
         self.en_cnt += 1
-        can_sends.append(
-          create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, self.apply_steer_ang,
-                        CS.mdps_bus))
+        can_sends.append(create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, self.apply_steer_ang, CS.mdps_bus))
 
       # SPAS12 20Hz
       if (frame % 5) == 0:
