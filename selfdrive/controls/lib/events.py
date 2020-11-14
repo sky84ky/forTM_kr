@@ -743,12 +743,12 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
 
   EventName.reverseGear: {
     ET.PERMANENT: Alert(
-      "후진 기어",
+      "GENESIS",
       "",
       AlertStatus.normal, AlertSize.full,
       Priority.LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2, creation_delay=0.5),
-    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("후진 기어"),
-    ET.NO_ENTRY: NoEntryAlert("후진 기어"),
+    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("GENESIS"),
+    ET.NO_ENTRY: NoEntryAlert("GENESIS"),
   },
 
   EventName.cruiseDisabled: {
@@ -756,7 +756,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
   },
 
   EventName.plannerError: {
-    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("Planner Solution Error"),
+    ET.SOFT_DISABLE: SoftDisableAlert("Planner Solution Error"),
     ET.NO_ENTRY: NoEntryAlert("Planner Solution Error"),
   },
 
