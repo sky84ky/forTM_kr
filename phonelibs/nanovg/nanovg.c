@@ -2292,7 +2292,7 @@ int nvgAddFallbackFont(NVGcontext* ctx, const char* baseFont, const char* fallba
 void nvgFontSize(NVGcontext* ctx, float size)
 {
 	NVGstate* state = nvg__getState(ctx);
-	state->fontSize = size;
+	state->fontSize = size * 0.8f;
 }
 
 void nvgFontBlur(NVGcontext* ctx, float blur)
