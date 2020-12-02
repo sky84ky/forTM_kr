@@ -91,7 +91,7 @@ class CarController():
       self.mdps11_stat_last = 0
       self.spas_always = False
 
-    self.scc_smoother = SccSmoother(accel_gain=1.0, decel_gain=1.0, curvature_gain=0.8)
+    self.scc_smoother = SccSmoother(accel_gain=1.0, decel_gain=1.0, curvature_gain=0.87)
 
   def update(self, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, sm):
