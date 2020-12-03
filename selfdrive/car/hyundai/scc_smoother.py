@@ -251,13 +251,12 @@ class SccSmoother:
         acc = -(lead.vRel / t) * CV.MS_TO_KPH * 1.8
         override_acc = acc
         accel = (op_accel + acc) / 2.
-      else:
-        accel = op_accel * interp(clu11_speed, [30., 60., 100.], [1.7, 1.4, 1.0])
+      else:        
         if lead.dRel > 15:
           if CS.out.vEgo < 16.7:
-            accel = op_accel * 1.2
-          else:
-            accel = op_accel * 1.0
+            accel = op_accel * interp(clu11_speed, [30., 60.], [1.3, 1.2])      
+        else:
+          accel = op_accel * interp(clu11_speed, [30., 60., 100.], [1.7, 1.4, 1.0])
     if accel > 0.:
       accel *= self.accel_gain * interp(clu11_speed, [30., 100.], [1.5, 1.2])
     else:
