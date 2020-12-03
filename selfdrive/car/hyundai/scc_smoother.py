@@ -247,7 +247,7 @@ class SccSmoother:
       d = lead.dRel - 5.
 
       if 0. < d < -lead.vRel * (7.8 + cruise_gap) * 2. and lead.vRel < -1.:
-        t = d / lead.vRel
+        t = d / lead.vRel * 0.98
         acc = -(lead.vRel / t) * CV.MS_TO_KPH * 1.8
         override_acc = acc
         accel = (op_accel + acc) / 2.
