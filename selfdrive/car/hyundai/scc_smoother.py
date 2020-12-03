@@ -253,7 +253,7 @@ class SccSmoother:
         accel = (op_accel + acc) / 2.
       else:        
         accel = op_accel * interp(clu11_speed, [0., 30., 50., 60., 100.], [1.75, 2.1, 1.75, 1.4, 1.0])
-#        if 30 > lead.dRel > 15:
+#        if 35 > lead.dRel > 15:
 #          if clu11_speed < 50:
 #            accel = op_accel * 2.5               
 #        else:
