@@ -66,7 +66,7 @@ class SccSmoother:
     self.scc_smoother_enabled = Params().get('SccSmootherEnabled') == b'1'
     self.slow_on_curves = Params().get('SccSmootherSlowOnCurves') == b'1'
 
-    self.sync_set_speed_while_gas_pressed = False
+    self.sync_set_speed_while_gas_pressed = True
 
   def reset(self):
     self.accel_buf = []
