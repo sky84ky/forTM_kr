@@ -7,6 +7,7 @@ from selfdrive.car.hyundai.interface import ButtonType
 from selfdrive.config import Conversions as CV, RADAR_TO_CAMERA
 from selfdrive.car.hyundai.values import Buttons
 from common.params import Params
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, V_CRUISE_DELTA_KM, V_CRUISE_DELTA_MI
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed
 
 # do not modify
