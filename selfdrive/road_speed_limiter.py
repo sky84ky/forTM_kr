@@ -50,7 +50,10 @@ class RoadSpeedLimiter:
 
     try:
 
-      #car_speed_kph = CS.vEgo * CV.MS_TO_KPH
+      #car_speed_kph = CS.vEgo * 3.6
+
+      road_limit_speed = self.json['road_limit_speed']
+      is_highway = self.json['is_highway']
 
       cam_limit_speed_left_dist = self.json['cam_limit_speed_left_dist']
       cam_limit_speed = self.json['cam_limit_speed']
@@ -60,17 +63,32 @@ class RoadSpeedLimiter:
       section_left_dist = self.json['section_left_dist']
       # section_left_time = self.json['section_left_time']
 
-      # 과속카메라 남은 거리가 0보다 크고 제한속도가 50 ~ 130 이면
+      if is_highway is not None:
+        if is_highway:
+          MIN_LIMIT = 80
+          MAX_LIMIT = 110
+          MAX_DELTA = 40
+        else:
+          MIN_LIMIT = 30
+          MAX_LIMIT = 80
+          MAX_DELTA = 30
+      else:
+        MIN_LIMIT = 30
+        MAX_LIMIT = 110
+        MAX_DELTA = 30
+
       if cam_limit_speed_left_dist is not None and cam_limit_speed is not None \
-          and cam_limit_speed_left_dist > 0 and 50 <= cam_limit_speed <= 130:
+          and cam_limit_speed_left_dist > 0 and MIN_LIMIT <= cam_limit_speed <= MAX_LIMIT and \
+          v_cruise_kph - cam_limit_speed <= MAX_DELTA:
 
         # 제한속도로 10초후의 거리보다 남은 거리가 작으면, 100km/h 일 경우 약 278미터
-        if cam_limit_speed_left_dist < cam_limit_speed * 15:
+        if cam_limit_speed_left_dist < (cam_limit_speed / 3.6) * 10:
           return min(v_cruise_kph, cam_limit_speed)
 
-      # 구간단속중이면
+      # 구간단속중
       elif section_left_dist is not None and section_limit_speed is not None and \
-          section_left_dist > 0:
+          section_left_dist > 0 and MIN_LIMIT <= section_limit_speed <= MAX_LIMIT and \
+          v_cruise_kph - section_limit_speed <= MAX_DELTA:
 
         return min(v_cruise_kph, section_limit_speed)
 
