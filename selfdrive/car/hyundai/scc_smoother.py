@@ -10,9 +10,8 @@ from common.params import Params
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed
 
 # do not modify
-V_CRUISE_DELTA_MI = 5 * CV.MPH_TO_KPH
-V_CRUISE_DELTA_KM = 10
-MIN_SET_SPEED = 30
+MIN_SET_SPEED = V_CRUISE_MIN
+MAX_SET_SPEED = V_CRUISE_MAX
 
 ALIVE_COUNT_MIN = 6
 ALIVE_COUNT_MAX = 8
@@ -157,7 +156,8 @@ class SccSmoother:
     if CS.gas_pressed:
       self.target_speed = clu11_speed
       if clu11_speed > controls.cruiseOpMaxSpeed and self.sync_set_speed_while_gas_pressed:
-        CC.cruiseOpMaxSpeed = controls.cruiseOpMaxSpeed = controls.v_cruise_kph = clu11_speed
+        set_speed = clip(clu11_speed, MIN_SET_SPEED, MAX_SET_SPEED)
+        CC.cruiseOpMaxSpeed = controls.cruiseOpMaxSpeed = controls.v_cruise_kph = set_speed
     else:
       self.target_speed = clu11_speed + accel
 
@@ -343,7 +343,7 @@ class SccSmoother:
         elif ButtonPrev == ButtonType.decelCruise:
           v_cruise_kph -= V_CRUISE_DELTA - -v_cruise_kph % V_CRUISE_DELTA
         ButtonCnt %= 70
-      v_cruise_kph = clip(v_cruise_kph, MIN_SET_SPEED, 144)
+      v_cruise_kph = clip(v_cruise_kph, MIN_SET_SPEED, MAX_SET_SPEED)
 
     return v_cruise_kph
 
