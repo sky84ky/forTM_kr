@@ -256,7 +256,7 @@ class SccSmoother:
     if accel > 0.:
       accel *= self.accel_gain * interp(clu11_speed, [30., 100.], [1.5, 1.2])
     else:
-      accel *= self.decel_gain * 1.8
+      accel *= self.decel_gain * 1.78
 
     return clip(accel, -LIMIT_DECEL, LIMIT_ACCEL), override_acc
 
