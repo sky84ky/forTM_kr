@@ -252,7 +252,7 @@ class SccSmoother:
         override_acc = acc
         accel = (op_accel + acc) / 2.
       else:        
-        accel = op_accel * interp(clu11_speed, [0., 30., 50., 60., 100.], [1.75, 1.9, 1.75, 1.4, 1.0])
+        accel = op_accel * interp(clu11_speed, [0., 30., 50., 60., 100.], [1.75, 2.0, 1.75, 1.4, 1.0])
     if accel > 0.:
       accel *= self.accel_gain * interp(clu11_speed, [30., 100.], [1.5, 1.2])
     else:
