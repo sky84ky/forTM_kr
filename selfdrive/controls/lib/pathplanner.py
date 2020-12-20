@@ -13,7 +13,7 @@ from common.params import Params
 import cereal.messaging as messaging
 from cereal import log
 
-AUTO_LCA_START_TIME = 2.0
+AUTO_LCA_START_TIME = 1.0
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
@@ -253,7 +253,7 @@ class PathPlanner():
 
     plan_send.pathPlan.angleSteers = float(self.angle_steers_des_mpc)
     plan_send.pathPlan.rateSteers = float(rate_desired)
-    plan_send.pathPlan.angleOffset = float(sm['liveParameters'].angleOffset)
+    plan_send.pathPlan.angleOffset = float(sm['liveParameters'].angleOffsetAverage)
     plan_send.pathPlan.mpcSolutionValid = bool(plan_solution_valid)
     plan_send.pathPlan.paramsValid = bool(sm['liveParameters'].valid)
 
