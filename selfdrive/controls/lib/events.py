@@ -218,7 +218,7 @@ def auto_lane_change_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: b
 
 EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, bool], Alert]]]] = {
   # ********** events with no alerts **********
-
+  
   # ********** events only containing alerts displayed in all states **********
 
   EventName.debugAlert: {
@@ -263,12 +263,12 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
 
   EventName.startupOneplus: {
     ET.PERMANENT: Alert(
-      "원플러스가 감지되었습니다",
-      "이 기기는 다음 버전부터 지원되지 않습니다",
+      "WARNING: Original EON deprecated",
+      "Device will no longer update",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
   },
-
+  
   EventName.invalidLkasSetting: {
     ET.PERMANENT: Alert(
       "차량 LKAS 버튼 상태확인",
@@ -467,7 +467,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 1., 1.),
   },
-
+  
   EventName.fanMalfunction: {
     ET.PERMANENT: NormalPermanentAlert("FAN 오작동", "하드웨어를 점검하세요"),
   },
@@ -766,7 +766,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
     ET.NO_ENTRY: NoEntryAlert("크루즈 오류 : 차량을 재가동하세요"),
   },
-
+  
   EventName.turningIndicatorOn: {
     ET.WARNING: Alert(
       "방향지시등 동작중에는 핸들을 잡아주세요",
@@ -790,17 +790,17 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
 
   EventName.sccSmootherStatus: {
     ET.PERMANENT: Alert("","", AlertStatus.normal, AlertSize.none,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeWarning1, .1, .1, .1),
+      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeWarning1, .4, .1, .1),
   },
 
   EventName.slowingDownSpeed: {
-    ET.PERMANENT: Alert("속도 감속중","", AlertStatus.normal, AlertSize.small,
+    ET.PERMANENT: Alert("속도를 조절합니다","", AlertStatus.normal, AlertSize.small,
       Priority.MID, VisualAlert.none, AudibleAlert.none, 0., .1, .1),
   },
 
   EventName.slowingDownSpeedSound: {
-    ET.PERMANENT: Alert("속도 감속중","", AlertStatus.normal, AlertSize.small,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeSlowingDownSpeed, 2., 2., 2.),
+    ET.PERMANENT: Alert("속도를 조절합니다","", AlertStatus.normal, AlertSize.small,
+      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeSlowingDownSpeed, 6., 2., 2.),
   },
 
 }
