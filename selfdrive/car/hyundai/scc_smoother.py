@@ -289,7 +289,7 @@ class SccSmoother:
         override_acc = acc
         accel = (op_accel + acc) / 2.
       else:        
-        if 40 > lead.dRel > 12 and CS.vEgo < 15.0:           
+        if 40 > lead.dRel > 12 and clu11_speed < 15.0 * CV.MS_TO_KPH:           
           accel = op_accel * 3.8
 
         else:
