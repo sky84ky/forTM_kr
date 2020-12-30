@@ -96,7 +96,7 @@ class CarState(CarStateBase):
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]['DriverBraking'] != 0
 
-    if self.car_fingerprint in [CAR.GENESIS, CAR.PALISADE, CAR.STINGERCAR, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 오토 홀드를 표시하기 위한 작업
+    if self.car_fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 오토 홀드를 표시하기 위한 작업
       self.brakeHold = (cp.vl["ESP11"]['AVH_STAT'] == 1) # Tenesi
     else:
       self.brakeHold = 0
@@ -111,7 +111,7 @@ class CarState(CarStateBase):
       ret.gas = cp.vl["EMS12"]['PV_AV_CAN'] / 100
       ret.gasPressed = bool(cp.vl["EMS16"]["CF_Ems_AclAct"])
     
-    if self.car_fingerprint in [CAR.GENESIS, CAR.STINGERCAR, CAR.PALISADE, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 기어 단수를 표시하기 위한 작업
+    if self.car_fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 기어 단수를 표시하기 위한 작업
       ret.currentGear = cp.vl["LVR11"]["CF_Lvr_CGear"]
 
     #sys.stdout = open('/data/media/0/tenesilog.txt', 'a') #  화일에 저장시 필요
