@@ -276,16 +276,16 @@ class CarState(CarStateBase):
 
       ("ESC_Off_Step", "TCS15", 0),
 
-      ("AVH_STAT", "ESP11", 0),  # Å×³×½Ã Ãß°¡
-      ("Lvr12_00", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_01", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_02", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_03", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_04", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_05", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_06", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("Lvr12_07", "LVR12", 0), # Å×³×½Ã Ãß°¡
-      ("CF_Lvr_CGear", "LVR11", 0), # Å×³×½Ã Ãß°¡
+      ("AVH_STAT", "ESP11", 0),  # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_00", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_01", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_02", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_03", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_04", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_05", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_06", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("Lvr12_07", "LVR12", 0), # í…Œë„¤ì‹œ ì¶”ê°€
+      ("CF_Lvr_CGear", "LVR11", 0), # í…Œë„¤ì‹œ ì¶”ê°€
 
       ("CF_Lvr_GearInf", "LVR11", 0),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
 
@@ -343,7 +343,7 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      # address, frequency DBCÁ¤ÀÇµÈ °Í¿¡ ÀÇÇÑ ÀÛµ¿
+      # address, frequency DBCì •ì˜ëœ ê²ƒì— ì˜í•œ ì‘ë™
       ("TCS13", 40),  # 0d916 0x394
       ("TCS15", 10),  # 0d1287 0x507
       ("CLU11", 40),  # 0d1265 0x4F1
@@ -372,7 +372,7 @@ class CarState(CarStateBase):
         ("CR_Mdps_OutTq", "MDPS12", 0)
       ]
       checks += [
-        ("MDPS12", 40) # GDS ÀåºñÀÇ Á¡°Ë¿¡¼­ Á¡°Ë½Ã°£¿¡¼­ ÀÛµ¿½Ã 40ms½Ã°£À¸·Î °Ë»çÇÑ´Ù¸¦ ÂüÁ¶ÇÔ..
+        ("MDPS12", 40) # GDS ì¥ë¹„ì˜ ì ê²€ì—ì„œ ì ê²€ì‹œê°„ì—ì„œ ì‘ë™ì‹œ 40msì‹œê°„ìœ¼ë¡œ ê²€ì‚¬í•œë‹¤ë¥¼ ì°¸ì¡°í•¨..
       ]
     if CP.sasBus == 0:
       signals += [
@@ -637,4 +637,4 @@ class CarState(CarStateBase):
       ]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
-
+#ì½”ë”© 
