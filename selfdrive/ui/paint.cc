@@ -756,6 +756,10 @@ static void ui_draw_debug(UIState *s)
   ui_print(s, ui_viz_rx_center + x_gain, ui_viz_ry+800 + y_gain, " 좌측간격(m)       차선폭(m)       우측간격(m)");
   ui_print(s, ui_viz_rx_center + x_gain, ui_viz_ry+850 + y_gain, "%.2f                       %.2f                       %.2f", scene.pathPlan.lPoly, scene.pathPlan.laneWidth, abs(scene.pathPlan.rPoly));
 }
+
+static void bb_ui_draw_debug(UIState *s)
+{
+    const UIScene *scene = &s->scene;
     char str[1024];
 
     cereal::CarControl::SccSmoother::Reader scc_smoother = scene->car_control.getSccSmoother();
@@ -834,6 +838,7 @@ static void ui_draw_debug(UIState *s)
 
 static void bb_ui_draw_UI(UIState *s)
 {
+static void bb_ui_draw_UI(UIState *s) {
   const UIScene *scene = &s->scene;
   const int bb_dml_w = 180;
   const int bb_dml_x = (scene->viz_rect.x + (bdr_is * 2));
@@ -1026,11 +1031,13 @@ static void ui_draw_driver_view(UIState *s) {
 static void ui_draw_vision_brake(UIState *s) {
   const UIScene *scene = &s->scene;
   const int brake_size = 96;
-  const int brake_x = (s->scene.viz_rect.x + (brake_size * 4) + (bdr_is * 4));
-  const int brake_y = (s->scene.viz_rect.bottom() - footer_h + ((footer_h - brake_size) / 2));
+  const int viz_x_gain = -100;
+  const int viz_y_gain = 0;
+  const int brake_x = ((s->scene.viz_rect.x + (brake_size * 4) + (bdr_is * 4)) + viz_x_gain);
+  const int brake_y = ((s->scene.viz_rect.bottom() - footer_h + ((footer_h - brake_size) / 2)) + viz_y_gain);
   const int brake_img_size = (brake_size * 1.5);
-  const int brake_img_x = (brake_x - (brake_img_size / 2));
-  const int brake_img_y = (brake_y - (brake_size / 4));
+  const int brake_img_x = ((brake_x - (brake_img_size / 2)) + viz_x_gain);
+  const int brake_img_y = ((brake_y - (brake_size / 4)) + viz_y_gain);
 
   bool brake_valid = scene->car_state.getBrakeLights();
   float brake_img_alpha = brake_valid ? 1.0f : 0.15f;
