@@ -172,7 +172,8 @@ void update_sockets(UIState *s) {
     scene.car_state = sm["carState"].getCarState();
     scene.brakePress = data.getBrakePressed();
     scene.brakeLights = data.getBrakeLights();
-
+    scene.currentGear = data.getCurrentGear();
+    scene.getGearShifter = data.getGearShifter();
     scene.tpmsPressureFl = data.getTpmsPressureFl();
     scene.tpmsPressureFr = data.getTpmsPressureFr();
     scene.tpmsPressureRl = data.getTpmsPressureRl();
@@ -316,7 +317,7 @@ void update_sockets(UIState *s) {
 }
 
 void ui_update(UIState *s) {
-
+  ui_read_params(s);
   update_sockets(s);
   ui_update_vision(s);
 
