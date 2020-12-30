@@ -96,6 +96,11 @@ class CarState(CarStateBase):
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]['DriverBraking'] != 0
 
+    if self.car_fingerprint in [CAR.GENESIS, CAR.PALISADE, CAR.STINGERCAR, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 오토 홀드를 표시하기 위한 작업
+      self.brakeHold = (cp.vl["ESP11"]['AVH_STAT'] == 1) # Tenesi
+    else:
+      self.brakeHold = 0
+
     # TODO: Check this
     ret.brakeLights = bool(cp.vl["TCS13"]['BrakeLight'] or ret.brakePressed)
 
@@ -105,11 +110,22 @@ class CarState(CarStateBase):
     else:
       ret.gas = cp.vl["EMS12"]['PV_AV_CAN'] / 100
       ret.gasPressed = bool(cp.vl["EMS16"]["CF_Ems_AclAct"])
+    
+    if self.car_fingerprint in [CAR.GENESIS, CAR.STINGERCAR, CAR.PALISADE, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 기어 단수를 표시하기 위한 작업
+      ret.currentGear = cp.vl["LVR11"]["CF_Lvr_CGear"]
+
+    #sys.stdout = open('/data/media/0/tenesilog.txt', 'a') #  화일에 저장시 필요
+    gear_disp2 = cp.vl["LVR11"] #["CF_Lvr_CGear"] # LVR11 등의 CAN ID를 기반으로한 데이터는 다음과 같게도 표시가능하다..
+    print(gear_disp2)
+    gear_disp3 = cp.vl["ESP11"] #["CF_Lvr_CGear"] # LVR11 등의 CAN ID를 기반으로한 데이터는 다음과 같게도 표시가능하다..
+    print(gear_disp3)
 
     # TODO: refactor gear parsing in function
     # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection,
     # as this seems to be standard over all cars, but is not the preferred method.
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
+      gear_disp = cp.vl["CLU15"]
+      print(gear_disp)
       if cp.vl["CLU15"]["CF_Clu_InhibitD"] == 1:
         ret.gearShifter = GearShifter.drive
       elif cp.vl["CLU15"]["CF_Clu_InhibitN"] == 1:
@@ -123,6 +139,8 @@ class CarState(CarStateBase):
     # Gear Selecton via TCU12
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       gear = cp.vl["TCU12"]["CUR_GR"]
+      gear_disp = cp.vl["TCU12"]
+      print(gear_disp)
       if gear == 0:
         ret.gearShifter = GearShifter.park
       elif gear == 14:
@@ -134,6 +152,8 @@ class CarState(CarStateBase):
     # Gear Selecton - This is only compatible with optima hybrid 2017
     elif self.CP.carFingerprint in FEATURES["use_elect_gears"]:
       gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
+      gear_disp = cp.vl["ELECT_GEAR"]
+      print(gear_disp)
       if gear in (5, 8):  # 5: D, 8: sport mode
         ret.gearShifter = GearShifter.drive
       elif gear == 6:
@@ -147,6 +167,8 @@ class CarState(CarStateBase):
     # Gear Selecton - This is not compatible with all Kia/Hyundai's, But is the best way for those it is compatible with
     else:
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
+      gear_disp = cp.vl["LVR12"]
+      print(gear_disp)
       if gear in (5, 8):  # 5: D, 8: sport mode
         ret.gearShifter = GearShifter.drive
       elif gear == 6:
@@ -194,6 +216,23 @@ class CarState(CarStateBase):
                     CAR.SONATA_HEV, CAR.SANTA_FE, CAR.KONA_EV, CAR.NIRO_EV, CAR.KONA]:
       self.lkas_button_on = bool(cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"])
 
+    #TPMS
+    if cp.vl["TPMS11"]['PRESSURE_FL'] > 43:
+      ret.tpmsPressureFl = cp.vl["TPMS11"]['PRESSURE_FL'] * 5 * 0.145
+    else:
+      ret.tpmsPressureFl = cp.vl["TPMS11"]['PRESSURE_FL']
+    if cp.vl["TPMS11"]['PRESSURE_FR'] > 43:
+      ret.tpmsPressureFr = cp.vl["TPMS11"]['PRESSURE_FR'] * 5 * 0.145
+    else:
+      ret.tpmsPressureFr = cp.vl["TPMS11"]['PRESSURE_FR']
+    if cp.vl["TPMS11"]['PRESSURE_RL'] > 43:
+      ret.tpmsPressureRl = cp.vl["TPMS11"]['PRESSURE_RL'] * 5 * 0.145
+    else:
+      ret.tpmsPressureRl = cp.vl["TPMS11"]['PRESSURE_RL']
+    if cp.vl["TPMS11"]['PRESSURE_RR'] > 43:
+      ret.tpmsPressureRr = cp.vl["TPMS11"]['PRESSURE_RR'] * 5 * 0.145
+    else:
+      ret.tpmsPressureRr = cp.vl["TPMS11"]['PRESSURE_RR']
 
     # scc smoother
     driver_override = cp.vl["TCS13"]["DriverOverride"]
@@ -217,6 +256,11 @@ class CarState(CarStateBase):
       ("WHL_SPD_FR", "WHL_SPD11", 0),
       ("WHL_SPD_RL", "WHL_SPD11", 0),
       ("WHL_SPD_RR", "WHL_SPD11", 0),
+
+      ("PRESSURE_FL", "TPMS11", 0),         # tpms
+      ("PRESSURE_FR", "TPMS11", 0),
+      ("PRESSURE_RL", "TPMS11", 0),
+      ("PRESSURE_RR", "TPMS11", 0),
 
       ("YAW_RATE", "ESP12", 0),
 
@@ -253,6 +297,17 @@ class CarState(CarStateBase):
       ("CF_VSM_Avail", "TCS13", 0),
 
       ("ESC_Off_Step", "TCS15", 0),
+
+      ("AVH_STAT", "ESP11", 0),  # 테네시 추가
+      ("Lvr12_00", "LVR12", 0), # 테네시 추가
+      ("Lvr12_01", "LVR12", 0), # 테네시 추가
+      ("Lvr12_02", "LVR12", 0), # 테네시 추가
+      ("Lvr12_03", "LVR12", 0), # 테네시 추가
+      ("Lvr12_04", "LVR12", 0), # 테네시 추가
+      ("Lvr12_05", "LVR12", 0), # 테네시 추가
+      ("Lvr12_06", "LVR12", 0), # 테네시 추가
+      ("Lvr12_07", "LVR12", 0), # 테네시 추가
+      ("CF_Lvr_CGear", "LVR11", 0), # 테네시 추가
 
       ("CF_Lvr_GearInf", "LVR11", 0),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
 
@@ -310,19 +365,19 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      # address, frequency
-      ("TCS13", 50),
-      ("TCS15", 10),
-      ("CLU11", 50),
-      ("ESP12", 100),
-      ("CGW1", 10),
-      ("CGW4", 5),
-      ("WHL_SPD11", 50),
+      # address, frequency DBC정의된 것에 의한 작동
+      ("TCS13", 40),  # 0d916 0x394
+      ("TCS15", 10),  # 0d1287 0x507
+      ("CLU11", 40),  # 0d1265 0x4F1
+      ("ESP12", 100),  # 0d544 0x220
+      ("CGW1", 10),  # 0d1345 0x541
+      ("CGW4", 5),  # 0d1369 0x559
+      ("WHL_SPD11", 40),  # 0d902 0x389
     ]
     if CP.sccBus == 0 and CP.enableCruise:
       checks += [
-        ("SCC11", 50),
-        ("SCC12", 50),
+        ("SCC11", 40),
+        ("SCC12", 40),
       ]
     if CP.mdpsBus == 0:
       signals += [
@@ -339,7 +394,7 @@ class CarState(CarStateBase):
         ("CR_Mdps_OutTq", "MDPS12", 0)
       ]
       checks += [
-        ("MDPS12", 50)
+        ("MDPS12", 40) # GDS 장비의 점검에서 점검시간에서 작동시 40ms시간으로 검사한다를 참조함..
       ]
     if CP.sasBus == 0:
       signals += [
@@ -516,8 +571,8 @@ class CarState(CarStateBase):
         ("ComfortBandLower", "SCC14", 0),
       ]
       checks += [
-        ("SCC11", 50),
-        ("SCC12", 50),
+        ("SCC11", 40),
+        ("SCC12", 40),
       ]
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 1)
 
@@ -599,8 +654,8 @@ class CarState(CarStateBase):
         ("ComfortBandLower", "SCC14", 0),
       ]
       checks += [
-        ("SCC11", 50),
-        ("SCC12", 50),
+        ("SCC11", 40),
+        ("SCC12", 40),
       ]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)

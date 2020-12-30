@@ -122,6 +122,8 @@ void update_sockets(UIState *s) {
   if (s->started && sm.updated("controlsState")) {
     auto event = sm["controlsState"];
     scene.controls_state = event.getControlsState();
+   
+    s->scene.curvature = scene.controls_state.getCurvature();
 
     // TODO: the alert stuff shouldn't be handled here
     auto alert_sound = scene.controls_state.getAlertSound();
@@ -166,7 +168,15 @@ void update_sockets(UIState *s) {
 
   if (sm.updated("carState"))
    {
+    auto data = sm["carState"].getCarState();
     scene.car_state = sm["carState"].getCarState();
+    scene.brakePress = data.getBrakePressed();
+    scene.brakeLights = data.getBrakeLights();
+
+    scene.tpmsPressureFl = data.getTpmsPressureFl();
+    scene.tpmsPressureFr = data.getTpmsPressureFr();
+    scene.tpmsPressureRl = data.getTpmsPressureRl();
+    scene.tpmsPressureRr = data.getTpmsPressureRr();
    }
 
    if (sm.updated("carControl"))
@@ -177,6 +187,19 @@ void update_sockets(UIState *s) {
    if (sm.updated("pathPlan"))
    {
     scene.path_plan = sm["pathPlan"].getPathPlan();
+
+    auto data = sm["pathPlan"].getPathPlan();
+
+    scene.pathPlan.laneWidth = data.getLaneWidth();
+    scene.pathPlan.cProb = data.getCProb();
+    scene.pathPlan.lProb = data.getLProb();
+    scene.pathPlan.rProb = data.getRProb();
+
+    auto l_list = data.getLPoly();
+    auto r_list = data.getRPoly();
+
+    scene.pathPlan.lPoly = l_list[3];
+    scene.pathPlan.rPoly = r_list[3];
    }
 
    if (sm.updated("gpsLocationExternal"))
