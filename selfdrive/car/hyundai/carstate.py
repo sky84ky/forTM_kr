@@ -96,11 +96,6 @@ class CarState(CarStateBase):
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]['DriverBraking'] != 0
 
-    if self.car_fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 오토 홀드를 표시하기 위한 작업
-      self.brakeHold = (cp.vl["ESP11"]['AVH_STAT'] == 1) # Tenesi
-    else:
-      self.brakeHold = 0
-
     # TODO: Check this
     ret.brakeLights = bool(cp.vl["TCS13"]['BrakeLight'] or ret.brakePressed)
 
@@ -110,22 +105,11 @@ class CarState(CarStateBase):
     else:
       ret.gas = cp.vl["EMS12"]['PV_AV_CAN'] / 100
       ret.gasPressed = bool(cp.vl["EMS16"]["CF_Ems_AclAct"])
-    
-    if self.car_fingerprint in [CAR.GENESIS, CAR.GENESIS_G90, CAR.GENESIS_G90_L, CAR.K7]: # 현재 기어 단수를 표시하기 위한 작업
-      ret.currentGear = cp.vl["LVR11"]["CF_Lvr_CGear"]
-
-    #sys.stdout = open('/data/media/0/tenesilog.txt', 'a') #  화일에 저장시 필요
-    gear_disp2 = cp.vl["LVR11"] #["CF_Lvr_CGear"] # LVR11 등의 CAN ID를 기반으로한 데이터는 다음과 같게도 표시가능하다..
-    print(gear_disp2)
-    gear_disp3 = cp.vl["ESP11"] #["CF_Lvr_CGear"] # LVR11 등의 CAN ID를 기반으로한 데이터는 다음과 같게도 표시가능하다..
-    print(gear_disp3)
 
     # TODO: refactor gear parsing in function
     # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection,
     # as this seems to be standard over all cars, but is not the preferred method.
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
-      gear_disp = cp.vl["CLU15"]
-      print(gear_disp)
       if cp.vl["CLU15"]["CF_Clu_InhibitD"] == 1:
         ret.gearShifter = GearShifter.drive
       elif cp.vl["CLU15"]["CF_Clu_InhibitN"] == 1:
@@ -139,8 +123,6 @@ class CarState(CarStateBase):
     # Gear Selecton via TCU12
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       gear = cp.vl["TCU12"]["CUR_GR"]
-      gear_disp = cp.vl["TCU12"]
-      print(gear_disp)
       if gear == 0:
         ret.gearShifter = GearShifter.park
       elif gear == 14:
@@ -152,8 +134,6 @@ class CarState(CarStateBase):
     # Gear Selecton - This is only compatible with optima hybrid 2017
     elif self.CP.carFingerprint in FEATURES["use_elect_gears"]:
       gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
-      gear_disp = cp.vl["ELECT_GEAR"]
-      print(gear_disp)
       if gear in (5, 8):  # 5: D, 8: sport mode
         ret.gearShifter = GearShifter.drive
       elif gear == 6:
@@ -167,8 +147,6 @@ class CarState(CarStateBase):
     # Gear Selecton - This is not compatible with all Kia/Hyundai's, But is the best way for those it is compatible with
     else:
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
-      gear_disp = cp.vl["LVR12"]
-      print(gear_disp)
       if gear in (5, 8):  # 5: D, 8: sport mode
         ret.gearShifter = GearShifter.drive
       elif gear == 6:
