@@ -343,19 +343,19 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      # address, frequency DBC정의된 것에 의한 작동
-      ("TCS13", 40),  # 0d916 0x394
-      ("TCS15", 10),  # 0d1287 0x507
-      ("CLU11", 40),  # 0d1265 0x4F1
-      ("ESP12", 100),  # 0d544 0x220
-      ("CGW1", 10),  # 0d1345 0x541
-      ("CGW4", 5),  # 0d1369 0x559
-      ("WHL_SPD11", 40),  # 0d902 0x389
+      # address, frequency
+      ("TCS13", 50),
+      ("TCS15", 10),
+      ("CLU11", 50),
+      ("ESP12", 100),
+      ("CGW1", 10),
+      ("CGW4", 5),
+      ("WHL_SPD11", 50),
     ]
     if CP.sccBus == 0 and CP.enableCruise:
       checks += [
-        ("SCC11", 40),
-        ("SCC12", 40),
+        ("SCC11", 50),
+        ("SCC12", 50),
       ]
     if CP.mdpsBus == 0:
       signals += [
@@ -372,7 +372,7 @@ class CarState(CarStateBase):
         ("CR_Mdps_OutTq", "MDPS12", 0)
       ]
       checks += [
-        ("MDPS12", 40) # GDS 장비의 점검에서 점검시간에서 작동시 40ms시간으로 검사한다를 참조함..
+        ("MDPS12", 50)
       ]
     if CP.sasBus == 0:
       signals += [
@@ -549,8 +549,8 @@ class CarState(CarStateBase):
         ("ComfortBandLower", "SCC14", 0),
       ]
       checks += [
-        ("SCC11", 40),
-        ("SCC12", 40),
+        ("SCC11", 50),
+        ("SCC12", 50),
       ]
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 1)
 
@@ -632,8 +632,8 @@ class CarState(CarStateBase):
         ("ComfortBandLower", "SCC14", 0),
       ]
       checks += [
-        ("SCC11", 40),
-        ("SCC12", 40),
+        ("SCC11", 50),
+        ("SCC12", 50),
       ]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
