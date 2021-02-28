@@ -332,7 +332,7 @@ class SccSmoother:
         if 0. < d < -lead.vRel * (9. + cruise_gap) * 2. and lead.vRel < -1.:
           t = d / lead.vRel
           accel = -(lead.vRel / t) * CV.MS_TO_KPH
-          accel *= self.decel_gain * 1.5
+          accel *= self.decel_gain * 1.75
 
           if accel < 0.:
             target_speed = clu11_speed + accel
@@ -397,7 +397,7 @@ class SccSmoother:
       dRel = lead.dRel
 
       if -3.9 <= stock_accel < apply_accel < -0.1:
-        stock_weight = interp(dRel, [2., 15.], [1., 0.])
+        stock_weight = interp(dRel, [2., 20.], [1., 0.])
         accel = apply_accel * (1. - stock_weight) + stock_accel * stock_weight
         self.fused_decel.append(accel)
         if len(self.fused_decel) > 5:
