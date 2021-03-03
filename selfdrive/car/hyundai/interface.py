@@ -159,16 +159,16 @@ class CarInterface(CarInterfaceBase):
 
     if ret.openpilotLongitudinalControl:
 
-      ret.longitudinalTuning.kpBP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-      ret.longitudinalTuning.kpV = [0.97, 0.83, 0.65, 0.53, 0.3, 0.2]
+      ret.longitudinalTuning.kpBP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+      ret.longitudinalTuning.kpV = [1.0, 0.85, 0.65, 0.55, 0.35, 0.25]
       ret.longitudinalTuning.kiBP = [0.]
-      ret.longitudinalTuning.kiV = [0.04]
+      ret.longitudinalTuning.kiV = [0.015]
       ret.longitudinalTuning.kf = 0.5
       ret.longitudinalTuning.deadzoneBP = [0., 100.*CV.KPH_TO_MS]
       ret.longitudinalTuning.deadzoneV = [0., 0.015]
 
-      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130. * CV.KPH_TO_MS ]
-      ret.gasMaxV = [0.5, 0.33, 0.28, 0.2, 0.15]
+      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS ]
+      ret.gasMaxV = [0.55, 0.37, 0.3, 0.22, 0.16]
 
       ret.brakeMaxBP = [0.]
       ret.brakeMaxV = [1.3]

@@ -332,7 +332,7 @@ class SccSmoother:
         if 0. < d < -lead.vRel * (9. + cruise_gap) * 2. and lead.vRel < -1.:
           t = d / lead.vRel
           accel = -(lead.vRel / t) * CV.MS_TO_KPH
-          accel *= self.decel_gain * 1.75
+          accel *= self.decel_gain * 1.6
 
           if accel < 0.:
             target_speed = clu11_speed + accel
@@ -376,8 +376,8 @@ class SccSmoother:
 
     else:
       if CS.gas_pressed and CS.cruiseState_enabled:
-        if clu11_speed > controls.v_cruise_kph and self.sync_set_speed_while_gas_pressed:
-          set_speed = clip(clu11_speed, MIN_SET_SPEED, MAX_SET_SPEED)
+        if clu11_speed + 2. > controls.v_cruise_kph and self.sync_set_speed_while_gas_pressed:
+          set_speed = clip(clu11_speed + 2., MIN_SET_SPEED, MAX_SET_SPEED)
           self.target_speed = set_speed
 
   def update_max_speed(self, max_speed):
