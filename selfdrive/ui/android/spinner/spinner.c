@@ -56,10 +56,10 @@ int main(int argc, char** argv) {
 
   // spinner
   int fb_w, fb_h;
-  FramebufferState *fb = framebuffer_init("spinner", 0x00001000, false,
+  FrameBuffer *fb = new FrameBuffer("spinner", 0x00001000, false,
                                           &fb_w, &fb_h);
   assert(fb);
-  framebuffer_set_power(fb, HWC_POWER_MODE_NORMAL);
+  fb->set_power(HWC_POWER_MODE_NORMAL);
 
   NVGcontext *vg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
   assert(vg);
@@ -173,9 +173,11 @@ int main(int argc, char** argv) {
     }
 
     nvgEndFrame(vg);
-    framebuffer_swap(fb);
+    fb->swap();
     assert(glGetError() == GL_NO_ERROR);
   }
+
+  delete fb;
 
   return 0;
 }
