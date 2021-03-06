@@ -799,11 +799,45 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 }
 
 static void ui_draw_vision_speed(UIState *s) {
+  const Rect &viz_rect = s->viz_rect;
+  const UIScene *scene = &s->scene;
+  const int viz_speed_w = 280;
+  const int viz_speed_x = viz_rect.centerX() - viz_speed_w/2;
   const float speed = std::max(0.0, s->scene.controls_state.getCluSpeedMs() * (s->is_metric ? 3.6 : 2.2369363));
   const std::string speed_str = std::to_string((int)std::nearbyint(speed));
+
+  NVGcolor val_color = COLOR_WHITE;
+
+  if( s->scene.brakePress ) val_color = COLOR_RED;
+  else if( s->scene.brakeLights ) val_color = nvgRGBA(201, 34, 49, 100);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  ui_draw_text(s, s->viz_rect.centerX(), 240, speed_str.c_str(), 96 * 2.5, COLOR_WHITE, "sans-bold");
-  ui_draw_text(s, s->viz_rect.centerX(), 320, s->is_metric ? "km/h" : "mph", 36 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
+  ui_draw_text(s, s->viz_rect.centerX(), 230, speed_str.c_str(), 100 * 2.5, COLOR_WHITE, "sans-bold");
+  ui_draw_text(s, s->viz_rect.centerX(), 310, s->is_metric ? "km/h" : "mph", 38 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
+  if(s->scene.leftBlinker) {
+    nvgBeginPath(s->vg);
+    nvgMoveTo(s->vg, viz_speed_x, box_y + header_h/4 - 30);
+    nvgLineTo(s->vg, viz_speed_x - viz_speed_w/2, box_y + header_h/4 + header_h/4 - 30);
+    nvgLineTo(s->vg, viz_speed_x, box_y + header_h/2 + header_h/4 - 30);
+    nvgClosePath(s->vg);
+    nvgFillColor(s->vg, nvgRGBA(77,178,255,s->scene.blinker_blinkingrate>=50?210:60));
+    nvgFill(s->vg);
+  }
+
+  if(s->scene.rightBlinker) {
+    nvgBeginPath(s->vg);
+    nvgMoveTo(s->vg, viz_speed_x+viz_speed_w, box_y + header_h/4 - 30);
+    nvgLineTo(s->vg, viz_speed_x+viz_speed_w + viz_speed_w/2, box_y + header_h/4 + header_h/4 - 30);
+    nvgLineTo(s->vg, viz_speed_x+viz_speed_w, box_y + header_h/2 + header_h/4 - 30);
+    nvgClosePath(s->vg);
+    nvgFillColor(s->vg, nvgRGBA(77,178,255,s->scene.blinker_blinkingrate>=50?210:60));
+    nvgFill(s->vg);
+  }
+
+  if(s->scene.leftBlinker || s->scene.rightBlinker) {
+    s->scene.blinker_blinkingrate -= 5.5;
+    if(s->scene.blinker_blinkingrate<0) s->scene.blinker_blinkingrate = 120;
+  }
+//여기까지 추가
 }
 
 static void ui_draw_vision_event(UIState *s) {
@@ -887,7 +921,7 @@ static void ui_draw_vision_footer(UIState *s) {
   ui_draw_vision_face(s);
 
 #if UI_FEATURE_BRAKE
-  ui_draw_vision_brake(s);
+  //ui_draw_vision_brake(s);
 #endif
 }
 
