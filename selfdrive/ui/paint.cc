@@ -704,19 +704,21 @@ static void bb_ui_draw_UI(UIState *s)
   const int bb_dmr_w = 180;
   const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - bb_dmr_w - (bdr_is * 2);
   const int bb_dmr_y = (box_y + (bdr_is * 1.5)) + UI_FEATURE_RIGHT_Y;
-
+// 스위치 화면 비우기 시작
 #if UI_FEATURE_LEFT
-  bb_ui_draw_measures_left(s, bb_dml_x, bb_dml_y, bb_dml_w);
+  if(s->show_debug_ui)
+    bb_ui_draw_measures_left(s, bb_dml_x, bb_dml_y, bb_dml_w);
 #endif
 
 #if UI_FEATURE_RIGHT
-  bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y, bb_dmr_w);
+  if(s->show_debug_ui)
+    bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y, bb_dmr_w);
 #endif
 
   bb_ui_draw_basic_info(s);
 
-  if(s->show_debug_ui)
-    bb_ui_draw_debug(s);
+//  if(s->show_debug_ui)
+//    bb_ui_draw_debug(s);
 }
 
 static void ui_draw_vision_brake(UIState *s) {
@@ -811,8 +813,9 @@ static void ui_draw_vision_speed(UIState *s) {
   if( s->scene.brakePress ) val_color = COLOR_RED;
   else if( s->scene.brakeLights ) val_color = nvgRGBA(201, 34, 49, 100);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  ui_draw_text(s, s->viz_rect.centerX(), 230, speed_str.c_str(), 100 * 2.5, COLOR_WHITE, "sans-bold");
-  ui_draw_text(s, s->viz_rect.centerX(), 310, s->is_metric ? "km/h" : "mph", 38 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
+
+  ui_draw_text(s, s->viz_rect.centerX(), 230, speed_str.c_str(), 100*2.5, val_color, "sans-bold");
+  ui_draw_text(s, s->viz_rect.centerX(), 310, s->is_metric ? "km/h" : "mph", 38*2.5, COLOR_WHITE_ALPHA(200), "sans-semibold");
   if(s->scene.leftBlinker) {
     nvgBeginPath(s->vg);
     nvgMoveTo(s->vg, viz_speed_x, box_y + header_h/4 - 30);

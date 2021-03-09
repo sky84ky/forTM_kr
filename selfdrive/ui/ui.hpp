@@ -1,5 +1,7 @@
 #pragma once
 
+#define UI_FEATURE_DEBUG 0
+
 #define UI_FEATURE_BRAKE 1
 #define UI_FEATURE_DASHCAM 1
 
