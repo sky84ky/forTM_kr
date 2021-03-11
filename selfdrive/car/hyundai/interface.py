@@ -142,7 +142,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.lateralTuning.lqr.scale = 1680.0
     ret.lateralTuning.lqr.ki = 0.01
-    ret.lateralTuning.lqr.dcGain = 0.002858
+    ret.lateralTuning.lqr.dcGain = 0.002861
 
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -162,23 +162,23 @@ class CarInterface(CarInterfaceBase):
     if ret.openpilotLongitudinalControl:
 
       ret.longitudinalTuning.kpBP = [0., 35. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 55. * CV.KPH_TO_MS, 70 * CV.KPH_TO_MS, 100 * CV.KPH_TO_MS]
-      ret.longitudinalTuning.kpV = [0.664, 0.684, 0.633, 0.46, 0.45, 0.5]
+      ret.longitudinalTuning.kpV = [0.6645, 0.684, 0.633, 0.46, 0.45, 0.5]
       ret.longitudinalTuning.kiBP = [0., 126.*CV.KPH_TO_MS]
       ret.longitudinalTuning.kiV = [0.04, 0.03]
       ret.longitudinalTuning.kf = 0.5
       ret.longitudinalTuning.deadzoneBP = [0., 100.*CV.KPH_TO_MS]
       ret.longitudinalTuning.deadzoneV = [0., 0.015]
 
-      ret.gasMaxBP = [0., 25.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
-      ret.gasMaxV = [0.61, 0.6, 0.45, 0.4, 0.18, 0.13, 0.13, 0.2]
-#      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
-#      ret.gasMaxV = [0.4, 0.61, 0.6, 0.45, 0.4, 0.18, 0.13, 0.13, 0.2] 
+#      ret.gasMaxBP = [0., 25.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
+#      ret.gasMaxV = [0.61, 0.6, 0.45, 0.4, 0.18, 0.13, 0.13, 0.2]
+      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
+      ret.gasMaxV = [0.45, 0.61, 0.57, 0.44, 0.39, 0.18, 0.13, 0.13, 0.2] 
       ret.brakeMaxBP = [0., 29.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 65*CV.KPH_TO_MS]
-      ret.brakeMaxV = [0.753, 0.853, 0.863, 0.854, 0.84]
+      ret.brakeMaxV = [0.753, 0.853, 0.866, 0.855, 0.84]
 
       ret.stoppingBrakeRate = 0.155  # brake_travel/s while trying to stop
       ret.startingBrakeRate = 0.99  # brake_travel/s while releasing on restart
-      ret.startAccel = 1.55
+      ret.startAccel = 1.53
 
     else:
       # scc smoother

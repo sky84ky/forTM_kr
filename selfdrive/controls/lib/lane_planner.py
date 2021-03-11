@@ -21,9 +21,9 @@ class LanePlanner:
     self.ll_x = np.zeros((TRAJECTORY_SIZE,))
     self.lll_y = np.zeros((TRAJECTORY_SIZE,))
     self.rll_y = np.zeros((TRAJECTORY_SIZE,))
-    self.lane_width_estimate = 3.7
+    self.lane_width_estimate = 3.0
     self.lane_width_certainty = 1.0
-    self.lane_width = 3.7
+    self.lane_width = 3.0
 
     self.lll_prob = 0.
     self.rll_prob = 0.
@@ -106,6 +106,12 @@ class LanePlanner:
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
 
     self.d_prob = l_prob + r_prob - l_prob * r_prob
+    # neokii/stonerains
+    if self.d_prob > 0.65:
+      self.d_prob = min(self.d_prob * 1.35, 1.0)
+    elif self.d_prob > 0.30:
+      self.d_prob = min(self.d_prob * 1.6255, 0.93)
+    
     lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
     lane_path_y_interp = np.interp(path_t, self.ll_t, lane_path_y)
     path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
