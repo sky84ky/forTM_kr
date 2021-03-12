@@ -23,7 +23,7 @@ from selfdrive.version import get_git_branch, terms_version, training_version
 
 FW_SIGNATURE = get_expected_signature()
 
-DISABLE_LTE_ONROAD = os.path.exists("/persist/disable_lte_onroad")
+DISABLE_LTE_ONROAD = os.path.exists("/persist/disable_lte_onroad") or TICI
 
 ThermalStatus = log.DeviceState.ThermalStatus
 NetworkType = log.DeviceState.NetworkType
@@ -409,7 +409,8 @@ def thermald_thread():
     msg.deviceState.thermalStatus = thermal_status
     pm.send("deviceState", msg)
 
-    set_offroad_alert_if_changed("Offroad_ChargeDisabled", (not usb_power))
+    if EON and not is_uno:
+      set_offroad_alert_if_changed("Offroad_ChargeDisabled", (not usb_power))
 
     should_start_prev = should_start
     startup_conditions_prev = startup_conditions.copy()

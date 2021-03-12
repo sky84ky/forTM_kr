@@ -1,9 +1,6 @@
 #include "ui.hpp"
 
 #include <assert.h>
-#include <map>
-#include <cmath>
-#include <iostream>
 #include "common/util.h"
 #include "common/timing.h"
 #include <algorithm>
@@ -34,39 +31,12 @@ const int box_h = vwp_h-(bdr_s*2);
 #ifdef QCOM2
 const float y_offset = 150.0;
 const float zoom = 1.1;
-const mat3 intrinsic_matrix = (mat3){{
-  2648.0, 0.0, 1928.0/2,
-  0.0, 2648.0, 1208.0/2,
-  0.0,   0.0,   1.0
-}};
 #else
 const float y_offset = 0.0;
 const float zoom = 2.35;
-const mat3 intrinsic_matrix = (mat3){{
-  910., 0., 1164.0/2,
-  0., 910., 874.0/2,
-  0.,   0.,   1.
-}};
 #endif
 
-// Projects a point in car to space to the corresponding point in full frame
-// image space.
-bool calib_frame_to_full_frame(const UIState *s, float in_x, float in_y, float in_z, vertex_data *out) {
-  const float margin = 500.0f;
-  const vec3 pt = (vec3){{in_x, in_y, in_z}};
-  const vec3 Ep = matvecmul3(s->scene.view_from_calib, pt);
-  const vec3 KEp = matvecmul3(intrinsic_matrix, Ep);
-
-  // Project.
-  float x = KEp.v[0] / KEp.v[2];
-  float y = KEp.v[1] / KEp.v[2];
-
-  nvgTransformPoint(&out->x, &out->y, s->car_space_transform, x, y);
-  return out->x >= -margin && out->x <= s->fb_w + margin && out->y >= -margin && out->y <= s->fb_h + margin;
-}
-
-
-static void ui_draw_text(const UIState *s, float x, float y, const char* string, float size, NVGcolor color, const char *font_name){
+static void ui_draw_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
   nvgFontFace(s->vg, font_name);
   nvgFontSize(s->vg, size);
   nvgFillColor(s->vg, color);
@@ -110,7 +80,7 @@ static void ui_draw_circle_image(const UIState *s, int x, int y, int size, const
   ui_draw_circle_image(s, x, y, size, image, nvgRGBA(0, 0, 0, (255 * bg_alpha)), img_alpha);
 }
 
-static void draw_lead(UIState *s, int idx){
+static void draw_lead(UIState *s, int idx) {
   // Draw lead car indicator
   const auto &lead = s->scene.lead_data[idx];
   auto [x, y] = s->scene.lead_vertices[idx];
@@ -159,7 +129,7 @@ static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *col
 
 static void draw_frame(UIState *s) {
   mat4 *out_mat;
-  if (s->scene.frontview) {
+  if (s->scene.driver_view) {
     glBindVertexArray(s->frame_vao[1]);
     out_mat = &s->front_frame_mat;
   } else {
@@ -183,7 +153,7 @@ static void draw_frame(UIState *s) {
 
   assert(glGetError() == GL_NO_ERROR);
   glEnableVertexAttribArray(0);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (const void*)0);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (const void *)0);
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
 }
@@ -218,7 +188,7 @@ static void ui_draw_world(UIState *s) {
   ui_draw_vision_lane_lines(s);
 
   // Draw lead indicators if openpilot is handling longitudinal
-  //if (s->longitudinal_control) {
+  //if (s->scene.longitudinal_control) {
     if (scene->lead_data[0].getStatus()) {
       draw_lead(s, 0);
     }
@@ -320,7 +290,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
         val_color = nvgRGBA(255, 0, 0, 200);
       }
       // lead car relative speed is always in meters
-      if (s->is_metric) {
+      if (s->scene.is_metric) {
          snprintf(val_str, sizeof(val_str), "%d", (int)(scene->lead_data[0].getVRel() * 3.6 + 0.5));
       } else {
          snprintf(val_str, sizeof(val_str), "%d", (int)(scene->lead_data[0].getVRel() * 2.2374144 + 0.5));
@@ -328,7 +298,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     } else {
        snprintf(val_str, sizeof(val_str), "-");
     }
-    if (s->is_metric) {
+    if (s->scene.is_metric) {
       snprintf(uom_str, sizeof(uom_str), "km/h");;
     } else {
       snprintf(uom_str, sizeof(uom_str), "mph");
@@ -586,9 +556,9 @@ static void bb_ui_draw_basic_info(UIState *s)
     int mdps_bus = scene->car_params.getMdpsBus();
     int scc_bus = scene->car_params.getSccBus();
 
-    snprintf(str, sizeof(str), "SR(%.2f) SRC(%.2f) SAD(%.2f) AO(%.2f/%.2f) MDPS(%d) SCC(%d)%s%s", scene->lateral_plan.getSteerRatio(),
-                                                        scene->lateral_plan.getSteerRateCost(),
-                                                        scene->lateral_plan.getSteerActuatorDelay(),
+    snprintf(str, sizeof(str), "SR(%.2f) SRC(%.2f) SAD(%.2f) AO(%.2f/%.2f) MDPS(%d) SCC(%d)%s%s", scene->controls_state.getSteerRatio(),
+                                                        scene->controls_state.getSteerRateCost(),
+                                                        scene->controls_state.getSteerActuatorDelay(),
                                                         scene->live_params.getAngleOffsetDeg(),
                                                         scene->live_params.getAngleOffsetAverageDeg(),
                                                         mdps_bus, scc_bus,
@@ -799,11 +769,11 @@ static void ui_draw_vision_maxspeed(UIState *s) {
 }
 
 static void ui_draw_vision_speed(UIState *s) {
-  const float speed = std::max(0.0, s->scene.controls_state.getCluSpeedMs() * (s->is_metric ? 3.6 : 2.2369363));
+  const float speed = std::max(0.0, s->scene.controls_state.getCluSpeedMs() * (s->scene.is_metric ? 3.6 : 2.2369363));
   const std::string speed_str = std::to_string((int)std::nearbyint(speed));
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
   ui_draw_text(s, s->viz_rect.centerX(), 240, speed_str.c_str(), 96 * 2.5, COLOR_WHITE, "sans-bold");
-  ui_draw_text(s, s->viz_rect.centerX(), 320, s->is_metric ? "km/h" : "mph", 36 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
+  ui_draw_text(s, s->viz_rect.centerX(), 320, s->scene.is_metric ? "km/h" : "mph", 36 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
 }
 
 static void ui_draw_vision_event(UIState *s) {
@@ -831,19 +801,22 @@ static void ui_draw_vision_face(UIState *s) {
 static void ui_draw_driver_view(UIState *s) {
   s->sidebar_collapsed = true;
   const bool is_rhd = s->scene.is_rhd;
-  const int width = 3 * s->viz_rect.w / 4;
+  const int width = 4 * s->viz_rect.h / 3;
   const Rect rect = {s->viz_rect.centerX() - width / 2, s->viz_rect.y, width, s->viz_rect.h};  // x, y, w, h
   const Rect valid_rect = {is_rhd ? rect.right() - rect.h / 2 : rect.x, rect.y, rect.h / 2, rect.h};
 
   // blackout
-  const int blackout_x = is_rhd ? rect.x : valid_rect.right();
-  const int blackout_w = rect.w - valid_rect.w;
-  NVGpaint gradient = nvgLinearGradient(s->vg, blackout_x, rect.y, blackout_x + blackout_w, rect.y,
-                                        COLOR_BLACK_ALPHA(is_rhd ? 255 : 0), COLOR_BLACK_ALPHA(is_rhd ? 0 : 255));
-  ui_fill_rect(s->vg, {blackout_x, rect.y, blackout_w, rect.h}, gradient);
-  ui_fill_rect(s->vg, {blackout_x, rect.y, blackout_w, rect.h}, COLOR_BLACK_ALPHA(144));
-  // border
-  ui_draw_rect(s->vg, rect, bg_colors[STATUS_OFFROAD], 1);
+  const int blackout_x_r = valid_rect.right();
+#ifndef QCOM2
+  const int blackout_w_r = rect.right() - valid_rect.right();
+  const int blackout_x_l = rect.x;
+#else
+  const int blackout_w_r = s->viz_rect.right() - valid_rect.right();
+  const int blackout_x_l = s->viz_rect.x;
+#endif
+  const int blackout_w_l = valid_rect.x - blackout_x_l;
+  ui_fill_rect(s->vg, {blackout_x_l, rect.y, blackout_w_l, rect.h}, COLOR_BLACK_ALPHA(144));
+  ui_fill_rect(s->vg, {blackout_x_r, rect.y, blackout_w_r, rect.h}, COLOR_BLACK_ALPHA(144));
 
   const bool face_detected = s->scene.driver_state.getFaceProb() > 0.4;
   if (face_detected) {
@@ -907,9 +880,9 @@ static void ui_draw_vision_alert(UIState *s) {
   color.a *= get_alert_alpha(scene->alert_blinking_rate);
   const int alr_h = alert_size_map[scene->alert_size] + bdr_s;
   const Rect rect = {.x = s->viz_rect.x - bdr_s,
-                  .y = s->fb_h - alr_h,
-                  .w = s->viz_rect.w + (bdr_s * 2),
-                  .h = alr_h};
+                     .y = s->fb_h - alr_h,
+                     .w = s->viz_rect.w + (bdr_s * 2),
+                     .h = alr_h};
 
   ui_fill_rect(s->vg, rect, color);
   ui_fill_rect(s->vg, rect, nvgLinearGradient(s->vg, rect.x, rect.y, rect.x, rect.bottom(), 
@@ -948,7 +921,7 @@ static void ui_draw_vision_frame(UIState *s) {
 
 static void ui_draw_vision(UIState *s) {
   const UIScene *scene = &s->scene;
-  if (!scene->frontview) {
+  if (!scene->driver_view) {
     // Draw augmented elements
     if (scene->world_objects_visible) {
       ui_draw_world(s);
@@ -976,7 +949,7 @@ void ui_draw(UIState *s) {
     s->viz_rect.w -= sbr_w;
   }
 
-  const bool draw_alerts = s->started && s->active_app == cereal::UiLayoutState::App::NONE;
+  const bool draw_alerts = s->scene.started && s->active_app == cereal::UiLayoutState::App::NONE;
   const bool draw_vision = draw_alerts && s->vipc_client->connected;
 
   // GL drawing functions
@@ -1002,7 +975,7 @@ void ui_draw(UIState *s) {
   glDisable(GL_BLEND);
 }
 
-void ui_draw_image(const UIState *s, const Rect &r, const char *name, float alpha){
+void ui_draw_image(const UIState *s, const Rect &r, const char *name, float alpha) {
   nvgBeginPath(s->vg);
   NVGpaint imgPaint = nvgImagePattern(s->vg, r.x, r.y, r.w, r.h, 0, s->images.at(name), alpha);
   nvgRect(s->vg, r.x, r.y, r.w, r.h);
@@ -1020,7 +993,7 @@ void ui_draw_rect(NVGcontext *vg, const Rect &r, NVGcolor color, int width, floa
 
 static inline void fill_rect(NVGcontext *vg, const Rect &r, const NVGcolor *color, const NVGpaint *paint, float radius) {
   nvgBeginPath(vg);
-  radius > 0? nvgRoundedRect(vg, r.x, r.y, r.w, r.h, radius) : nvgRect(vg, r.x, r.y, r.w, r.h);
+  radius > 0 ? nvgRoundedRect(vg, r.x, r.y, r.w, r.h, radius) : nvgRect(vg, r.x, r.y, r.w, r.h);
   if (color) nvgFillColor(vg, *color);
   if (paint) nvgFillPaint(vg, *paint);
   nvgFill(vg);
@@ -1028,7 +1001,7 @@ static inline void fill_rect(NVGcontext *vg, const Rect &r, const NVGcolor *colo
 void ui_fill_rect(NVGcontext *vg, const Rect &r, const NVGcolor &color, float radius) {
   fill_rect(vg, r, &color, nullptr, radius);
 }
-void ui_fill_rect(NVGcontext *vg, const Rect &r, const NVGpaint &paint, float radius){
+void ui_fill_rect(NVGcontext *vg, const Rect &r, const NVGpaint &paint, float radius) {
   fill_rect(vg, r, nullptr, &paint, radius);
 }
 
@@ -1068,13 +1041,32 @@ static const mat4 device_transform = {{
   0.0,  0.0, 0.0, 1.0,
 }};
 
+static const float driver_view_ratio = 1.333;
+#ifndef QCOM2
 // frame from 4/3 to 16/9 display
-static const mat4 full_to_wide_frame_transform = {{
-  .75,  0.0, 0.0, 0.0,
+static const mat4 driver_view_transform = {{
+  driver_view_ratio*(1080-2*bdr_s)/(1920-2*bdr_s),  0.0, 0.0, 0.0,
   0.0,  1.0, 0.0, 0.0,
   0.0,  0.0, 1.0, 0.0,
   0.0,  0.0, 0.0, 1.0,
 }};
+#else
+// from dmonitoring.cc
+static const int full_width_tici = 1928;
+static const int full_height_tici = 1208;
+static const int adapt_width_tici = 668;
+static const int crop_x_offset = 32;
+static const int crop_y_offset = -196;
+static const float yscale = full_height_tici * driver_view_ratio / adapt_width_tici;
+static const float xscale = yscale*(1080-2*bdr_s)/(2160-2*bdr_s)*full_width_tici/full_height_tici;
+
+static const mat4 driver_view_transform = {{
+  xscale,  0.0, 0.0, xscale*crop_x_offset/full_width_tici*2,
+  0.0,  yscale, 0.0, yscale*crop_y_offset/full_height_tici*2,
+  0.0,  0.0, 1.0, 0.0,
+  0.0,  0.0, 0.0, 1.0,
+}};
+#endif
 
 void ui_nvg_init(UIState *s) {
   // init drawing
@@ -1130,7 +1122,7 @@ void ui_nvg_init(UIState *s) {
 
   assert(glGetError() == GL_NO_ERROR);
 
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     float x1, x2, y1, y2;
     if (i == 1) {
       // flip horizontally so it looks like a mirror
@@ -1166,13 +1158,13 @@ void ui_nvg_init(UIState *s) {
     glGenBuffers(1, &s->frame_ibo[i]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s->frame_ibo[i]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(frame_indicies), frame_indicies, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
 
   s->video_rect = Rect{bdr_s, bdr_s, s->fb_w - 2 * bdr_s, s->fb_h - 2 * bdr_s};
-  float zx = zoom * 2 * intrinsic_matrix.v[2] / s->video_rect.w;
-  float zy = zoom * 2 * intrinsic_matrix.v[5] / s->video_rect.h;
+  float zx = zoom * 2 * fcam_intrinsic_matrix.v[2] / s->video_rect.w;
+  float zy = zoom * 2 * fcam_intrinsic_matrix.v[5] / s->video_rect.h;
 
   const mat4 frame_transform = {{
     zx, 0.0, 0.0, 0.0,
@@ -1181,7 +1173,7 @@ void ui_nvg_init(UIState *s) {
     0.0, 0.0, 0.0, 1.0,
   }};
 
-  s->front_frame_mat = matmul(device_transform, full_to_wide_frame_transform);
+  s->front_frame_mat = matmul(device_transform, driver_view_transform);
   s->rear_frame_mat = matmul(device_transform, frame_transform);
 
   // Apply transformation such that video pixel coordinates match video
@@ -1192,7 +1184,7 @@ void ui_nvg_init(UIState *s) {
   nvgScale(s->vg, zoom, zoom);
 
   // 3) Put (0, 0) in top left corner of video
-  nvgTranslate(s->vg, -intrinsic_matrix.v[2], -intrinsic_matrix.v[5]);
+  nvgTranslate(s->vg, -fcam_intrinsic_matrix.v[2], -fcam_intrinsic_matrix.v[5]);
 
   nvgCurrentTransform(s->vg, s->car_space_transform);
   nvgResetTransform(s->vg);

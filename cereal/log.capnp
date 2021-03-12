@@ -518,19 +518,24 @@ struct ControlsState @0x97ff69c53601abf1 {
   cumLagMs @15 :Float32;
   canErrorCounter @57 :UInt32;
 
-  angleSteers @58 :Float32;
-  cluSpeedMs @59 :Float32;
-  applyAccel @60 :Float32;
-  fusedAccel @61 :Float32;
-  leadDist @62 :Float32;
-  aReqValue @63 :Float32;
-  aReqValueMin @64 :Float32;
-  aReqValueMax @65 :Float32;
+  angleSteers @59 :Float32;
+  cluSpeedMs @60 :Float32;
+  applyAccel @61 :Float32;
+  fusedAccel @62 :Float32;
+  leadDist @63 :Float32;
+  aReqValue @64 :Float32;
+  aReqValueMin @65 :Float32;
+  aReqValueMax @66 :Float32;
+
+  steerRatio @67 :Float32;
+  steerRateCost @68 :Float32;
+  steerActuatorDelay @69 :Float32;
 
   lateralControlState :union {
     indiState @52 :LateralINDIState;
     pidState @53 :LateralPIDState;
     lqrState @55 :LateralLQRState;
+    angleState @58 :LateralAngleState;
   }
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
@@ -593,6 +598,13 @@ struct ControlsState @0x97ff69c53601abf1 {
     output @3 :Float32;
     lqrOutput @4 :Float32;
     saturated @5 :Bool;
+  }
+
+  struct LateralAngleState {
+    active @0 :Bool;
+    steeringAngleDeg @1 :Float32;
+    output @2 :Float32;
+    saturated @3 :Bool;
   }
 
   # deprecated
@@ -780,19 +792,15 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   dPathPoints @20 :List(Float32);
   dProb @21 :Float32;
 
-  steeringAngleDeg @8 :Float32; # deg
-  steeringRateDeg @13 :Float32; # deg/s
   mpcSolutionValid @9 :Bool;
-  angleOffsetDeg @11 :Float32;
   desire @17 :Desire;
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
-  autoLaneChangeEnabled @22 :Bool;
-  autoLaneChangeTimer @23 :Int8;
+  curvature @22 :Float32; # rad
+  curvatureRate @23 :Float32; # rad/s
 
-  steerRatio @24 :Float32;
-  steerRateCost @25 :Float32;
-  steerActuatorDelay @26 :Float32;
+  autoLaneChangeEnabled @24 :Bool;
+  autoLaneChangeTimer @25 :Int8;
 
   enum Desire {
     none @0;
@@ -828,6 +836,9 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   posenetValidDEPRECATED @16 :Bool;
   sensorValidDEPRECATED @14 :Bool;
   paramsValidDEPRECATED @10 :Bool;
+  steeringAngleDegDEPRECATED @8 :Float32; # deg
+  steeringRateDegDEPRECATED @13 :Float32; # deg/s
+  angleOffsetDegDEPRECATED @11 :Float32;
 }
 
 struct LiveLocationKalman {
@@ -1118,7 +1129,7 @@ struct LiveMpcData {
   x @0 :List(Float32);
   y @1 :List(Float32);
   psi @2 :List(Float32);
-  delta @3 :List(Float32);
+  curvature @3 :List(Float32);
   qpIterations @4 :UInt32;
   calculationTime @5 :UInt64;
   cost @6 :Float64;
@@ -1298,7 +1309,6 @@ struct Event {
     liveTracks @16 :List(LiveTracks);
     sendcan @17 :List(CanData);
     liveCalibration @19 :LiveCalibrationData;
-    gpsLocation @21 :GpsLocationData;
     carState @22 :Car.CarState;
     carControl @23 :Car.CarControl;
     longitudinalPlan @24 :LongitudinalPlan;
@@ -1372,5 +1382,6 @@ struct Event {
     orbFeaturesSummaryDEPRECATED @58 :Legacy.OrbFeaturesSummary;
     featuresDEPRECATED @10 :Legacy.CalibrationFeatures;
     kalmanOdometryDEPRECATED @65 :Legacy.KalmanOdometry;
+    gpsLocationDEPRECATED @21 :GpsLocationData;
   }
 }

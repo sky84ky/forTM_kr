@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import os
+import math
 from cereal import car, log
-from common.numpy_fast import clip
+from common.numpy_fast import clip, interp
 from common.realtime import sec_since_boot, config_realtime_process, Priority, Ratekeeper, DT_CTRL
 from common.profiler import Profiler
 from common.params import Params, put_nonblocking
 import cereal.messaging as messaging
 from selfdrive.car.hyundai.scc_smoother import CruiseState, SccSmoother
+from selfdrive.car.hyundai.values import CAR
 from selfdrive.config import Conversions as CV
 from selfdrive.swaglog import cloudlog
 from selfdrive.boardd.boardd import can_list_to_can_capnp
@@ -17,13 +19,14 @@ from selfdrive.controls.lib.longcontrol import LongControl, STARTING_TARGET_SPEE
 from selfdrive.controls.lib.latcontrol_pid import LatControlPID
 from selfdrive.controls.lib.latcontrol_indi import LatControlINDI
 from selfdrive.controls.lib.latcontrol_lqr import LatControlLQR
+from selfdrive.controls.lib.latcontrol_angle import LatControlAngle
 from selfdrive.controls.lib.events import Events, ET
 from selfdrive.controls.lib.alertmanager import AlertManager
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.controls.lib.longitudinal_planner import LON_MPC_STEP
 from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI
-from selfdrive.ntune import ntune_get
+from selfdrive.ntune import ntune_get, ntune_isEnabled
 
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
@@ -32,7 +35,7 @@ STEER_ANGLE_SATURATION_THRESHOLD = 2.5  # Degrees
 
 SIMULATION = "SIMULATION" in os.environ
 NOSENSOR = "NOSENSOR" in os.environ
-IGNORE_PROCESSES = set(["rtshield", "uploader", "deleter", "loggerd", "logmessaged", "tombstoned", "logcatd", "proclogd", "clocksd", "updated", "timezoned"])
+IGNORE_PROCESSES = set(["rtshield", "uploader", "deleter", "loggerd", "logmessaged", "tombstoned", "logcatd", "proclogd", "clocksd", "updated", "timezoned", "manage_athenad"])
 
 ThermalStatus = log.DeviceState.ThermalStatus
 State = log.ControlsState.OpenpilotState
@@ -106,7 +109,9 @@ class Controls:
     self.LoC = LongControl(self.CP, self.CI.compute_gb)
     self.VM = VehicleModel(self.CP)
 
-    if self.CP.lateralTuning.which() == 'pid':
+    if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
+      self.LaC = LatControlAngle(self.CP)
+    elif self.CP.lateralTuning.which() == 'pid':
       self.LaC = LatControlPID(self.CP)
     elif self.CP.lateralTuning.which() == 'indi':
       self.LaC = LatControlINDI(self.CP)
@@ -140,6 +145,7 @@ class Controls:
     self.aReqValue = 0.
     self.aReqValueMin = 0.
     self.aReqValueMax = 0.
+    self.angle_steers_des = 0.
 
     self.sm['liveCalibration'].calStatus = Calibration.CALIBRATED
     self.sm['deviceState'].freeSpacePercent = 100
@@ -252,9 +258,7 @@ class Controls:
     # TODO: fix simulator
     if not SIMULATION:
       #if not NOSENSOR:
-        #if not self.sm.alive['ubloxRaw'] and (self.sm.frame > 10. / DT_CTRL):
-          #self.events.add(EventName.gpsMalfunction)
-        #elif not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000) and not TICI:
+        #if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000) and not TICI:
           # Not show in first 1 km to allow for driving out of garage. This event shows after 5 minutes
           #self.events.add(EventName.noGps)
       if not self.sm.all_alive(['roadCameraState', 'driverCameraState']) and (self.sm.frame > 5 / DT_CTRL):
@@ -387,6 +391,20 @@ class Controls:
   def state_control(self, CS):
     """Given the state, this function returns an actuators packet"""
 
+    # Update VehicleModel
+    params = self.sm['liveParameters']
+    x = max(params.stiffnessFactor, 0.1)
+    #sr = max(params.steerRatio, 0.1)
+    if self.CP.carName in [CAR.GENESIS_G80]:
+      sr = interp(abs(self.angle_steers_des), [5., 15.], [11.8, 16.2])
+    else:
+      if ntune_isEnabled('useLiveSteerRatio'):
+        sr = max(self.sm['liveParameters'].steerRatio, 0.1)
+      else:
+        sr = max(ntune_get('steerRatio'), 0.1)
+
+    self.VM.update_params(x, sr)
+
     lat_plan = self.sm['lateralPlan']
     long_plan = self.sm['longitudinalPlan']
 
@@ -422,7 +440,7 @@ class Controls:
                                                      self.sm['radarState'])
 
     # Steering PID loop and lateral MPC
-    actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(self.active, CS, self.CP, lat_plan)
+    actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(self.active, CS, self.CP, self.VM, params, lat_plan)
 
     # Check for difference between desired angle and angle for angle based control
     angle_control_saturated = self.CP.steerControlType == car.CarParams.SteerControlType.angle and \
@@ -436,9 +454,11 @@ class Controls:
     # Send a "steering required alert" if saturation count has reached the limit
     if (lac_log.saturated and not CS.steeringPressed) or \
        (self.saturated_count > STEER_ANGLE_SATURATION_TIMEOUT):
-      # Check if we deviated from the path
-      left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.1
-      right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.1
+
+      if len(lat_plan.dPathPoints):
+        # Check if we deviated from the path
+        left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.1
+        right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.1
 
       #if left_deviation or right_deviation:
       #  self.events.add(EventName.steerSaturated)
@@ -502,10 +522,16 @@ class Controls:
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
-                    (self.state == State.softDisabling)
+                  (self.state == State.softDisabling)
 
-    angleOffsetDeg = self.sm['lateralPlan'].angleOffsetDeg
-    steer_angle_rad = (CS.steeringAngleDeg - angleOffsetDeg) * CV.DEG_TO_RAD
+    # Curvature & Steering angle
+    params = self.sm['liveParameters']
+    lat_plan = self.sm['lateralPlan']
+
+    steer_angle_without_offset = math.radians(CS.steeringAngleDeg - params.angleOffsetAverageDeg)
+    curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo)
+    self.angle_steers_des = math.degrees(self.VM.get_steer_from_curvature(-lat_plan.curvature, CS.vEgo))
+    self.angle_steers_des += params.angleOffsetDeg
 
     # controlsState
     dat = messaging.new_message('controlsState')
@@ -523,7 +549,8 @@ class Controls:
     controlsState.lateralPlanMonoTime = self.sm.logMonoTime['lateralPlan']
     controlsState.enabled = self.enabled
     controlsState.active = self.active
-    controlsState.curvature = self.VM.calc_curvature(steer_angle_rad, CS.vEgo)
+    controlsState.curvature = curvature
+    controlsState.steeringAngleDesiredDeg = self.angle_steers_des
     controlsState.state = self.state
     controlsState.engageable = not self.events.any(ET.NO_ENTRY)
     controlsState.longControlState = self.LoC.long_control_state
@@ -532,7 +559,6 @@ class Controls:
     controlsState.upAccelCmd = float(self.LoC.pid.p)
     controlsState.uiAccelCmd = float(self.LoC.pid.i)
     controlsState.ufAccelCmd = float(self.LoC.pid.f)
-    controlsState.steeringAngleDesiredDeg = float(self.LaC.angle_steers_des)
     controlsState.vTargetLead = float(v_acc)
     controlsState.aTarget = float(a_acc)
     controlsState.cumLagMs = -self.rk.remaining * 1000.
@@ -540,7 +566,7 @@ class Controls:
     controlsState.forceDecel = bool(force_decel)
     controlsState.canErrorCounter = self.can_error_counter
 
-    controlsState.angleSteers = steer_angle_rad * CV.RAD_TO_DEG
+    controlsState.angleSteers = steer_angle_without_offset # CS.steeringAngleDeg
     controlsState.cluSpeedMs = self.clu_speed_ms
     controlsState.applyAccel = self.apply_accel
     controlsState.fusedAccel = self.fused_accel
@@ -549,7 +575,13 @@ class Controls:
     controlsState.aReqValueMin = self.aReqValueMin
     controlsState.aReqValueMax = self.aReqValueMax
 
-    if self.CP.lateralTuning.which() == 'pid':
+    controlsState.steerRatio = self.VM.sR
+    controlsState.steerRateCost = ntune_get('steerRateCost')
+    controlsState.steerActuatorDelay = ntune_get('steerActuatorDelay')
+
+    if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
+      controlsState.lateralControlState.angleState = lac_log
+    elif self.CP.lateralTuning.which() == 'pid':
       controlsState.lateralControlState.pidState = lac_log
     elif self.CP.lateralTuning.which() == 'lqr':
       controlsState.lateralControlState.lqrState = lac_log
