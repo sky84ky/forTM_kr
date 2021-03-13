@@ -396,7 +396,7 @@ class SccSmoother:
     if lead is not None:
       dRel = lead.dRel
 
-      if -3.9 <= stock_accel < apply_accel < -0.1:
+      if stock_accel < apply_accel < -0.1:
         stock_weight = interp(dRel, [2., 20.], [1., 0.])
         accel = apply_accel * (1. - stock_weight) + stock_accel * stock_weight
         self.fused_decel.append(accel)
