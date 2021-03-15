@@ -398,18 +398,13 @@ class SccSmoother:
 
       if stock_accel < apply_accel < -0.1:
         stock_weight = interp(dRel, [2., 20.], [1., 0.])
-        accel = apply_accel * (1. - stock_weight) + stock_accel * stock_weight
-        self.fused_decel.append(accel)
-        if len(self.fused_decel) > 10:
-          self.fused_decel.pop(0)
-        return accel, dRel
+        apply_accel = apply_accel * (1. - stock_weight) + stock_accel * stock_weight
 
-    size = len(self.fused_decel)
-    if size > 0:
-      apply_accel = float(apply_accel + np.sum(self.fused_decel)) / (size + 1.)
+    self.fused_decel.append(apply_accel)
+    if len(self.fused_decel) > 10:
       self.fused_decel.pop(0)
 
-    return apply_accel, dRel
+    return mean(self.fused_decel), dRel
 
   @staticmethod
   def update_cruise_buttons(controls, CS, longcontrol): # called by controlds's state_transition
