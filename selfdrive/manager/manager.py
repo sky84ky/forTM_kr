@@ -15,7 +15,7 @@ from common.spinner import Spinner
 from common.text_window import TextWindow
 from selfdrive.hardware import EON, HARDWARE
 from selfdrive.hardware.eon.apk import (pm_apply_packages, start_offroad,
-                                        update_apks)
+                                        update_apks, pm_grant, system)
 from selfdrive.manager.build import MAX_BUILD_PROGRESS, PREBUILT
 from selfdrive.manager.helpers import unblock_stdout
 from selfdrive.manager.process import ensure_running, launcher
@@ -120,6 +120,11 @@ def manager_cleanup():
 def manager_thread(spinner=None):
   shutdownd = Process(name="shutdownd", target=launcher, args=("selfdrive.shutdownd",))
   shutdownd.start()
+
+  if EON:
+    pm_grant("com.neokii.openpilot", "android.permission.ACCESS_FINE_LOCATION")
+    system("am startservice com.neokii.oproadlimit/.MainService")
+    system("am startservice com.neokii.openpilot/.MainService")
 
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
