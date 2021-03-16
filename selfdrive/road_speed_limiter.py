@@ -105,11 +105,11 @@ class RoadSpeedLimiter:
         MIN_LIMIT = 30
         MAX_LIMIT = 120
 
-      log = "RECV: " + str(is_highway)
-      log += ", " + str(cam_limit_speed)
-      log += ", " + str(cam_limit_speed_left_dist)
-      log += ", " + str(section_limit_speed)
-      log += ", " + str(section_left_dist)
+      #log = "RECV: " + str(is_highway)
+      #log += ", " + str(cam_limit_speed)
+      #log += ", " + str(cam_limit_speed_left_dist)
+      #log += ", " + str(section_limit_speed)
+      #log += ", " + str(section_left_dist)
 
       v_ego = CS.clu11["CF_Clu_Vanz"] / 3.6
 

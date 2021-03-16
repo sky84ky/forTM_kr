@@ -401,7 +401,7 @@ class SccSmoother:
         apply_accel = apply_accel * (1. - stock_weight) + stock_accel * stock_weight
 
     self.fused_decel.append(apply_accel)
-    if len(self.fused_decel) > 10:
+    if len(self.fused_decel) > 5:
       self.fused_decel.pop(0)
 
     return mean(self.fused_decel), dRel
