@@ -96,7 +96,7 @@ class RoadSpeedLimiter:
 
       if is_highway is not None:
         if is_highway:
-          MIN_LIMIT = 60
+          MIN_LIMIT = 40
           MAX_LIMIT = 120
         else:
           MIN_LIMIT = 30
