@@ -33,7 +33,7 @@ def manager_init(spinner=None):
     ("CommunityFeaturesToggle", "0"),
     ("CompletedTrainingVersion", "0"),
     ("IsRHD", "0"),
-    ("IsMetric", "0"),
+    ("IsMetric", "1"),
     ("RecordFront", "0"),
     ("HasAcceptedTerms", "0"),
     ("HasCompletedSetup", "0"),
@@ -44,6 +44,19 @@ def manager_init(spinner=None):
     ("VisionRadarToggle", "0"),
     ("LaneChangeEnabled", "1"),
     ("IsDriverViewEnabled", "0"),
+
+    # HKG
+    ("LongControlEnabled", "0"),
+    ("MadModeEnabled", "1"),
+    ("AutoLaneChangeEnabled", "0"),
+
+    # scc smoother
+    ("SccSmootherState", "0"),
+    ("SccSmootherEnabled", "0"),
+    ("SccSmootherSlowOnCurves", "0"),
+    ("SccSmootherSyncGasPressed", "0"),
+    ("SccSmootherSwitchGapOnly", "0"),
+    ("ShowDebugUI", "0")
   ]
 
   # set unset params
