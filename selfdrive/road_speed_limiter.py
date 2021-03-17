@@ -69,6 +69,8 @@ class RoadSpeedLimiter:
 
   def get_max_speed(self, CS, v_cruise_kph):
 
+    log = ""
+
     if current_milli_time() - self.last_updated > 1000 * 20:
 
       if self.last_exception is not None:
