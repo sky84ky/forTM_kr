@@ -156,10 +156,10 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.
     ret.steerLimitTimer = 2.5
 
-    ret.steerRateCost = 0.3
+    ret.steerRateCost = 0.4
 
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.3]
+    ret.steerMaxV = [1.5]
 
     if ret.openpilotLongitudinalControl:
 
