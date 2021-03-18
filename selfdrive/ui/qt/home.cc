@@ -152,8 +152,8 @@ void OffroadHome::refresh() {
     return;
   }
 
-  date->setText(QDateTime::currentDateTime().toString("dddd, MMMM d"));
-
+  //날짜 수정;
+  date->setText(QDateTime::currentDateTime().toString("yyyy년 M월 d일"));
   // update alerts
 
   alerts_widget->refresh();

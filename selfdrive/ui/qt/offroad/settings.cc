@@ -87,44 +87,44 @@ QWidget * toggles_panel() {
   toggles_list->setMargin(50);
 
   toggles_list->addWidget(new ParamsToggle("OpenpilotEnabledToggle",
-                                            "Enable openpilot",
-                                            "Use the openpilot system for adaptive cruise control and lane keep driver assistance. Your attention is required at all times to use this feature. Changing this setting takes effect when the car is powered off.",
+                                            "오픈파일럿 사용",
+                                            "어댑티브 크루즈 컨트롤 및 차선 유지 지원을 위해 오픈파일럿 시스템을 사용하십시오. 이 기능을 사용하려면 항상 주의를 기울여야 합니다. 이 설정을 변경하는 것은 자동차의 전원이 꺼졌을 때 적용됩니다.",
                                             "../assets/offroad/icon_openpilot.png"
                                               ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("LaneChangeEnabled",
-                                            "Enable Lane Change Assist",
-                                            "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",
+                                            "차선변경 보조 사용",
+                                            "주변의 안전을 확인한 후 방향 지시등을 활성화하고 스티어링 휠을 원하는 차선 쪽으로 부드럽게 밀어 오픈파일럿으로 차선 변경 보조를 수행하십시오. 오픈파일럿은 차선 변경이 안전한지 확인할 수 없습니다. 이 기능을 사용하려면 주변 환경을 지속적으로 관찰해야 합니다.",
                                             "../assets/offroad/icon_road.png"
                                               ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("IsLdwEnabled",
-                                            "Enable Lane Departure Warnings",
-                                            "Receive alerts to steer back into the lane when your vehicle drifts over a detected lane line without a turn signal activated while driving over 31mph (50kph).",
+                                            "차선이탈 경보 사용",
+                                            "50km/h이상의 속도로 주행하는 동안 방향 지시등이 활성화되지 않은 상태에서 차량이 감지된 차선 위를 넘어갈 경우 원래 차선으로 다시 방향을 전환하도록 경고를 보냅니다.",
                                             "../assets/offroad/icon_warning.png"
                                               ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("RecordFront",
-                                            "Record and Upload Driver Camera",
-                                            "Upload data from the driver facing camera and help improve the driver monitoring algorithm.",
+                                            "운전자 영상 녹화 및 업로드",
+                                            "운전자 모니터링 카메라에서 데이터를 업로드하고 운전자 모니터링 알고리즘을 개선하십시오.",
                                             "../assets/offroad/icon_network.png"
                                             ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("IsRHD",
-                                            "Enable Right-Hand Drive",
-                                            "Allow openpilot to obey left-hand traffic conventions and perform driver monitoring on right driver seat.",
+                                            "우핸들 운전방식 사용",
+                                            "오픈파일럿이 좌측 교통 규칙을 준수하도록 허용하고 우측 운전석에서 운전자 모니터링을 수행하십시오.",
                                             "../assets/offroad/icon_openpilot_mirrored.png"
                                             ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("IsMetric",
-                                            "Use Metric System",
-                                            "Display speed in km/h instead of mp/h.",
+                                            "미터법 사용",
+                                            "mi/h 대신 km/h 단위로 속도를 표시합니다.",
                                             "../assets/offroad/icon_metric.png"
                                             ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamsToggle("CommunityFeaturesToggle",
-                                            "Enable Community Features",
-                                            "Use features from the open source community that are not maintained or supported by comma.ai and have not been confirmed to meet the standard safety model. These features include community supported cars and community supported hardware. Be extra cautious when using these features",
+                                            "커뮤니티 기능 사용",
+                                            "comma.ai에서 유지 또는 지원하지 않고 표준 안전 모델에 부합하는 것으로 확인되지 않은 오픈 소스 커뮤니티의 기능을 사용하십시오. 이러한 기능에는 커뮤니티 지원 자동차와 커뮤니티 지원 하드웨어가 포함됩니다. 이러한 기능을 사용할 때는 각별히 주의해야 합니다.",
                                             "../assets/offroad/icon_shell.png"
                                             ));
 
@@ -155,7 +155,7 @@ QWidget * device_panel() {
     device_layout->addWidget(labelWidget(QString::fromStdString(l.first), QString::fromStdString(l.second)), 0, Qt::AlignTop);
   }
 
-  QPushButton* dcam_view = new QPushButton("Driver camera view");
+  QPushButton* dcam_view = new QPushButton("운전자 영상 미리보기");
   device_layout->addWidget(dcam_view, 0, Qt::AlignBottom);
   device_layout->addWidget(horizontal_line(), Qt::AlignBottom);
   QObject::connect(dcam_view, &QPushButton::released, [=]() {
@@ -163,39 +163,39 @@ QWidget * device_panel() {
   });
 
   // TODO: show current calibration values
-  QPushButton *clear_cal_btn = new QPushButton("Reset Calibration");
+  QPushButton *clear_cal_btn = new QPushButton("캘리브레이션 리셋");
   device_layout->addWidget(clear_cal_btn, 0, Qt::AlignBottom);
   device_layout->addWidget(horizontal_line(), Qt::AlignBottom);
   QObject::connect(clear_cal_btn, &QPushButton::released, [=]() {
-    if (ConfirmationDialog::confirm("Are you sure you want to reset calibration?")) {
+    if (ConfirmationDialog::confirm("캘리브레이션을 초기화합니다. 진행하시겠습니까?")) {
       Params().delete_db_value("CalibrationParams");
     }
   });
 
   // power buttons
 
-  QPushButton *poweroff_btn = new QPushButton("Power Off");
+  QPushButton *poweroff_btn = new QPushButton("전원 끄기");
   device_layout->addWidget(poweroff_btn, Qt::AlignBottom);
   QObject::connect(poweroff_btn, &QPushButton::released, [=]() {
-    if (ConfirmationDialog::confirm("Are you sure you want to power off?")) {
+    if (ConfirmationDialog::confirm("장치의 전원을 끕니다. 진행하시겠습니까?")) {
       Hardware::poweroff();
     }
   });
 
   device_layout->addWidget(horizontal_line(), Qt::AlignBottom);
 
-  QPushButton *reboot_btn = new QPushButton("Reboot");
+  QPushButton *reboot_btn = new QPushButton("재부팅");
   device_layout->addWidget(reboot_btn, Qt::AlignBottom);
   QObject::connect(reboot_btn, &QPushButton::released, [=]() {
-    if (ConfirmationDialog::confirm("Are you sure you want to reboot?")) {
+    if (ConfirmationDialog::confirm("장치를 재부팅 합니다. 진행하시겠습니까?")) {
       Hardware::reboot();
     }
   });
 
-  QPushButton *uninstall_btn = new QPushButton("Uninstall openpilot");
+  QPushButton *uninstall_btn = new QPushButton("오픈파일럿 제거");
   device_layout->addWidget(uninstall_btn);
   QObject::connect(uninstall_btn, &QPushButton::released, [=]() {
-    if (ConfirmationDialog::confirm("Are you sure you want to uninstall?")) {
+    if (ConfirmationDialog::confirm("오픈파일럿을 제거합니다. 진행하시겠습니까?")) {
       Params().write_db_value("DoUninstall", "1");
     }
   });
@@ -255,11 +255,11 @@ QWidget * network_panel(QWidget * parent) {
   // TODO: can probably use the ndk for this
   // simple wifi + tethering buttons
   std::vector<std::pair<const char*, const char*>> btns = {
-    {"Open WiFi Settings", "am start -n com.android.settings/.wifi.WifiPickerActivity \
+    {"네트워크 설정열기", "am start -n com.android.settings/.wifi.WifiPickerActivity \
                             -a android.net.wifi.PICK_WIFI_NETWORK \
                             --ez extra_prefs_show_button_bar true \
                             --es extra_prefs_set_next_text ''"},
-    {"Open Tethering Settings", "am start -n com.android.settings/.TetherSettings \
+    {"테터링 설정열기", "am start -n com.android.settings/.TetherSettings \
                                  --ez extra_prefs_show_button_bar true \
                                  --es extra_prefs_set_next_text ''"},
   };
@@ -315,10 +315,10 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
 
   // setup panels
   panels = {
-    {"Developer", developer_panel()},
-    {"Device", device_panel()},
-    {"Network", network_panel(this)},
-    {"Toggles", toggles_panel()},
+    {"개발자", developer_panel()},
+    {"장치", device_panel()},
+    {"네트워크", network_panel(this)},
+    {"토글메뉴", toggles_panel()},
   };
 
   sidebar_layout->addSpacing(45);

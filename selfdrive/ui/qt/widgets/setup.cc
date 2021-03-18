@@ -164,7 +164,7 @@ SetupWidget::SetupWidget(QWidget* parent) : QWidget(parent) {
 
   QVBoxLayout* finishRegistationLayout = new QVBoxLayout;
   finishRegistationLayout->addSpacing(30);
-  QPushButton* finishButton = new QPushButton("Finish registration");
+  QPushButton* finishButton = new QPushButton("comma.ai openpilot");
   finishButton->setFixedHeight(200);
   finishButton->setStyleSheet(R"(
     border-radius: 30px;
@@ -174,7 +174,7 @@ SetupWidget::SetupWidget(QWidget* parent) : QWidget(parent) {
   QObject::connect(finishButton, SIGNAL(released()), this, SLOT(showQrCode()));
   finishRegistationLayout->addWidget(finishButton);
 
-  QLabel* registrationDescription = new QLabel("Pair your device with the comma connect app");
+  QLabel* registrationDescription = new QLabel("Special thanks to\nneokii.\nEnjoy your driving");
   registrationDescription->setStyleSheet(R"(
     font-size: 55px;
     font-weight: 400;

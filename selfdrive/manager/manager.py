@@ -48,13 +48,13 @@ def manager_init(spinner=None):
     # HKG
     ("LongControlEnabled", "0"),
     ("MadModeEnabled", "1"),
-    ("AutoLaneChangeEnabled", "0"),
+    ("AutoLaneChangeEnabled", "1"),
 
     # scc smoother
     ("SccSmootherState", "0"),
-    ("SccSmootherEnabled", "0"),
-    ("SccSmootherSlowOnCurves", "0"),
-    ("SccSmootherSyncGasPressed", "0"),
+    ("SccSmootherEnabled", "1"),
+    ("SccSmootherSlowOnCurves", "1"),
+    ("SccSmootherSyncGasPressed", "1"),
     ("SccSmootherSwitchGapOnly", "0"),
     ("ShowDebugUI", "0")
   ]

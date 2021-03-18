@@ -69,6 +69,10 @@ int main(int argc, char** argv) {
 
   int spinner_img = nvgCreateImageMem(vg, 0, (unsigned char*)_binary_img_spinner_track_png_start, _binary_img_spinner_track_png_end - _binary_img_spinner_track_png_start);
   assert(spinner_img >= 0);
+  int spinner_img_bgsw = 1920;//가로크기
+  int spinner_img_bgsh = 1080;//세로세로
+  int spinner_img_bgsx = 0;//X축 좌표
+  int spinner_img_bgsy= 0;//Y축 좌표
   int spinner_img_s = 360;
   int spinner_img_x = ((fb_w/2)-(spinner_img_s/2));
   int spinner_img_y = 260;
@@ -116,6 +120,14 @@ int main(int argc, char** argv) {
     nvgRect(vg, 0, 0, fb_w, fb_h);
     nvgFill(vg);
 
+    // comma
+    NVGpaint comma_imgPaint = nvgImagePattern(vg, spinner_img_bgsx, spinner_img_bgsy,
+      spinner_img_bgsw, spinner_img_bgsh, 0, spinner_comma_img, 1.0f);
+    nvgBeginPath(vg);
+    nvgFillPaint(vg, comma_imgPaint);
+    nvgRect(vg, spinner_img_bgsx, spinner_img_bgsy, spinner_img_bgsw, spinner_img_bgsh);
+    nvgFill(vg);
+
     // spin track
     nvgSave(vg);
     nvgTranslate(vg, spinner_img_xc, spinner_img_yc);
@@ -129,19 +141,13 @@ int main(int argc, char** argv) {
     nvgFill(vg);
     nvgRestore(vg);
 
-    // comma
-    NVGpaint comma_imgPaint = nvgImagePattern(vg, spinner_img_x, spinner_img_y,
-      spinner_img_s, spinner_img_s, 0, spinner_comma_img, 1.0f);
-    nvgBeginPath(vg);
-    nvgFillPaint(vg, comma_imgPaint);
-    nvgRect(vg, spinner_img_x, spinner_img_y, spinner_img_s, spinner_img_s);
-    nvgFill(vg);
+
 
     if (draw_progress){
       // draw progress bar
       int progress_width = 1000;
       int progress_x = fb_w/2-progress_width/2;
-      int progress_y = 775;
+      int progress_y = 945;
       int progress_height = 25;
 
       NVGpaint paint = nvgBoxGradient(

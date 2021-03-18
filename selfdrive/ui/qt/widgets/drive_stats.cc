@@ -66,16 +66,16 @@ void DriveStats::parseResponse(QString response) {
   QGridLayout* gl = new QGridLayout();
 
   int all_distance = all["distance"].toDouble() * (metric ? MILE_TO_KM : 1);
-  gl->addWidget(new QLabel("ALL TIME"), 0, 0, 1, 3);
-  gl->addLayout(build_stat("DRIVES", all["routes"].toDouble()), 1, 0, 3, 1);
+  gl->addWidget(new QLabel("전체 시간"), 0, 0, 1, 3);
+  gl->addLayout(build_stat("주행수", all["routes"].toDouble()), 1, 0, 3, 1);
   gl->addLayout(build_stat(metric ? "KM" : "MILES", all_distance), 1, 1, 3, 1);
-  gl->addLayout(build_stat("HOURS", all["minutes"].toDouble() / 60), 1, 2, 3, 1);
+  gl->addLayout(build_stat("시간", all["minutes"].toDouble() / 60), 1, 2, 3, 1);
 
   int week_distance = week["distance"].toDouble() * (metric ? MILE_TO_KM : 1);
-  gl->addWidget(new QLabel("PAST WEEK"), 6, 0, 1, 3);
-  gl->addLayout(build_stat("DRIVES", week["routes"].toDouble()), 7, 0, 3, 1);
+  gl->addWidget(new QLabel("지난주"), 6, 0, 1, 3);
+  gl->addLayout(build_stat("주행수", week["routes"].toDouble()), 7, 0, 3, 1);
   gl->addLayout(build_stat(metric ? "KM" : "MILES", week_distance), 7, 1, 3, 1);
-  gl->addLayout(build_stat("HOURS", week["minutes"].toDouble() / 60), 7, 2, 3, 1);
+  gl->addLayout(build_stat("시간", week["minutes"].toDouble() / 60), 7, 2, 3, 1);
 
   QWidget* q = new QWidget;
   q->setLayout(gl);
