@@ -57,6 +57,7 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.GENESIS_G90_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
+
     # hyundai
     elif candidate in [CAR.SANTA_FE]:
       ret.mass = 1694 + STD_CARGO_KG
@@ -165,9 +166,9 @@ class CarInterface(CarInterfaceBase):
     if ret.openpilotLongitudinalControl:
 
       ret.longitudinalTuning.kpBP = [0., 35. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 55. * CV.KPH_TO_MS, 70 * CV.KPH_TO_MS, 100 * CV.KPH_TO_MS]
-      ret.longitudinalTuning.kpV = [0.6648, 0.684, 0.633, 0.46, 0.45, 0.5]
+      ret.longitudinalTuning.kpV = [0.6652, 0.6841, 0.633, 0.46, 0.45, 0.5]
       ret.longitudinalTuning.kiBP = [0., 126.*CV.KPH_TO_MS]
-      ret.longitudinalTuning.kiV = [0.028, 0.03]
+      ret.longitudinalTuning.kiV = [0.025, 0.03]
       ret.longitudinalTuning.kf = 0.5
       ret.longitudinalTuning.deadzoneBP = [0., 100.*CV.KPH_TO_MS]
       ret.longitudinalTuning.deadzoneV = [0., 0.015]
@@ -177,7 +178,7 @@ class CarInterface(CarInterfaceBase):
       ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 48.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
       ret.gasMaxV = [0.45, 0.61, 0.56, 0.43, 0.38, 0.18, 0.13, 0.13, 0.2] 
       ret.brakeMaxBP = [0., 29.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 65*CV.KPH_TO_MS]
-      ret.brakeMaxV = [0.753, 0.853, 0.867, 0.856, 0.84]
+      ret.brakeMaxV = [0.753, 0.853, 0.8669, 0.856, 0.84]
 
       ret.stoppingBrakeRate = 0.155  # brake_travel/s while trying to stop
       ret.startingBrakeRate = 0.99  # brake_travel/s while releasing on restart
