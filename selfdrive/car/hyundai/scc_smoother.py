@@ -307,22 +307,21 @@ class SccSmoother:
 
       # Tuned by stonerains
 
-      if 0. < d < -lead.vRel * (7.7 + cruise_gap) * 2. and lead.vRel < -1.:
-        t = d / lead.vRel
-        acc = -(lead.vRel / t) * CV.MS_TO_KPH * 1.84
+      if 0. < d < -lead.vRel * (7.687 + cruise_gap) * 2. and lead.vRel < -1.: #여기서 부터 254라인까지 선행차가 있을 때 감속 로직, 내용이 있으나 고치면 생각보다 처음부터 해야할게 많아서 안건드리는게 낫다
+        t = d / lead.vRel * 0.978
+        acc = -(lead.vRel / t) * CV.MS_TO_KPH * 1.8
         override_acc = acc
         accel = (op_accel + acc) / 2.
-      else:
-        if 40 > lead.dRel > 12 and clu11_speed < 15.0 * CV.MS_TO_KPH:
+      else:        #여기서 부터 선행차가 있을 때 가속 로직. 
+        if 40 > lead.dRel > 12 and CS.out.vEgo < 15.0:      # 앞차와 거리가 12m보다 크고 40m 보다 작을 때 속도가 15m/s 보다 작으면 가속도를 추가로 아래와 같이 3.8을 곱한다     
           accel = op_accel * 3.8
         else:
-          accel = op_accel * interp(clu11_speed, [0., 30., 38., 50., 51., 60., 100.],
-                                    [2.3, 3.4, 3.2, 1.7, 1.65, 1.4, 1.0])
+          accel = op_accel * interp(clu11_speed, [0., 30., 38., 50., 51., 60., 100.], [2.3, 3.4, 3.2, 1.7, 1.65, 1.4, 1.0]) #보간법 0일 때 엑셀값(가속도) 2.4배 나머지는 각 구간의 보간법
 
     if accel > 0.:
-      accel *= self.accel_gain * interp(clu11_speed, [35., 60., 100.], [1.5, 1.25, 1.2])
+      accel *= self.accel_gain * interp(clu11_speed, [35., 60., 100.], [1.5, 1.25, 1.2])  # 전체 가속로직 선행차가 있을 땐 256라인 가속을 받고 여기서 한번더 가속을 받는다. 선행차가 없을 때는 여기서만 가속을 받는다. 자연스러운 가속은 선행차가 있을 때 가속을 세게해야한다.
     else:
-      accel *= self.decel_gain * 1.8
+      accel *= self.decel_gain * interp(clu11_speed, [70., 75.], [1.79285, 1.8])  #전체 감속로직 보간70킬로까지 감속을 너무 세게 하면 자연스러운 거리 유지가 힘듬.
 
     return clip(accel, -LIMIT_DECEL, LIMIT_ACCEL), override_acc
 
