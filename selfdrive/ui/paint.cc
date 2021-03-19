@@ -877,7 +877,7 @@ static void ui_draw_vision_face(UIState *s) {
   const int face_size = 96;
   const int face_x = (s->viz_rect.x + face_size + (bdr_s * 2));
   const int face_y = (s->viz_rect.bottom() - footer_h + ((footer_h - face_size) / 2));
-  ui_draw_circle_image(s, face_x, face_y + 15., face_size, "driver_face", s->scene.dmonitoring_state.getIsActiveMode());
+  ui_draw_circle_image(s, face_x, face_y - 15., face_size, "driver_face", s->scene.dmonitoring_state.getIsActiveMode());
 }
 
 static void ui_draw_driver_view(UIState *s) {
@@ -897,8 +897,8 @@ static void ui_draw_driver_view(UIState *s) {
   const int blackout_x_l = s->viz_rect.x;
 #endif
   const int blackout_w_l = valid_rect.x - blackout_x_l;
-  ui_fill_rect(s->vg, {blackout_x_l, rect.y + 15., blackout_w_l, rect.h}, COLOR_BLACK_ALPHA(144));
-  ui_fill_rect(s->vg, {blackout_x_r, rect.y + 15., blackout_w_r, rect.h}, COLOR_BLACK_ALPHA(144));
+  ui_fill_rect(s->vg, {blackout_x_l, rect.y, blackout_w_l, rect.h}, COLOR_BLACK_ALPHA(144));
+  ui_fill_rect(s->vg, {blackout_x_r, rect.y, blackout_w_r, rect.h}, COLOR_BLACK_ALPHA(144));
 
   const bool face_detected = s->scene.driver_state.getFaceProb() > 0.4;
   if (face_detected) {
