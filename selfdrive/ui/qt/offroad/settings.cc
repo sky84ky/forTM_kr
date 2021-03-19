@@ -381,11 +381,11 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   // setup panels
 
   std::vector<QString> panels_key = {
-    "Developer",
-    "Device",
-    "Network",
-    "Toggles",
-    "Community",
+    "개발자",
+    "장치",
+    "네트워크",
+    "토글메뉴",
+    "커뮤니티",
   };
 
   panels = {
