@@ -133,6 +133,71 @@ QWidget * toggles_panel() {
   return widget;
 }
 
+QWidget * community_panel() {
+  QVBoxLayout *toggles_list = new QVBoxLayout();
+  toggles_list->setMargin(50);
+
+  toggles_list->addWidget(new ParamsToggle("커뮤니티 기능",
+                                            "커뮤니티 기능 사용",
+                                            "커뮤니티의 오픈 소스를 사용합니다. 콤마의 정규 소스가 아니기 때문에 사용에 주의 하시길 바랍니다.",
+                                            "../assets/offroad/icon_openpilot.png"
+                                              ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("롱컨트롤 사용",
+                                            "N 롱컨트롤 기능 사용",
+                                            "오픈파일럿이 속도를 조절합니다. 주의 하시길 바랍니다.",
+                                            "../assets/offroad/icon_road.png"
+                                              ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("매드모드 사용",
+                                            "HKG 매드모드 사용",
+                                            "가감속의 사용 하지 않아도 핸들 조향을 사용합니다.",
+                                            "../assets/offroad/icon_openpilot.png"
+                                              ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("자동 차선변경 사용",
+                                            "자동 차선 변경",
+                                            "사용에 주의 하십시오",
+                                            "../assets/offroad/icon_road.png"
+                                              ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("가감속 스무서 사용",
+                                            "N Smoother",
+                                            "순정 ASCC 기능을 이용하여 가속과 감속을 부드럽게 할 수 있도록 도와 줍니다. 사용법을 정확히 인지하고 사용하십시오.",
+                                            "../assets/offroad/icon_road.png"
+                                            ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("커브 감속 사용",
+                                            "곡률에 따른 속도 감속 기능을 사용",
+                                            "",
+                                            "../assets/offroad/icon_road.png"
+                                            ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("크루즈 속도의 동기화",
+                                            "크루즈 속도를 설정 후 엑셀로 인해 설정 속도보다 가속 속도가 높아지면 그 속도에 크루즈 설정 속도가 동기화 됩니다.",
+                                            "",
+                                            "../assets/offroad/icon_road.png"
+                                            ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("스무스 설정 버튼 변경",
+                                            "크루즈 갭 설정 버튼으로 순정 ASCC와 가감속 스무서 설정을 변경합니다.",
+                                            "",
+                                            "../assets/offroad/icon_road.png"
+                                            ));
+                                            toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamsToggle("디버그 내용 보기",
+                                            "가감속 등 디버그 내용을 화면에 띄웁니다.",
+                                            "",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+
+  QWidget *widget = new QWidget;
+  widget->setLayout(toggles_list);
+  return widget;
+}
+
+
+
 QWidget * device_panel() {
 
   QVBoxLayout *device_layout = new QVBoxLayout;
@@ -314,16 +379,27 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   QObject::connect(close_btn, SIGNAL(released()), this, SIGNAL(closeSettings()));
 
   // setup panels
+
+  std::vector<QString> panels_key = {
+    "Developer",
+    "Device",
+    "Network",
+    "Toggles",
+    "Community",
+  };
+
   panels = {
     {"개발자", developer_panel()},
     {"장치", device_panel()},
     {"네트워크", network_panel(this)},
     {"토글메뉴", toggles_panel()},
+    {"커뮤니티", community_panel()},
   };
 
   sidebar_layout->addSpacing(45);
   nav_btns = new QButtonGroup();
-  for (auto &panel : panels) {
+  for (auto key : panels_key) {
+    auto& panel = *(panels.find(key));
     QPushButton *btn = new QPushButton(panel.first);
     btn->setCheckable(true);
     btn->setStyleSheet(R"(
