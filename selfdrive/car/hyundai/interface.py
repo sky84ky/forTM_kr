@@ -165,24 +165,22 @@ class CarInterface(CarInterfaceBase):
 
     if ret.openpilotLongitudinalControl:
 
-      ret.longitudinalTuning.kpBP = [0., 35. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 55. * CV.KPH_TO_MS, 70 * CV.KPH_TO_MS, 100 * CV.KPH_TO_MS]
-      ret.longitudinalTuning.kpV = [0.6652, 0.6841, 0.633, 0.46, 0.45, 0.5]
+      ret.longitudinalTuning.kpBP = [0., 35. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 55. * CV.KPH_TO_MS, 70. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+      ret.longitudinalTuning.kpV = [0.6652, 0.6843, 0.633, 0.46, 0.45, 0.45]
       ret.longitudinalTuning.kiBP = [0., 126.*CV.KPH_TO_MS]
-      ret.longitudinalTuning.kiV = [0.025, 0.03]
+      ret.longitudinalTuning.kiV = [0.025, 0.028]
       ret.longitudinalTuning.kf = 0.5
-      ret.longitudinalTuning.deadzoneBP = [0., 100.*CV.KPH_TO_MS]
-      ret.longitudinalTuning.deadzoneV = [0., 0.015]
+      ret.longitudinalTuning.deadzoneBP = [0., 50.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS]
+      ret.longitudinalTuning.deadzoneV = [0., 0., 0.015]
 
-#      ret.gasMaxBP = [0., 25.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
-#      ret.gasMaxV = [0.61, 0.6, 0.45, 0.4, 0.18, 0.13, 0.13, 0.2]
-      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 48.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS]
-      ret.gasMaxV = [0.45, 0.61, 0.56, 0.43, 0.38, 0.18, 0.13, 0.13, 0.2] 
+      ret.gasMaxBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 36.*CV.KPH_TO_MS, 37.*CV.KPH_TO_MS, 48.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS, 65.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+      ret.gasMaxV = [0.45, 0.61, 0.56, 0.43, 0.38, 0.18, 0.13, 0.13, 0.2,  0.22, 0.16] 
       ret.brakeMaxBP = [0., 29.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 50*CV.KPH_TO_MS, 65*CV.KPH_TO_MS]
-      ret.brakeMaxV = [0.753, 0.853, 0.8669, 0.856, 0.84]
+      ret.brakeMaxV = [0.754, 0.854, 0.8669, 0.85613, 0.84]
 
       ret.stoppingBrakeRate = 0.155  # brake_travel/s while trying to stop
       ret.startingBrakeRate = 0.99  # brake_travel/s while releasing on restart
-      ret.startAccel = 1.52
+      ret.startAccel = 1.4
 
     else:
       # scc smoother
