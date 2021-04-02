@@ -75,11 +75,11 @@ DevicePanel::DevicePanel(QWidget* parent) : QWidget(parent) {
   Params params = Params();
 
   QString dongle = QString::fromStdString(params.get("DongleId", false));
-  device_layout->addWidget(new LabelControl("Dongle ID", dongle));
+  device_layout->addWidget(new LabelControl("동글 아이디", dongle));
   device_layout->addWidget(horizontal_line());
 
   QString serial = QString::fromStdString(params.get("HardwareSerial", false));
-  device_layout->addWidget(new LabelControl("Serial", serial));
+  device_layout->addWidget(new LabelControl("시리얼", serial));
 
   // offroad-only buttons
   QList<ButtonControl*> offroad_btns;
@@ -318,7 +318,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
         color: grey;
         border: none;
         background: none;
-        font-size: 63px;
+        font-size: 60px;
         font-weight: 500;
         padding-top: 35px;
         padding-bottom: 35px;
