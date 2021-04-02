@@ -26,7 +26,7 @@ SshControl::SshControl() : AbstractControl("SSH Keys", "Warning: This grants SSH
   hlayout->addWidget(&btn);
 
   QObject::connect(&btn, &QPushButton::released, [=]() {
-    if (btn.text() == "ADD") {
+    if (btn.text() == "추가") {
       username = InputDialog::getText("Enter your GitHub username");
       if (username.length() > 0) {
         btn.setText("LOADING");
@@ -54,10 +54,10 @@ void SshControl::refresh() {
   QString param = QString::fromStdString(Params().get("GithubSshKeys"));
   if (param.length()) {
     username_label.setText(QString::fromStdString(Params().get("GithubUsername")));
-    btn.setText("REMOVE");
+    btn.setText("제거");
   } else {
     username_label.setText("");
-    btn.setText("ADD");
+    btn.setText("추가");
   }
   btn.setEnabled(true);
 }
