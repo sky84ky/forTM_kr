@@ -5,7 +5,7 @@ from cereal import log
 from selfdrive.ntune import ntune_get
 
 ENABLE_ZORROBYTE = False
-ENABLE_LANE_INC_PROB = False
+ENABLE_LANE_INC_PROB = True
 
 TRAJECTORY_SIZE = 33
 # camera offset is meters from center car to camera
