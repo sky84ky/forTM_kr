@@ -174,6 +174,7 @@ void ui_draw_sidebar(UIState *s) {
   draw_settings_button(s);
   draw_home_button(s);
   draw_network_strength(s);
+  draw_battery_icon(s);
   draw_network_type(s);
   draw_temp_metric(s);
   draw_panda_metric(s);
