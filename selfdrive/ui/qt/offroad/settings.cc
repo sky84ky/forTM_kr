@@ -57,7 +57,7 @@ QWidget * toggles_panel() {
   toggles_list->addWidget(record_toggle);
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamControl("EndToEndToggle",
-                                           "\차선이 없을 때 사용 버전 알파",
+                                           "차선이 없을 때 사용 버전 알파",
                                            "차선이 없는 곳에서 사람과 같이 운전을 하는 것을 목표함니다.",
                                            "../assets/offroad/icon_road.png"));
 
