@@ -300,7 +300,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   // close button
   QPushButton *close_btn = new QPushButton("X");
   close_btn->setStyleSheet(R"(
-    font-size: 65px;
+    font-size: 60px;
     font-weight: bold;
     border 1px grey solid;
     border-radius: 100px;
@@ -333,10 +333,10 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
         color: grey;
         border: none;
         background: none;
-        font-size: 57px;
+        font-size: 65px;
         font-weight: 500;
-        padding-top: 35px;
-        padding-bottom: 35px;
+        padding-top: 18px;
+        padding-bottom: 18px;
       }
       QPushButton:checked {
         color: white;
