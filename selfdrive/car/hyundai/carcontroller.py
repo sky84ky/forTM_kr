@@ -172,7 +172,7 @@ class CarController():
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
     self.scc12_cnt %= 0xF
 	
-	apply_steer = interp(CS.out.vEgo, [0., 3.], [0., 1.])
+    apply_steer = interp(CS.out.vEgo, [0., 3.], [0., 1.])
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
