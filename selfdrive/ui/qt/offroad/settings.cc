@@ -384,7 +384,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   setStyleSheet(R"(
     * {
       color: white;
-      font-size: 50px;
+      font-size: 48px;
     }
     SettingsWindow {
       background-color: black;
