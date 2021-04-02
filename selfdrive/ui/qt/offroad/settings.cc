@@ -106,8 +106,8 @@ DevicePanel::DevicePanel(QWidget* parent) : QWidget(parent) {
     }
   }));
 
-  QString brand = params.getBool("Passive") ? "대시캠" : "오픈파일럿";
-  offroad_btns.append(new ButtonControl("오픈파일럿 제거 " + brand, "", "", [=]() {
+  QString brand = params.getBool("Passive") ? "대시캠" : "";
+  offroad_btns.append(new ButtonControl("오픈파일럿 제거 " + brand, "오픈파일럿 제거", "", [=]() {
     if (ConfirmationDialog::confirm("오픈파일럿을 제거하시겠습니까?")) {
       Params().putBool("DoUninstall", true);
     }
