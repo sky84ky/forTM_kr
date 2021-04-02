@@ -4,7 +4,7 @@ from selfdrive.hardware import EON, TICI
 from cereal import log
 from selfdrive.ntune import ntune_get
 
-ENABLE_ZORROBYTE = False
+ENABLE_ZORROBYTE = True
 ENABLE_LANE_INC_PROB = True
 
 TRAJECTORY_SIZE = 33
