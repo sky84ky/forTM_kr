@@ -318,7 +318,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
         color: grey;
         border: none;
         background: none;
-        font-size: 60px;
+        font-size: 57px;
         font-weight: 500;
         padding-top: 35px;
         padding-bottom: 35px;
