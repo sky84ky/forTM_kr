@@ -30,6 +30,7 @@ class LongitudinalMpc():
     self.duration = 0
 
     self.cruise_gap = 0
+    self.auto_tr = True
 
   def publish(self, pm):
     if LOG_MPC:
@@ -98,8 +99,13 @@ class LongitudinalMpc():
     # Calculate mpc
     t = sec_since_boot()
 
-    cruise_gap = int(clip(CS.cruiseGap, 1., 4.))
-    TR = interp(float(cruise_gap), [1., 2., 3., 4.], [1.2, 1.5, 2.0, 2.6])
+    # scc smoother
+
+    if self.auto_tr:
+      TR = interp(v_ego, [3., 11.1, 19.4, 30.], [1.0, 1.05, 1.35, 1.88]) #10.8킬로에 1.0 100킬로에 2.0
+    else:
+      cruise_gap = int(clip(CS.cruiseGap, 1., 4.))
+      TR = interp(float(cruise_gap), [1., 2., 3., 4.], [1.2, 1.5, 2.0, 2.6])
 
     self.n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
     self.duration = int((sec_since_boot() - t) * 1e9)
