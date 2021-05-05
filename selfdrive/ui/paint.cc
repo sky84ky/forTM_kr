@@ -711,6 +711,25 @@ static void ui_draw_vision_brake(UIState *s) {
   ui_draw_circle_image(s, center_x, center_y, radius, "brake", brake_bg, brake_img_alpha);
 }
 
+static void ui_draw_vision_autohold(UIState *s) {
+  const UIScene *scene = &s->scene;
+  int autohold = scene->car_state.getAutoHold();
+  if(autohold < 0)
+    return;
+
+  const int radius = 96;
+  const int center_x = s->viz_rect.x + radius*4 + (bdr_s * 2);
+  const int center_y = s->viz_rect.bottom() - footer_h / 2;
+
+  float brake_img_alpha = autohold > 0 ? 1.0f : 0.15f;
+  float brake_bg_alpha = autohold > 0 ? 0.3f : 0.1f;
+  NVGcolor brake_bg = nvgRGBA(0, 0, 0, (255 * brake_bg_alpha));
+
+  ui_draw_circle_image(s, center_x, center_y, radius,
+        autohold > 1 ? "autohold_warning" : "autohold_active",
+        brake_bg, brake_img_alpha);
+}
+
 static void ui_draw_vision_maxspeed(UIState *s) {
 
   // scc smoother
@@ -918,6 +937,9 @@ static void ui_draw_vision_footer(UIState *s) {
 
 #if UI_FEATURE_BRAKE
   //ui_draw_vision_brake(s);
+#endif
+#if UI_FEATURE_AUTOHOLD
+  ui_draw_vision_autohold(s);
 #endif
 }
 
@@ -1151,20 +1173,22 @@ void ui_nvg_init(UIState *s) {
 
   // init images
   std::vector<std::pair<const char *, const char *>> images = {
-      {"wheel", "../assets/img_chffr_wheel.png"},
-      {"trafficSign_turn", "../assets/img_trafficSign_turn.png"},
-      {"driver_face", "../assets/img_driver_face.png"},
-      {"button_settings", "../assets/images/button_settings.png"},
-      {"button_home", "../assets/images/button_home.png"},
-      {"battery", "../assets/images/battery.png"},
-      {"battery_charging", "../assets/images/battery_charging.png"},
-      {"network_0", "../assets/images/network_0.png"},
-      {"network_1", "../assets/images/network_1.png"},
-      {"network_2", "../assets/images/network_2.png"},
-      {"network_3", "../assets/images/network_3.png"},
-      {"network_4", "../assets/images/network_4.png"},
-      {"network_5", "../assets/images/network_5.png"},
-	  {"brake", "../assets/img_brake_disc.png"},
+    {"wheel", "../assets/img_chffr_wheel.png"},
+    {"trafficSign_turn", "../assets/img_trafficSign_turn.png"},
+    {"driver_face", "../assets/img_driver_face.png"},
+    {"button_settings", "../assets/images/button_settings.png"},
+    {"button_home", "../assets/images/button_home.png"},
+    {"battery", "../assets/images/battery.png"},
+    {"battery_charging", "../assets/images/battery_charging.png"},
+    {"network_0", "../assets/images/network_0.png"},
+    {"network_1", "../assets/images/network_1.png"},
+    {"network_2", "../assets/images/network_2.png"},
+    {"network_3", "../assets/images/network_3.png"},
+    {"network_4", "../assets/images/network_4.png"},
+    {"network_5", "../assets/images/network_5.png"},
+    {"brake", "../assets/img_brake_disc.png"},
+	{"autohold_warning", "../assets/img_autohold_warning.png"},
+	{"autohold_active", "../assets/img_autohold_active.png"},
   };
   for (auto [name, file] : images) {
     s->images[name] = nvgCreateImage(s->vg, file, 1);
