@@ -38,7 +38,8 @@ static bool calib_frame_to_full_frame(const UIState *s, float in_x, float in_y, 
 static void ui_init_vision(UIState *s) {
   // Invisible until we receive a calibration message.
   s->scene.world_objects_visible = false;
-
+  s->status = STATUS_OFFROAD;
+	
   for (int i = 0; i < s->vipc_client->num_buffers; i++) {
     s->texture[i].reset(new EGLImageTexture(&s->vipc_client->buffers[i]));
 
@@ -274,6 +275,7 @@ static void update_status(UIState *s) {
       s->scene.end_to_end = Params().getBool("EndToEndToggle");
       s->vipc_client = s->scene.driver_view ? s->vipc_client_front : s->vipc_client_rear;
     } else {
+      s->status = STATUS_OFFROAD;
       s->vipc_client->connected = false;
     }
   }
@@ -309,7 +311,7 @@ static void update_extras(UIState *s)
 
 
 #if UI_FEATURE_DASHCAM
-   if(s->awake)
+   if(s->awake && s->status != STATUS_OFFROAD)
    {
         int touch_x = -1, touch_y = -1;
         int touched = touch_poll(&(s->touch), &touch_x, &touch_y, 0);
