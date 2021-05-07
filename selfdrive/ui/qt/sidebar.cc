@@ -12,7 +12,7 @@ StatusWidget::StatusWidget(bool has_substatus, QWidget *parent) : QFrame(parent)
   if (has_substatus) {
     layout->setContentsMargins(50, 24, 16, 24);
     status->setAlignment(Qt::AlignLeft | Qt::AlignHCenter);
-    status->setStyleSheet(R"(font-size: 60px; font-weight: 500;)");
+    status->setStyleSheet(R"(font-size: 56px; font-weight: 500;)");
 
     substatus = new QLabel(this);
     substatus->setAlignment(Qt::AlignLeft | Qt::AlignHCenter);
