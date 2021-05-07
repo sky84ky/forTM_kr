@@ -52,7 +52,7 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
   if (!Hardware::TICI()) {
     toggles.append(new ParamControl("IsUploadRawEnabled",
                                     "업로드 로그",
-                                    "와이파이 연결 시 로그와 영상 전체를 업로드 한다.",
+                                    "와이파이 연결 시 로그와 영상 전체를 업로드 합니다.",
                                     "../assets/offroad/icon_network.png",
                                     this));
   }
@@ -65,7 +65,7 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
   toggles.append(record_toggle);
   toggles.append(new ParamControl("EndToEndToggle",
                                   "차선이 없을 때 사용 버전 알파",
-                                  "차선이 없는 곳에서 사람과 같이 운전을 하는 것을 목표함니다.",
+                                  "차선이 없는 곳에서 사람과 같이 운전을 하는 것을 목표합니다.",
                                   "../assets/offroad/icon_road.png",
                                   this));
 
