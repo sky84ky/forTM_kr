@@ -51,8 +51,8 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
 
   if (!Hardware::TICI()) {
     toggles.append(new ParamControl("IsUploadRawEnabled",
-                                    "Upload Raw Logs",
-                                    "Upload full logs and full resolution video by default while on WiFi. If not enabled, individual logs can be marked for upload at my.comma.ai/useradmin.",
+                                    "업로드 로그",
+                                    "와이파이 연결 시 로그와 영상 전체를 업로드 한다.",
                                     "../assets/offroad/icon_network.png",
                                     this));
   }
@@ -286,8 +286,8 @@ QWidget * community_panel() {
   //toggles_list->setMargin(50);
 
   toggles_list->addWidget(new ParamControl("UseClusterSpeed",
-                                            "Use Cluster Speed",
-                                            "Use cluster speed instead of wheel speed.",
+                                            "클러스터 스피드 사용",
+                                            "휠 스피드 대신 클러스터 스피드를 사용합니다.",
                                             "../assets/offroad/icon_road.png"
                                               ));
 
