@@ -195,7 +195,7 @@ class SccSmoother:
     ascc_enabled = CS.acc_mode and enabled and CS.cruiseState_enabled \
                    and 1 < CS.cruiseState_speed < 255 and not CS.brake_pressed
 #장푸님 자동 크루즈 설정
-    ascc_auto_set = enabled and (clu11_speed > 30 or CS.obj_valid) \ #
+    ascc_auto_set = enabled and (clu11_speed > 30 or CS.obj_valid) \#
                   and CS.gas_pressed and CS.prev_cruiseState_speed and not CS.cruiseState_speed #
 
     if not self.longcontrol:
