@@ -194,14 +194,17 @@ class SccSmoother:
 
     ascc_enabled = CS.acc_mode and enabled and CS.cruiseState_enabled \
                    and 1 < CS.cruiseState_speed < 255 and not CS.brake_pressed
+#장푸님 자동 크루즈 설정
+    ascc_auto_set = enabled and (clu11_speed > 30 or CS.obj_valid) \ #
+                  and CS.gas_pressed and CS.prev_cruiseState_speed and not CS.cruiseState_speed #
 
     if not self.longcontrol:
-      if not ascc_enabled or CS.standstill or CS.cruise_buttons != Buttons.NONE:
+      if (not ascc_enabled or CS.standstill or CS.cruise_buttons != Buttons.NONE) and not ascc_auto_set: #
         self.reset()
         self.wait_timer = max(ALIVE_COUNT) + max(WAIT_COUNT)
         return
 
-    if not ascc_enabled:
+    if not ascc_enabled and not ascc_auto_set: #
       self.reset()
 
     self.cal_target_speed(CS, clu11_speed, controls)
@@ -210,10 +213,14 @@ class SccSmoother:
 
     if self.wait_timer > 0:
       self.wait_timer -= 1
-    elif ascc_enabled:
+    elif ascc_enabled or ascc_auto_set:#
+    # elif ascc_auto_set:
 
       if self.alive_timer == 0:
-        self.btn = self.get_button(CS.cruiseState_speed * self.speed_conv_to_clu)
+        if ascc_enabled:#
+          self.btn = self.get_button(CS.cruiseState_speed * self.speed_conv_to_clu)#
+        elif ascc_auto_set:#
+          self.btn = Buttons.SET_DECEL#
         self.alive_count = SccSmoother.get_alive_count()
 
       if self.btn != Buttons.NONE:

@@ -142,9 +142,9 @@ Sidebar::Sidebar(QWidget *parent) : QFrame(parent) {
 
 void Sidebar::update(const UIState &s) {
   static std::map<NetStatus, std::pair<QString, QColor>> connectivity_map = {
-      {NET_ERROR, {"CONNECT\nERROR", COLOR_DANGER}},
-      {NET_CONNECTED, {"CONNECT\nONLINE", COLOR_GOOD}},
-      {NET_DISCONNECTED, {"CONNECT\nOFFLINE", COLOR_WARNING}},
+      {NET_ERROR, {"네트워크\n에러", COLOR_DANGER}},
+      {NET_CONNECTED, {"네트워크\n연결됨", COLOR_GOOD}},
+      {NET_DISCONNECTED, {"네트워크\n연결안됨", COLOR_WARNING}},
   };
   auto net_params = connectivity_map[s.scene.athenaStatus];
   connect->update(net_params.first, net_params.second);
@@ -181,10 +181,10 @@ void Sidebar::update(const UIState &s) {
   signal->update(network_type, img_idx);
 
   QColor panda_color = COLOR_GOOD;
-  QString panda_message = "VEHICLE\nONLINE";
+  QString panda_message = "판다\n연결됨";
   if (s.scene.pandaType == cereal::PandaState::PandaType::UNKNOWN) {
     panda_color = COLOR_DANGER;
-    panda_message = "NO\nPANDA";
+    panda_message = "판다\n연결안됨";
   }
   else if (Hardware::TICI() && s.scene.started) {
     panda_color = s.scene.gpsOK ? COLOR_GOOD : COLOR_WARNING;
