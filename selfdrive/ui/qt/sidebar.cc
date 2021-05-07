@@ -154,8 +154,8 @@ void Sidebar::update(const UIState &s) {
       {cereal::DeviceState::ThermalStatus::YELLOW, COLOR_WARNING},
       {cereal::DeviceState::ThermalStatus::RED, COLOR_DANGER},
       {cereal::DeviceState::ThermalStatus::DANGER, COLOR_DANGER}};
-  QString temp_val = QString("%1 °C").arg((int)s.scene.deviceState.getAmbientTempC());
-  temp->update(temp_val, temp_severity_map[s.scene.deviceState.getThermalStatus()], "  이온 온도");
+  QString temp_val = QString(" %1 °C").arg((int)s.scene.deviceState.getAmbientTempC());
+  temp->update(temp_val, temp_severity_map[s.scene.deviceState.getThermalStatus()], "   이온 온도");
 
   static std::map<cereal::DeviceState::NetworkType, const char *> network_type_map = {
       {cereal::DeviceState::NetworkType::NONE, "--"},
